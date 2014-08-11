@@ -6,7 +6,7 @@ package com.appirio.tech.core.api.v2.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.appirio.tech.core.api.v2.exception.CMCParseException;
+import com.appirio.tech.core.api.v2.exception.ResourceNotMappedException;
 import com.appirio.tech.core.api.v2.model.CMCResource;
 import com.appirio.tech.core.api.v2.service.RESTActionService;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
@@ -31,7 +31,7 @@ public class ResourceFactory<T extends CMCResource> {
 		if(queryServiceMap.containsKey(resource)) {
 			return queryServiceMap.get(resource);
 		} else {
-			throw new CMCParseException("unknown resource:" + resource);
+			throw new ResourceNotMappedException("unknown resource:" + resource);
 		}
 	}
 	
@@ -39,7 +39,7 @@ public class ResourceFactory<T extends CMCResource> {
 		if(actionServiceMap.containsKey(resource)) {
 			return actionServiceMap.get(resource);
 		} else {
-			throw new CMCParseException("unknown resource:" + resource);
+			throw new ResourceNotMappedException("unknown resource:" + resource);
 		}
 	}
 	
@@ -47,7 +47,7 @@ public class ResourceFactory<T extends CMCResource> {
 		if(modelMap.containsKey(resource)) {
 			return modelMap.get(resource);
 		} else {
-			throw new CMCParseException("unknown resource");
+			throw new ResourceNotMappedException("unknown resource");
 		}
 	}
 }

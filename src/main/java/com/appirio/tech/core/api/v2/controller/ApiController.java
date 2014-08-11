@@ -22,9 +22,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.appirio.tech.core.api.v2.ApiVersion;
 import com.appirio.tech.core.api.v2.CMCID;
-import com.appirio.tech.core.api.v2.ExceptionCallbackHandler;
 import com.appirio.tech.core.api.v2.ExceptionContent;
-import com.appirio.tech.core.api.v2.RootExceptionCallbackHandler;
+import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
+import com.appirio.tech.core.api.v2.exception.handler.ResourceNotMappedHandler;
+import com.appirio.tech.core.api.v2.exception.handler.RootExceptionCallbackHandler;
 import com.appirio.tech.core.api.v2.model.CMCResource;
 import com.appirio.tech.core.api.v2.model.CMCResourceHelper;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
@@ -48,14 +49,15 @@ import com.appirio.tech.core.api.v2.service.RESTQueryService;
  */
 @RequestMapping("/api/v2")
 @Controller
-public class ApiV2Controller<T extends CMCResource> {
+public class ApiController<T extends CMCResource> {
 	protected final Logger logger = Logger.getLogger(getClass());
 	
 	private List<ExceptionCallbackHandler> exceptionHandlers;
 	private ResourceFactory<T> resourceFactory;
 	
-	public ApiV2Controller() {
+	public ApiController() {
 		exceptionHandlers = new ArrayList<ExceptionCallbackHandler>();
+		exceptionHandlers.add(new ResourceNotMappedHandler());
 		exceptionHandlers.add(new RootExceptionCallbackHandler());
 		
 		resourceFactory = new ResourceFactory<T>();
@@ -184,10 +186,10 @@ public class ApiV2Controller<T extends CMCResource> {
 			if(handler.isHandle(ex)) {
 				exceptionContent = handler.getExceptionContent(ex, request, res);
 				UID uid = new UID();
-				logger.warn("Exception caught in Api controller. id:" + uid.toString(), ex);
 				response.setId(uid.toString());
 				response.setResult(false, exceptionContent.getHttpStatus().value(), exceptionContent);
 				res.setStatus(exceptionContent.getHttpStatus().value());
+				return response;
 			}
 		}
 		

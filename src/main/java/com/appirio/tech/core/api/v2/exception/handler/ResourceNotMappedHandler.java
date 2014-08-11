@@ -1,29 +1,32 @@
 /**
  * 
  */
-package com.appirio.tech.core.api.v2;
+package com.appirio.tech.core.api.v2.exception.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 
+import com.appirio.tech.core.api.v2.ExceptionContent;
+import com.appirio.tech.core.api.v2.exception.ResourceNotMappedException;
+
 /**
- * Default ExceptionCallbackHandler that handles base exception upon API error.
+ * Returns 404 (NotFound) 
  * 
  * @author sudo
  *
  */
-public class RootExceptionCallbackHandler implements ExceptionCallbackHandler{
+public class ResourceNotMappedHandler implements ExceptionCallbackHandler {
 
 	public boolean isHandle(Throwable th) {
-		//returns true for every Throwable type
-		return true;
+		return (th instanceof ResourceNotMappedException)?true:false;
 	}
 
 	public ExceptionContent getExceptionContent(Throwable th, HttpServletRequest request, HttpServletResponse res) {
 		ExceptionContent content = new ExceptionContent(th);
-		content.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		content.setHttpStatus(HttpStatus.NOT_FOUND);
 		return content;
 	}
+
 }

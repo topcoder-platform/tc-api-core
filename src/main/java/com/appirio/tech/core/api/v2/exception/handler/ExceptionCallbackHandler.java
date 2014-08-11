@@ -1,10 +1,12 @@
 /**
  * 
  */
-package com.appirio.tech.core.api.v2;
+package com.appirio.tech.core.api.v2.exception.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.appirio.tech.core.api.v2.ExceptionContent;
 
 /**
  * The class get's callback when Exception is caught on API response time.

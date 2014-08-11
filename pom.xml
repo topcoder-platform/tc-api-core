@@ -42,6 +42,12 @@
 		<version>DEPS-SPRING-1.0-SNAPSHOT</version>
 		<type>pom</type>
     </dependency>
+	<dependency>
+		<groupId>com.appirio.tech.core.deps.spring.test</groupId>
+		<artifactId>tech.core.deps.spring.test</artifactId>
+		<version>DEPS-SPRING-TEST-1.0-SNAPSHOT</version>
+		<type>pom</type>
+	</dependency>
 
     <dependency>
       <groupId>junit</groupId>
