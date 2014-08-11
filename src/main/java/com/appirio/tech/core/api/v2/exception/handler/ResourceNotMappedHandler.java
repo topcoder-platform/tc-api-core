@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 
-import com.appirio.tech.core.api.v2.ExceptionContent;
+import com.appirio.tech.core.api.v2.exception.ExceptionContent;
 import com.appirio.tech.core.api.v2.exception.ResourceNotMappedException;
 
 /**

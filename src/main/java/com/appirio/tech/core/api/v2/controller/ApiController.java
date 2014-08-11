@@ -4,7 +4,6 @@ package com.appirio.tech.core.api.v2.controller;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.rmi.server.UID;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,10 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.appirio.tech.core.api.v2.ApiVersion;
 import com.appirio.tech.core.api.v2.CMCID;
-import com.appirio.tech.core.api.v2.ExceptionContent;
+import com.appirio.tech.core.api.v2.exception.ExceptionContent;
 import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
-import com.appirio.tech.core.api.v2.exception.handler.ResourceNotMappedHandler;
-import com.appirio.tech.core.api.v2.exception.handler.RootExceptionCallbackHandler;
 import com.appirio.tech.core.api.v2.model.CMCResource;
 import com.appirio.tech.core.api.v2.model.CMCResourceHelper;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
@@ -49,20 +46,20 @@ import com.appirio.tech.core.api.v2.service.RESTQueryService;
  */
 @RequestMapping("/api/v2")
 @Controller
-public class ApiController<T extends CMCResource> {
+public class ApiController {
 	protected final Logger logger = Logger.getLogger(getClass());
 	
 	private List<ExceptionCallbackHandler> exceptionHandlers;
-	private ResourceFactory<T> resourceFactory;
+	private ResourceFactory resourceFactory;
 	
 	public ApiController() {
-		exceptionHandlers = new ArrayList<ExceptionCallbackHandler>();
-		exceptionHandlers.add(new ResourceNotMappedHandler());
-		exceptionHandlers.add(new RootExceptionCallbackHandler());
-		
-		resourceFactory = new ResourceFactory<T>();
+		resourceFactory = new ResourceFactory();
 	}
 	
+	/**
+	 * Get current {@link ExceptionCallbackHandler} that are registered within this Controller.
+	 * 
+	 */
 	public List<ExceptionCallbackHandler> getExceptionHandlers() {
 		return exceptionHandlers;
 	}
@@ -78,7 +75,16 @@ public class ApiController<T extends CMCResource> {
 		this.exceptionHandlers = exceptionHandlers;
 	}
 	
-	public ResourceFactory<T> getResourceFactory() {
+	public void setResourceFactory(ResourceFactory resourceFactory) {
+		this.resourceFactory = resourceFactory;
+	}
+	
+	/**
+	 * Get current {@link ResourceFactory} that is registered within this Controller
+	 * 
+	 * @return
+	 */
+	public ResourceFactory getResourceFactory() {
 		return resourceFactory;
 	}
 	

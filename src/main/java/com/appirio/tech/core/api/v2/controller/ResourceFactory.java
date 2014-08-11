@@ -3,7 +3,6 @@
  */
 package com.appirio.tech.core.api.v2.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.appirio.tech.core.api.v2.exception.ResourceNotMappedException;
@@ -15,16 +14,18 @@ import com.appirio.tech.core.api.v2.service.RESTQueryService;
  * @author sudo
  *
  */
-public class ResourceFactory<T extends CMCResource> {
+public class ResourceFactory {
 
 	private Map<String, RESTQueryService> queryServiceMap;
 	private Map<String, RESTActionService> actionServiceMap;
-	private Map<String, Class<T>> modelMap;
+	private Map<String, Class<? extends CMCResource>> modelMap;
 	
-	public ResourceFactory() {
-		queryServiceMap = new HashMap<String, RESTQueryService>();
-		actionServiceMap = new HashMap<String, RESTActionService>();
-		modelMap = new HashMap<String, Class<T>>();
+	public void setup(Map<String, RESTQueryService> queryServiceMap,
+			Map<String, RESTActionService> actionServiceMap,
+			Map<String, Class<? extends CMCResource>> modelMap) {
+		this.queryServiceMap = queryServiceMap;
+		this.actionServiceMap = actionServiceMap;
+		this.modelMap = modelMap;
 	}
 
 	public RESTQueryService getQueryService(String resource) throws Exception {
@@ -43,7 +44,7 @@ public class ResourceFactory<T extends CMCResource> {
 		}
 	}
 	
-	public Class<T> getResourceModel(String resource) throws Exception {
+	public Class<? extends CMCResource> getResourceModel(String resource) throws Exception {
 		if(modelMap.containsKey(resource)) {
 			return modelMap.get(resource);
 		} else {

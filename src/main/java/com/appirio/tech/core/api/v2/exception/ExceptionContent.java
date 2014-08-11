@@ -1,4 +1,4 @@
-package com.appirio.tech.core.api.v2;
+package com.appirio.tech.core.api.v2.exception;
 
 import org.springframework.http.HttpStatus;
 
