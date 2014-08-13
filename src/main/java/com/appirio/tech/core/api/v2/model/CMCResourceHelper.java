@@ -52,7 +52,7 @@ public class CMCResourceHelper {
 	 * @param clazz
 	 * @since v2
 	 */
-	public static FieldSelector getDefaultFieldSelector(Class<? extends CMCResource> clazz) {
+	public static FieldSelector getDefaultFieldSelector(Class<? extends AbstractResource> clazz) {
 		FieldSelector selector = new FieldSelector();
 		try {
 			Set<String> fields = CMCResourceHelper.getDefaultFields(clazz);
@@ -65,7 +65,7 @@ public class CMCResourceHelper {
 		return selector;
 	}
 	
-	public static Set<String> getDefaultFields(Class<? extends CMCResource> clazz) {
+	public static Set<String> getDefaultFields(Class<? extends AbstractResource> clazz) {
 		Set<String> ret = new HashSet<String>();
 		
 		Method[] methods = clazz.getMethods();
@@ -95,7 +95,7 @@ public class CMCResourceHelper {
 	 * 
 	 * NOTE: since CMCResource wants to be POJO, it should be better that "serializable"
 	 * fields should only be taken care when actual serialization is going to happen,
-	 * and {@link CMCResource} doesn't know anything about which fields that gets serialized.
+	 * and {@link AbstractResource} doesn't know anything about which fields that gets serialized.
 	 * Unfortunately, as Jackson filter function (JSON serializer) only takes Object to it's
 	 * method, we made the method here for it to use. See {@link ApiBeanSerializeFilter} for
 	 * the implementation and usage of {@link #serializeFields}
@@ -103,7 +103,7 @@ public class CMCResourceHelper {
 	 * @param selector
 	 * @since va1
 	 */
-	public static void setSerializeFields(CMCResource cobj, FieldSelector selector) {
+	public static void setSerializeFields(AbstractResource cobj, FieldSelector selector) {
 		Set<String> serializeFields = new HashSet<String>();
 		serializeFields = selector.getSelectedFields();
 		if(serializeFields.isEmpty()) {
@@ -116,7 +116,7 @@ public class CMCResourceHelper {
 		for(Method method : methods) {
 			String methodName = method.getName();
 			if(methodName.startsWith("get") && method.getParameterTypes().length==0) {
-				if(CMCResource.class.isAssignableFrom(method.getReturnType()) ||
+				if(AbstractResource.class.isAssignableFrom(method.getReturnType()) ||
 						isReturnNotNullOrTypeCollectionOfCMCResource(cobj, method)) {
 					
 					String underscoreLabel = getUnderscoreFieldName(methodName);
@@ -133,14 +133,14 @@ public class CMCResourceHelper {
 				Method method = methodMap.get(fieldName);
 				if(method!=null) {
 					Class<?> returnType = method.getReturnType();
-					if(CMCResource.class.isAssignableFrom(returnType)) {
-						CMCResource co = (CMCResource)method.invoke(cobj);
+					if(AbstractResource.class.isAssignableFrom(returnType)) {
+						AbstractResource co = (AbstractResource)method.invoke(cobj);
 						if(co!=null) setSerializeFields(co, selector.getField(fieldName));
 					} else if (Collection.class.isAssignableFrom(returnType)) {
 						Collection<?> collection = (Collection<?>)method.invoke(cobj);
 						for(Object item : collection) {
-							if(item instanceof CMCResource) {
-								CMCResource co = (CMCResource)item;
+							if(item instanceof AbstractResource) {
+								AbstractResource co = (AbstractResource)item;
 								setSerializeFields(co, selector.getField(fieldName));
 							}
 						}
@@ -160,7 +160,7 @@ public class CMCResourceHelper {
 	 * @param method
 	 * @return
 	 */
-	private static boolean isReturnNotNullOrTypeCollectionOfCMCResource(CMCResource co, Method method) {
+	private static boolean isReturnNotNullOrTypeCollectionOfCMCResource(AbstractResource co, Method method) {
 		if (Collection.class.isAssignableFrom(method.getReturnType())) {
 			Object obj;
 			try {
@@ -170,7 +170,7 @@ public class CMCResourceHelper {
 			}
 			if (obj != null) {
 				Collection<?> col = (Collection<?>) obj;
-				if (col.size() > 0 && col.iterator().next() instanceof CMCResource) {
+				if (col.size() > 0 && col.iterator().next() instanceof AbstractResource) {
 					return true;
 				}
 			}

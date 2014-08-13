@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.appirio.tech.core.api.v2.exception.ResourceInitializationException;
 import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
-import com.appirio.tech.core.api.v2.model.CMCResource;
+import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.service.RESTActionService;
 import com.appirio.tech.core.api.v2.service.RESTPersistentService;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
@@ -59,9 +59,9 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 		Map<String, RESTActionService> actionServiceMap = new HashMap<String, RESTActionService>();
 		setupService(actionServiceMap, RESTActionService.class);
 
-		Map<String, Class<? extends CMCResource>> modelMap = new HashMap<String, Class<? extends CMCResource>>();
-		Map<String, CMCResource> modelBeans = context.getBeansOfType(CMCResource.class);
-		for(CMCResource model: modelBeans.values()) {
+		Map<String, Class<? extends AbstractResource>> modelMap = new HashMap<String, Class<? extends AbstractResource>>();
+		Map<String, AbstractResource> modelBeans = context.getBeansOfType(AbstractResource.class);
+		for(AbstractResource model: modelBeans.values()) {
 			if(modelBeans.containsKey(model.getResourcePath())) {
 				throw new ResourceInitializationException("Duplicate Service detected during initialization. " + model.getResourcePath());
 			}
@@ -93,7 +93,7 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 	 */
 	private void logComplete(List<ExceptionCallbackHandler> handlerList, Map<String, RESTQueryService> queryServiceMap,
 			Map<String, RESTPersistentService> persistentServiceMap, Map<String, RESTActionService> actionServiceMap,
-			Map<String, Class<? extends CMCResource>> modelMap) {
+			Map<String, Class<? extends AbstractResource>> modelMap) {
 		if(logger.isDebugEnabled()) {
 			StringBuilder builder = new StringBuilder();
 			builder.append("ApiController Initialization complete:").append("\n");

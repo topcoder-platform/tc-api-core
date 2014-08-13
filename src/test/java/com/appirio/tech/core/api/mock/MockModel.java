@@ -3,38 +3,33 @@
  */
 package com.appirio.tech.core.api.mock;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.stereotype.Component;
 
 import com.appirio.tech.core.api.v2.CMCID;
-import com.appirio.tech.core.api.v2.model.CMCResource;
+import com.appirio.tech.core.api.v2.model.CMCObject;
 
 /**
  * @author sudo
  *
  */
 @Component
-public class MockModel extends CMCResource {
+public class MockModel extends CMCObject {
 
 	public static final String RESOURCE_PATH = "mock_models";
 
-	private CMCID id;
 	private String strTest;
 	private Integer intTest;
+	private String dummyField = "dummy";
 	
 	public MockModel() {}
 	
 	public MockModel(CMCID id, String strTest, Integer intTest) {
-		this.id = id;
+		super.setId(id);
 		this.strTest = strTest;
 		this.intTest = intTest;
 	}
 	
-	public CMCID getId() {
-		return id;
-	}
-	public void setId(CMCID id) {
-		this.id = id;
-	}
 	public String getStrTest() {
 		return strTest;
 	}
@@ -46,6 +41,17 @@ public class MockModel extends CMCResource {
 	}
 	public void setIntTest(Integer intTest) {
 		this.intTest = intTest;
+	}
+	/**
+	 * Dummy field that Jackson Mapper should ignore
+	 * @return
+	 */
+	@JsonIgnore
+	public String getDummyField() {
+		return dummyField;
+	}
+	public void setDummyField(String dummyField) {
+		this.dummyField = dummyField;
 	}
 
 	public String getResourcePath() {

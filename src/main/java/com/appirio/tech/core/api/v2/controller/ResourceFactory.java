@@ -6,7 +6,7 @@ package com.appirio.tech.core.api.v2.controller;
 import java.util.Map;
 
 import com.appirio.tech.core.api.v2.exception.ResourceNotMappedException;
-import com.appirio.tech.core.api.v2.model.CMCResource;
+import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.service.RESTActionService;
 import com.appirio.tech.core.api.v2.service.RESTPersistentService;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
@@ -20,12 +20,12 @@ public class ResourceFactory {
 	private Map<String, RESTQueryService> queryServiceMap;
 	private Map<String, RESTPersistentService> persistentServiceMap;
 	private Map<String, RESTActionService> actionServiceMap;
-	private Map<String, Class<? extends CMCResource>> modelMap;
+	private Map<String, Class<? extends AbstractResource>> modelMap;
 	
 	public void setup(Map<String, RESTQueryService> queryServiceMap,
 			Map<String, RESTPersistentService> persistentServiceMap,
 			Map<String, RESTActionService> actionServiceMap,
-			Map<String, Class<? extends CMCResource>> modelMap) {
+			Map<String, Class<? extends AbstractResource>> modelMap) {
 		this.queryServiceMap = queryServiceMap;
 		this.persistentServiceMap = persistentServiceMap;
 		this.actionServiceMap = actionServiceMap;
@@ -56,7 +56,7 @@ public class ResourceFactory {
 		}
 	}
 	
-	public Class<? extends CMCResource> getResourceModel(String resource) throws Exception {
+	public Class<? extends AbstractResource> getResourceModel(String resource) throws Exception {
 		if(modelMap.containsKey(resource)) {
 			return modelMap.get(resource);
 		} else {

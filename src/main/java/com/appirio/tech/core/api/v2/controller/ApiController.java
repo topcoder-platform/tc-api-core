@@ -23,7 +23,7 @@ import com.appirio.tech.core.api.v2.ApiVersion;
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.exception.ExceptionContent;
 import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
-import com.appirio.tech.core.api.v2.model.CMCResource;
+import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.model.CMCResourceHelper;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
 import com.appirio.tech.core.api.v2.request.FilterParameter;
@@ -125,7 +125,7 @@ public class ApiController {
 													OrderByQuery.instanceFromRaw(orderBy));
 		RESTQueryService service = resourceFactory.getQueryService(resource);
 
-		List<? extends CMCResource> models = service.handleGet(request, query);
+		List<? extends AbstractResource> models = service.handleGet(request, query);
 		return getResponse(models, query.getFieldSelector());
 	}
 
@@ -148,7 +148,7 @@ public class ApiController {
 		QueryParameter query = new QueryParameter(FieldSelector.instanceFromV2String(fields));
 		RESTQueryService service = resourceFactory.getQueryService(resource);
 
-		CMCResource model = service.handleGet(query.getFieldSelector(), recordId);
+		AbstractResource model = service.handleGet(query.getFieldSelector(), recordId);
 		return getResponse(model, query.getFieldSelector());
 	}
 
@@ -162,13 +162,13 @@ public class ApiController {
 		return service.handleAction(recordId, action, request);
 	}
 
-	private ApiResponse getResponse(CMCResource object, FieldSelector selector) {
+	private ApiResponse getResponse(AbstractResource object, FieldSelector selector) {
 		CMCResourceHelper.setSerializeFields(object, selector);
 		return createResponse(object);
 	}
 
-	private ApiResponse getResponse(List<? extends CMCResource> objects, FieldSelector selector) {
-		for (CMCResource object : objects) {
+	private ApiResponse getResponse(List<? extends AbstractResource> objects, FieldSelector selector) {
+		for (AbstractResource object : objects) {
 			CMCResourceHelper.setSerializeFields(object, selector);
 		}
 		return createResponse(objects);

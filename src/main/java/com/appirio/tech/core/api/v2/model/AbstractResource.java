@@ -22,8 +22,8 @@ import com.appirio.tech.core.api.v2.service.RESTService;
  * @author sudo
  *
  */
-@JsonFilter("ApiResponseFilter")
-public abstract class CMCResource implements RESTService {
+//@JsonFilter("ApiResponseFilter")
+public abstract class AbstractResource implements RESTService {
 	private Set<String> serializeFields;
 	private CMCID accountId;
 	

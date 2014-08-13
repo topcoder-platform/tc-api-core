@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.dao.DaoBase;
 import com.appirio.tech.core.api.v2.model.CMCObject;
-import com.appirio.tech.core.api.v2.model.CMCResource;
+import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
 import com.appirio.tech.core.api.v2.request.QueryParameter;
 import com.appirio.tech.core.api.v2.response.ApiResponse;
@@ -46,7 +46,7 @@ public class MockAggregatedService implements RESTActionService, RESTPersistentS
 	/* (non-Javadoc)
 	 * @see com.appirio.tech.core.api.v2.service.RESTQueryService#handleGet(javax.servlet.http.HttpServletRequest, com.appirio.tech.core.api.v2.request.QueryParameter)
 	 */
-	public List<? extends CMCResource> handleGet(HttpServletRequest request, QueryParameter query) throws Exception {
+	public List<? extends AbstractResource> handleGet(HttpServletRequest request, QueryParameter query) throws Exception {
 		return null;
 	}
 

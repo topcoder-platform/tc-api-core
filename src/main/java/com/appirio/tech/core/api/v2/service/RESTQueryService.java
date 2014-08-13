@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.model.CMCObject;
-import com.appirio.tech.core.api.v2.model.CMCResource;
+import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
 import com.appirio.tech.core.api.v2.request.QueryParameter;
 
@@ -31,6 +31,6 @@ public interface RESTQueryService extends RESTService {
 	 */
 	CMCObject handleGet(FieldSelector selector, CMCID recordId) throws Exception;
 
-	List<? extends CMCResource> handleGet(HttpServletRequest request, QueryParameter query) throws Exception;
+	List<? extends AbstractResource> handleGet(HttpServletRequest request, QueryParameter query) throws Exception;
 	
 }
