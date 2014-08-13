@@ -3,11 +3,11 @@ package com.appirio.tech.core.api.v2.dao;
 import java.util.List;
 
 import com.appirio.tech.core.api.v2.CMCID;
-import com.appirio.tech.core.api.v2.model.CMCObject;
+import com.appirio.tech.core.api.v2.model.AbstractIdResource;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
 import com.appirio.tech.core.api.v2.request.QueryParameter;
 
-public interface DaoBase <T extends CMCObject> {
+public interface DaoBase <T extends AbstractIdResource> {
 
 	/**
 	 * Return list of CMCObjects with given selector and filter

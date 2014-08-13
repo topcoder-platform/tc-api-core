@@ -3,12 +3,11 @@
  */
 package com.appirio.tech.core.api.v2.model;
 
-import java.util.Set;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonFilter;
 
 import com.appirio.tech.core.api.v2.CMCID;
+import com.appirio.tech.core.api.v2.controller.ApiBeanSerializeFilter;
+import com.appirio.tech.core.api.v2.controller.ApiHttpMessageConverter;
 import com.appirio.tech.core.api.v2.service.RESTService;
 
 /**
@@ -22,25 +21,10 @@ import com.appirio.tech.core.api.v2.service.RESTService;
  * @author sudo
  *
  */
-//@JsonFilter("ApiResponseFilter")
+@JsonFilter("ApiResponseFilter")
 public abstract class AbstractResource implements RESTService {
-	private Set<String> serializeFields;
+	
 	private CMCID accountId;
-	
-	/* (non-Javadoc)
-	 * @see com.appirio.tech.core.api.v2.model.RESTResource#getSerializeFields()
-	 */
-	@JsonIgnore
-	public Set<String> getSerializeFields() {
-		return serializeFields;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.appirio.tech.core.api.v2.model.RESTResource#setSerializeFields(java.util.Set)
-	 */
-	public void setSerializeFields(Set<String> serializeFields) {
-		this.serializeFields = serializeFields;
-	}
 	
 	/**
 	 * Returns account id of this resource resides.

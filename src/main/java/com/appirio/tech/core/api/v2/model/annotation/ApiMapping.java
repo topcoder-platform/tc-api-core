@@ -29,10 +29,10 @@ public @interface ApiMapping {
 	String[] alias() default {};
 	
 	/**
-	 * Set true if we want to return the fields although API didn't specify in {@link FieldSelector}
+	 * Set false if we do not want to return the fields when API didn't specify in {@link FieldSelector}
 	 * @return
 	 */
-	boolean queryDefault() default false;
+	boolean queryDefault() default true;
 	
 	/**
 	 * Set false if we want to hide the method from api

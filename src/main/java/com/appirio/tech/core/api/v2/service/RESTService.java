@@ -3,6 +3,8 @@
  */
 package com.appirio.tech.core.api.v2.service;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 
 /**
  * Interface to define classes that handles API requests.
@@ -16,5 +18,6 @@ public interface RESTService {
 	 * 
 	 * @return
 	 */
+	@JsonIgnore
 	public String getResourcePath();
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.dao.DaoBase;
-import com.appirio.tech.core.api.v2.model.CMCObject;
+import com.appirio.tech.core.api.v2.model.AbstractIdResource;
 import com.appirio.tech.core.api.v2.service.RESTPersistentService;
 
 /**
@@ -29,14 +29,14 @@ public class MockPersistentService implements RESTPersistentService {
 	/* (non-Javadoc)
 	 * @see com.appirio.tech.core.api.v2.service.RESTPersistentService#handlePost(javax.servlet.http.HttpServletRequest, com.appirio.tech.core.api.v2.model.CMCObject)
 	 */
-	public <T extends CMCObject> CMCID handlePost(HttpServletRequest request, T object) throws Exception {
+	public <T extends AbstractIdResource> CMCID handlePost(HttpServletRequest request, T object) throws Exception {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.appirio.tech.core.api.v2.service.RESTPersistentService#handlePut(javax.servlet.http.HttpServletRequest, com.appirio.tech.core.api.v2.model.CMCObject)
 	 */
-	public <T extends CMCObject> CMCID handlePut(HttpServletRequest request, T object) throws Exception {
+	public <T extends AbstractIdResource> CMCID handlePut(HttpServletRequest request, T object) throws Exception {
 		return null;
 	}
 
@@ -49,7 +49,7 @@ public class MockPersistentService implements RESTPersistentService {
 	/* (non-Javadoc)
 	 * @see com.appirio.tech.core.api.v2.service.RESTPersistentService#getResourceDao()
 	 */
-	public <T extends CMCObject> DaoBase<T> getResourceDao() {
+	public <T extends AbstractIdResource> DaoBase<T> getResourceDao() {
 		return null;
 	}
 

@@ -60,11 +60,33 @@ public class QueryTest extends ControllerTest {
 			.andExpect(jsonPath("result.status").value(HttpStatus.SC_OK))
 			.andExpect(jsonPath("result.content").isArray())
 			.andExpect(jsonPath("result.content", Matchers.hasSize(1)))
-			//.andExpect(jsonPath("result.content[0].id").value(id.toString()))
+			.andExpect(jsonPath("result.content[0].id").value(id.toString()))
 			.andExpect(jsonPath("result.content[0].strTest").value(strTest))
 			.andExpect(jsonPath("result.content[0].intTest").value(intTest))
 			.andExpect(jsonPath("result.content[0].dummyField").doesNotExist())
 			.andDo(print());
+	}
+
+	@Test
+	public void testQueryFieldParameter() throws Exception {
 		
+		//Setup model into MockStorage
+		CMCID id = new CMCID("100");
+		String strTest = "String Test Value";
+		Integer intTest = 9999;
+		MockModel model = new MockModel(id, strTest, intTest);
+		webApplicationContext.getBean(MockQueryService.class).insertModel(model);
+		
+		//Now do test
+		String fieldParam = "id,strTest";
+		mockMvc.perform(get("/api/v2/" + MockModel.RESOURCE_PATH)
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("fields", fieldParam))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("result.content", Matchers.hasSize(1)))
+					.andExpect(jsonPath("result.content[0].id").value(id.toString()))
+					.andExpect(jsonPath("result.content[0].strTest").value(strTest))
+					.andExpect(jsonPath("result.content[0].intTest").doesNotExist())
+					.andDo(print());
 	}
 }

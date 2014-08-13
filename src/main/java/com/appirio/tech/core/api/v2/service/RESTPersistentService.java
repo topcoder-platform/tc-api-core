@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.dao.DaoBase;
-import com.appirio.tech.core.api.v2.model.CMCObject;
+import com.appirio.tech.core.api.v2.model.AbstractIdResource;
 
 /**
  * Interface to handle REST calls for persistent resources.
@@ -14,11 +14,11 @@ import com.appirio.tech.core.api.v2.model.CMCObject;
  */
 public interface RESTPersistentService extends RESTService {
 
-	<T extends CMCObject> CMCID handlePost(HttpServletRequest request, T object) throws Exception;
+	<T extends AbstractIdResource> CMCID handlePost(HttpServletRequest request, T object) throws Exception;
 
-	<T extends CMCObject> CMCID handlePut(HttpServletRequest request, T object) throws Exception;
+	<T extends AbstractIdResource> CMCID handlePut(HttpServletRequest request, T object) throws Exception;
 	
 	void handleDelete(HttpServletRequest request, CMCID id) throws Exception;
 
-	<T extends CMCObject> DaoBase<T> getResourceDao();
+	<T extends AbstractIdResource> DaoBase<T> getResourceDao();
 }

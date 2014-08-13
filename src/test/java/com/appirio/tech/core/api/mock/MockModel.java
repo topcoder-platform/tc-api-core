@@ -7,14 +7,14 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.stereotype.Component;
 
 import com.appirio.tech.core.api.v2.CMCID;
-import com.appirio.tech.core.api.v2.model.CMCObject;
+import com.appirio.tech.core.api.v2.model.AbstractIdResource;
 
 /**
  * @author sudo
  *
  */
 @Component
-public class MockModel extends CMCObject {
+public class MockModel extends AbstractIdResource {
 
 	public static final String RESOURCE_PATH = "mock_models";
 

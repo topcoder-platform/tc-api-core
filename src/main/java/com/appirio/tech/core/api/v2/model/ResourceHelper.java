@@ -3,6 +3,7 @@
  */
 package com.appirio.tech.core.api.v2.model;
 
+import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,9 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy;
-
+import com.appirio.tech.core.api.v2.controller.ApiBeanSerializeFilter;
 import com.appirio.tech.core.api.v2.exception.CMCParseException;
 import com.appirio.tech.core.api.v2.model.annotation.ApiMapping;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
@@ -21,9 +20,7 @@ import com.appirio.tech.core.api.v2.request.FieldSelector;
  * @author sudo
  *
  */
-public class CMCResourceHelper {
-
-	private static final LowerCaseWithUnderscoresStrategy namingStrategy = new LowerCaseWithUnderscoresStrategy();
+public class ResourceHelper {
 
 	/**
 	 * Translates getter/setter method names to underscore field name
@@ -34,13 +31,12 @@ public class CMCResourceHelper {
 	 * @throws CMCParseException when the specified method is not getter/setter/is-getter
 	 * @since va1
 	 */
-	@JsonIgnore
-	protected static String getUnderscoreFieldName(String methodName) {
+	protected static String getApiFieldName(String methodName) {
 		if(methodName.startsWith("get") || 
 				methodName.startsWith("set")) {
-			return namingStrategy.translate(methodName.substring(3));
+			return Introspector.decapitalize(methodName.substring(3));
 		} else if (methodName.startsWith("is")) {
-			return namingStrategy.translate(methodName.substring(2));
+			return Introspector.decapitalize(methodName.substring(2));
 		} else {
 			throw new CMCParseException("Unable to transform method to underscore field name");
 		}
@@ -55,7 +51,7 @@ public class CMCResourceHelper {
 	public static FieldSelector getDefaultFieldSelector(Class<? extends AbstractResource> clazz) {
 		FieldSelector selector = new FieldSelector();
 		try {
-			Set<String> fields = CMCResourceHelper.getDefaultFields(clazz);
+			Set<String> fields = ResourceHelper.getDefaultFields(clazz);
 			for(String field : fields) {
 				selector.addField(field);
 			}
@@ -73,9 +69,9 @@ public class CMCResourceHelper {
 			String methodName = method.getName();
 			if(methodName.startsWith("get") && method.getParameterTypes().length==0) {
 				ApiMapping api = method.getAnnotation(ApiMapping.class);
-				if(api!=null && api.visible() && api.queryDefault()) {
-					ret.add(getUnderscoreFieldName(method.getName()));
-					if(api.alias()!=null) {
+				if(api==null || (api.visible() && api.queryDefault())) {
+					ret.add(getApiFieldName(method.getName()));
+					if(api!=null && api.alias()!=null) {
 						for(String alias : api.alias()) {
 							ret.add(alias);
 						}
@@ -93,21 +89,16 @@ public class CMCResourceHelper {
 	 * The method will call children's {@link #setSerializeFields(FieldSelector)} if
 	 * this instance has any from the specified {@link FieldSelector}
 	 * 
-	 * NOTE: since CMCResource wants to be POJO, it should be better that "serializable"
-	 * fields should only be taken care when actual serialization is going to happen,
-	 * and {@link AbstractResource} doesn't know anything about which fields that gets serialized.
-	 * Unfortunately, as Jackson filter function (JSON serializer) only takes Object to it's
-	 * method, we made the method here for it to use. See {@link ApiBeanSerializeFilter} for
-	 * the implementation and usage of {@link #serializeFields}
+	 * See {@link ApiBeanSerializeFilter} for the implementation and usage of {@link #serializeFields}
 	 *  
 	 * @param selector
 	 * @since va1
 	 */
-	public static void setSerializeFields(AbstractResource cobj, FieldSelector selector) {
+	public static void setSerializeFields(AbstractResource cobj, FieldSelector selector, Map<Integer, Set<String>> objectFieldMap) {
 		Set<String> serializeFields = new HashSet<String>();
 		serializeFields = selector.getSelectedFields();
 		if(serializeFields.isEmpty()) {
-			serializeFields = CMCResourceHelper.getDefaultFields(cobj.getClass());
+			serializeFields = ResourceHelper.getDefaultFields(cobj.getClass());
 		}
 		Method[] methods = cobj.getClass().getMethods();
 		
@@ -119,7 +110,7 @@ public class CMCResourceHelper {
 				if(AbstractResource.class.isAssignableFrom(method.getReturnType()) ||
 						isReturnNotNullOrTypeCollectionOfCMCResource(cobj, method)) {
 					
-					String underscoreLabel = getUnderscoreFieldName(methodName);
+					String underscoreLabel = getApiFieldName(methodName);
 					if(serializeFields.contains(underscoreLabel)) {
 						methodMap.put(underscoreLabel, method);
 					}
@@ -135,13 +126,13 @@ public class CMCResourceHelper {
 					Class<?> returnType = method.getReturnType();
 					if(AbstractResource.class.isAssignableFrom(returnType)) {
 						AbstractResource co = (AbstractResource)method.invoke(cobj);
-						if(co!=null) setSerializeFields(co, selector.getField(fieldName));
+						if(co!=null) setSerializeFields(co, selector.getField(fieldName), objectFieldMap);
 					} else if (Collection.class.isAssignableFrom(returnType)) {
 						Collection<?> collection = (Collection<?>)method.invoke(cobj);
 						for(Object item : collection) {
 							if(item instanceof AbstractResource) {
 								AbstractResource co = (AbstractResource)item;
-								setSerializeFields(co, selector.getField(fieldName));
+								setSerializeFields(co, selector.getField(fieldName), objectFieldMap);
 							}
 						}
 					}
@@ -151,7 +142,7 @@ public class CMCResourceHelper {
 			}
 		}
 		
-		cobj.setSerializeFields(serializeFields);
+		objectFieldMap.put(System.identityHashCode(cobj), serializeFields);
 	}
 
 	/**
@@ -178,15 +169,4 @@ public class CMCResourceHelper {
 		return false;
 	}
 
-	/**
-	 * String#substring which will cut of tail chars safely
-	 * 
-	 * @param value
-	 * @param length
-	 * @return
-	 */
-	public static String chop(String value, int length) {
-		if(value==null) return null;
-		return value.substring(0, Math.min(value.length(), length));
-	}
 }

@@ -4,7 +4,10 @@ package com.appirio.tech.core.api.v2.controller;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.rmi.server.UID;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,12 +27,13 @@ import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.exception.ExceptionContent;
 import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
 import com.appirio.tech.core.api.v2.model.AbstractResource;
-import com.appirio.tech.core.api.v2.model.CMCResourceHelper;
+import com.appirio.tech.core.api.v2.model.ResourceHelper;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
 import com.appirio.tech.core.api.v2.request.FilterParameter;
 import com.appirio.tech.core.api.v2.request.LimitQuery;
 import com.appirio.tech.core.api.v2.request.OrderByQuery;
 import com.appirio.tech.core.api.v2.request.QueryParameter;
+import com.appirio.tech.core.api.v2.response.ApiFieldSelectorResponse;
 import com.appirio.tech.core.api.v2.response.ApiResponse;
 import com.appirio.tech.core.api.v2.service.RESTActionService;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
@@ -114,8 +118,8 @@ public class ApiController {
 			HttpServletRequest request) throws Exception {
 
 		FieldSelector selector;
-		if(filter==null || filter.trim().length()==0) {
-			selector = CMCResourceHelper.getDefaultFieldSelector(resourceFactory.getResourceModel(resource));
+		if(fields==null || fields.trim().length()==0) {
+			selector = ResourceHelper.getDefaultFieldSelector(resourceFactory.getResourceModel(resource));
 		} else {
 			selector = FieldSelector.instanceFromV2String(fields);
 		}
@@ -126,7 +130,7 @@ public class ApiController {
 		RESTQueryService service = resourceFactory.getQueryService(resource);
 
 		List<? extends AbstractResource> models = service.handleGet(request, query);
-		return getResponse(models, query.getFieldSelector());
+		return createFieldSelectorResponse(models, query.getFieldSelector());
 	}
 
 	@RequestMapping(value="/{resource}/{recordId}", method=GET)
@@ -138,7 +142,7 @@ public class ApiController {
 		//add default fields if selector is empty.
 		if(fields==null || fields.isEmpty()){
 			fields = "";
-			for(String field : CMCResourceHelper.getDefaultFields(resourceFactory.getResourceModel(resource))) {
+			for(String field : ResourceHelper.getDefaultFields(resourceFactory.getResourceModel(resource))) {
 				fields = field + ",";
 			}
 			//remove the last ","
@@ -149,7 +153,7 @@ public class ApiController {
 		RESTQueryService service = resourceFactory.getQueryService(resource);
 
 		AbstractResource model = service.handleGet(query.getFieldSelector(), recordId);
-		return getResponse(model, query.getFieldSelector());
+		return createFieldSelectorResponse(model, query.getFieldSelector());
 	}
 
 	@RequestMapping(value="/{resource}/{recordId}/{action}", method=RequestMethod.POST)
@@ -160,18 +164,6 @@ public class ApiController {
 			HttpServletRequest request) throws Exception {
 		RESTActionService service = resourceFactory.getActionService(resource);
 		return service.handleAction(recordId, action, request);
-	}
-
-	private ApiResponse getResponse(AbstractResource object, FieldSelector selector) {
-		CMCResourceHelper.setSerializeFields(object, selector);
-		return createResponse(object);
-	}
-
-	private ApiResponse getResponse(List<? extends AbstractResource> objects, FieldSelector selector) {
-		for (AbstractResource object : objects) {
-			CMCResourceHelper.setSerializeFields(object, selector);
-		}
-		return createResponse(objects);
 	}
 
 	/**
@@ -202,11 +194,35 @@ public class ApiController {
 		return response;
 	}
 
-	protected ApiResponse createResponse(final Object object) {
+	private ApiResponse createResponse(final Object object) {
 		ApiResponse response = new ApiResponse();
 		response.setId((new UID()).toString());
 		response.setResult(true, HttpStatus.OK.value(), object);
 		response.setVersion(ApiVersion.v2);
+		return response;
+	}
+
+	private ApiFieldSelectorResponse createFieldSelectorResponse(List<? extends AbstractResource> object, FieldSelector selector) {
+		ApiFieldSelectorResponse response = new ApiFieldSelectorResponse();
+		Map<Integer, Set<String>> fieldSelectionMap = new HashMap<Integer, Set<String>>();
+		for(AbstractResource resource : object) {
+			ResourceHelper.setSerializeFields(resource, selector, fieldSelectionMap);
+		}
+		response.setId((new UID()).toString());
+		response.setResult(true, HttpStatus.OK.value(), object);
+		response.setVersion(ApiVersion.v2);
+		response.setFieldSelectionMap(fieldSelectionMap);
+		return response;
+	}
+
+	private ApiFieldSelectorResponse createFieldSelectorResponse(final AbstractResource object, FieldSelector selector) {
+		ApiFieldSelectorResponse response = new ApiFieldSelectorResponse();
+		response.setId((new UID()).toString());
+		response.setResult(true, HttpStatus.OK.value(), object);
+		response.setVersion(ApiVersion.v2);
+		Map<Integer, Set<String>> fieldSelectionMap = new HashMap<Integer, Set<String>>();
+		ResourceHelper.setSerializeFields(object, selector, fieldSelectionMap);
+		response.setFieldSelectionMap(fieldSelectionMap);
 		return response;
 	}
 }
