@@ -16,6 +16,6 @@ import com.appirio.tech.core.api.v2.response.ApiResponse;
  * @author sudo
  *
  */
-public interface RESTActionService {
+public interface RESTActionService extends RESTService {
 	ApiResponse handleAction(CMCID recordId, String action, HttpServletRequest request) throws Exception;
 }

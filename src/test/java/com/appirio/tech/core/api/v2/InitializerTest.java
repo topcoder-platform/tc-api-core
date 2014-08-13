@@ -10,11 +10,16 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.appirio.tech.core.api.mock.MockModel;
 import com.appirio.tech.core.api.v2.controller.ApiController;
+import com.appirio.tech.core.api.v2.controller.ResourceFactory;
 import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
+import com.appirio.tech.core.api.v2.service.RESTActionService;
+import com.appirio.tech.core.api.v2.service.RESTPersistentService;
+import com.appirio.tech.core.api.v2.service.RESTQueryService;
 
 /**
- * Tests initializing properties
+ * Tests initializing properties after Spring context loads.
  * 
  * @author sudo
  *
@@ -23,7 +28,7 @@ public class InitializerTest extends ControllerTest {
 
 	@Test
 	public void testExceptionHandlers() {
-		//first get all ExceptionHandlers
+		//Get all ExceptionHandlers in the class file and assert them via Controller.
 		Map<String, ExceptionCallbackHandler> handlers = webApplicationContext.getBeansOfType(ExceptionCallbackHandler.class);
 		Assert.assertNotNull(handlers);
 		int handlerCount = handlers.values().size();
@@ -38,4 +43,47 @@ public class InitializerTest extends ControllerTest {
 			Assert.assertTrue(registered.contains(handler));
 		}
 	}
+	
+	@Test
+	public void testRESTQueryServicesLoad() throws Exception {
+		Map<String, RESTQueryService> services = webApplicationContext.getBeansOfType(RESTQueryService.class);
+		Assert.assertNotNull(services);
+		Assert.assertTrue(services.values().size()>0);
+		
+		ApiController ctrl = webApplicationContext.getBean(ApiController.class);
+		ResourceFactory factory = ctrl.getResourceFactory();
+		Assert.assertNotNull(factory);
+		
+		RESTQueryService service = factory.getQueryService(MockModel.RESOURCE_PATH);
+		Assert.assertNotNull(service);
+	}
+
+	@Test
+	public void testRESTActionServicesLoad() throws Exception {
+		Map<String, RESTActionService> services = webApplicationContext.getBeansOfType(RESTActionService.class);
+		Assert.assertNotNull(services);
+		Assert.assertTrue(services.values().size()>0);
+		
+		ApiController ctrl = webApplicationContext.getBean(ApiController.class);
+		ResourceFactory factory = ctrl.getResourceFactory();
+		Assert.assertNotNull(factory);
+		
+		RESTActionService service = factory.getActionService(MockModel.RESOURCE_PATH);
+		Assert.assertNotNull(service);
+	}
+
+	@Test
+	public void testRESTPersistentServicesLoad() throws Exception {
+		Map<String, RESTPersistentService> services = webApplicationContext.getBeansOfType(RESTPersistentService.class);
+		Assert.assertNotNull(services);
+		Assert.assertTrue(services.values().size()>0);
+		
+		ApiController ctrl = webApplicationContext.getBean(ApiController.class);
+		ResourceFactory factory = ctrl.getResourceFactory();
+		Assert.assertNotNull(factory);
+		
+		RESTPersistentService service = factory.getPersistentService(MockModel.RESOURCE_PATH);
+		Assert.assertNotNull(service);
+	}
+
 }

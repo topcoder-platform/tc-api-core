@@ -19,7 +19,7 @@ import com.appirio.tech.core.api.v2.request.QueryParameter;
  * @author sudo
  *
  */
-public interface RESTQueryService {
+public interface RESTQueryService extends RESTService {
 
 	/**
 	 * returns CMCObject of defined CMCID.

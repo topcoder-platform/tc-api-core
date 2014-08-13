@@ -32,6 +32,8 @@ public class FilterParameter extends SearchParameter {
 	private boolean like = false;
 
 	public FilterParameter(String filterValue) {
+		if(filterValue==null) return;
+		
 		String[] params = filterValue.split("&");
 		for(String param : params) {
 			String[] data = param.split("=");

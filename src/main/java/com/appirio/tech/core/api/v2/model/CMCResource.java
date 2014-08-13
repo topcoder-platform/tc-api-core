@@ -9,6 +9,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonFilter;
 
 import com.appirio.tech.core.api.v2.CMCID;
+import com.appirio.tech.core.api.v2.service.RESTService;
 
 /**
  * Base class to represent CMC Domain object.
@@ -22,21 +23,21 @@ import com.appirio.tech.core.api.v2.CMCID;
  *
  */
 @JsonFilter("ApiResponseFilter")
-public class CMCResource {
+public abstract class CMCResource implements RESTService {
 	private Set<String> serializeFields;
 	private CMCID accountId;
 	
-	/**
-	 * Get fields to serialize.
-	 * 
-	 * @see CMCResourceHelper#setSerializeFields(CMCObject, FieldSelector) for details.
-	 * @return
+	/* (non-Javadoc)
+	 * @see com.appirio.tech.core.api.v2.model.RESTResource#getSerializeFields()
 	 */
 	@JsonIgnore
 	public Set<String> getSerializeFields() {
 		return serializeFields;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.appirio.tech.core.api.v2.model.RESTResource#setSerializeFields(java.util.Set)
+	 */
 	public void setSerializeFields(Set<String> serializeFields) {
 		this.serializeFields = serializeFields;
 	}

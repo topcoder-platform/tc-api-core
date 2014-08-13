@@ -13,7 +13,7 @@ import com.appirio.tech.core.api.v2.CMCID;
  * @author sudo
  *
  */
-public class CMCObject extends CMCResource {
+public abstract class CMCObject extends CMCResource {
 	private CMCID id;
 	
 	public void setId(CMCID id) {

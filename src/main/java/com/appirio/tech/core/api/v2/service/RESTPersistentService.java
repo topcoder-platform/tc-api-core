@@ -12,7 +12,7 @@ import com.appirio.tech.core.api.v2.model.CMCObject;
  * @author sudo
  *
  */
-public interface RESTPersistentService extends RESTQueryService {
+public interface RESTPersistentService extends RESTService {
 
 	<T extends CMCObject> CMCID handlePost(HttpServletRequest request, T object) throws Exception;
 

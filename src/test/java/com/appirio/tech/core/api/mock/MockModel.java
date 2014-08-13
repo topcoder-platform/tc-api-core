@@ -3,6 +3,8 @@
  */
 package com.appirio.tech.core.api.mock;
 
+import org.springframework.stereotype.Component;
+
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.model.CMCResource;
 
@@ -10,11 +12,16 @@ import com.appirio.tech.core.api.v2.model.CMCResource;
  * @author sudo
  *
  */
+@Component
 public class MockModel extends CMCResource {
+
+	public static final String RESOURCE_PATH = "mock_models";
 
 	private CMCID id;
 	private String strTest;
 	private Integer intTest;
+	
+	public MockModel() {}
 	
 	public MockModel(CMCID id, String strTest, Integer intTest) {
 		this.id = id;
@@ -39,5 +46,9 @@ public class MockModel extends CMCResource {
 	}
 	public void setIntTest(Integer intTest) {
 		this.intTest = intTest;
+	}
+
+	public String getResourcePath() {
+		return RESOURCE_PATH;
 	}
 }

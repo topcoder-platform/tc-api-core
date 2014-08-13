@@ -8,6 +8,7 @@ import java.util.Map;
 import com.appirio.tech.core.api.v2.exception.ResourceNotMappedException;
 import com.appirio.tech.core.api.v2.model.CMCResource;
 import com.appirio.tech.core.api.v2.service.RESTActionService;
+import com.appirio.tech.core.api.v2.service.RESTPersistentService;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
 
 /**
@@ -17,20 +18,31 @@ import com.appirio.tech.core.api.v2.service.RESTQueryService;
 public class ResourceFactory {
 
 	private Map<String, RESTQueryService> queryServiceMap;
+	private Map<String, RESTPersistentService> persistentServiceMap;
 	private Map<String, RESTActionService> actionServiceMap;
 	private Map<String, Class<? extends CMCResource>> modelMap;
 	
 	public void setup(Map<String, RESTQueryService> queryServiceMap,
+			Map<String, RESTPersistentService> persistentServiceMap,
 			Map<String, RESTActionService> actionServiceMap,
 			Map<String, Class<? extends CMCResource>> modelMap) {
 		this.queryServiceMap = queryServiceMap;
+		this.persistentServiceMap = persistentServiceMap;
 		this.actionServiceMap = actionServiceMap;
 		this.modelMap = modelMap;
 	}
 
-	public RESTQueryService getQueryService(String resource) throws Exception {
+	public RESTQueryService getQueryService(String resource) throws ResourceNotMappedException {
 		if(queryServiceMap.containsKey(resource)) {
 			return queryServiceMap.get(resource);
+		} else {
+			throw new ResourceNotMappedException("unknown resource:" + resource);
+		}
+	}
+	
+	public RESTPersistentService getPersistentService(String resource) throws ResourceNotMappedException {
+		if(persistentServiceMap.containsKey(resource)) {
+			return persistentServiceMap.get(resource);
 		} else {
 			throw new ResourceNotMappedException("unknown resource:" + resource);
 		}

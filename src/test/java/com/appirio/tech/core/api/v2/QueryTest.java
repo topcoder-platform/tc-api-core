@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.Test;
 
+import com.appirio.tech.core.api.mock.MockModel;
+
 /**
  * Tests basic queries
  * 
@@ -24,5 +26,12 @@ public class QueryTest extends ControllerTest {
 
 		mockMvc.perform(get("/api/v2/dummy_resource"))
 			.andExpect(status().isNotFound());
+	}
+	
+	@Test
+	public void testQueryFound() throws Exception {
+		mockMvc.perform(get("/api/v2/" + MockModel.RESOURCE_PATH))
+			.andDo(print())
+			.andExpect(status().isOk());
 	}
 }
