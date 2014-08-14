@@ -58,4 +58,12 @@ public class FilterParameter extends SearchParameter {
 	public Set<String> getFields() {
 		return getParamMap().keySet();
 	}
+
+	public static FilterParameter fromEncodedString(String filter) throws UnsupportedEncodingException {
+		if(filter==null) {
+			return new FilterParameter(filter);
+		} else {
+			return new FilterParameter(URLDecoder.decode(filter, "UTF-8"));
+		}
+	}
 }

@@ -3,7 +3,6 @@ package com.appirio.tech.core.api.v2.controller;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import java.net.URLDecoder;
 import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.List;
@@ -125,7 +124,7 @@ public class ApiController {
 			selector = FieldSelector.instanceFromV2String(fields);
 		}
 		QueryParameter query = new QueryParameter(selector,
-													new FilterParameter(URLDecoder.decode(filter, "UTF-8")),
+													FilterParameter.fromEncodedString(filter),
 													LimitQuery.instanceFromRaw(limit, offset, offsetId),
 													OrderByQuery.instanceFromRaw(orderBy));
 		RESTQueryService<?> service = resourceFactory.getQueryService(resource);
