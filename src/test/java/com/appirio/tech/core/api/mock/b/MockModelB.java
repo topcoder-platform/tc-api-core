@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.appirio.tech.core.api.mock;
+package com.appirio.tech.core.api.mock.b;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.stereotype.Component;
@@ -14,17 +14,17 @@ import com.appirio.tech.core.api.v2.model.AbstractIdResource;
  *
  */
 @Component
-public class MockModel extends AbstractIdResource {
+public class MockModelB extends AbstractIdResource {
 
-	public static final String RESOURCE_PATH = "mock_models";
+	public static final String RESOURCE_PATH = "mock_b_models";
 
 	private String strTest;
 	private Integer intTest;
 	private String dummyField = "dummy";
 	
-	public MockModel() {}
+	public MockModelB() {}
 	
-	public MockModel(CMCID id, String strTest, Integer intTest) {
+	public MockModelB(CMCID id, String strTest, Integer intTest) {
 		super.setId(id);
 		this.strTest = strTest;
 		this.intTest = intTest;

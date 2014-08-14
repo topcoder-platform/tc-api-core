@@ -22,13 +22,6 @@ import com.appirio.tech.core.api.v2.exception.CMCParseException;
  */
 public class FilterParameter extends SearchParameter {
 
-	/**
-	 * orderBy, limit and offset is no longer used in FilterParameter,
-	 * but is now specified from root param from v2
-	 */
-	private RequestOrderBy orderBy;
-	private Integer limit;
-	private Integer offset;
 	private boolean like = false;
 
 	public FilterParameter(String filterValue) {
@@ -40,13 +33,7 @@ public class FilterParameter extends SearchParameter {
 			if(data.length != 2) {
 				throw new CMCParseException("Unable to parse filter parameter:" + param);
 			}
-			if(data[0].equalsIgnoreCase("order_by")){
-				orderBy = new RequestOrderBy(data[1]);
-			} else if(data[0].equalsIgnoreCase("limit")){
-				limit = Integer.valueOf(data[1]);
-			} else if(data[0].equalsIgnoreCase("offset")){
-				offset = Integer.valueOf(data[1]);
-			} else if(data[0].equalsIgnoreCase("like") && data[1].equalsIgnoreCase("true")) {
+			if(data[0].equalsIgnoreCase("like") && data[1].equalsIgnoreCase("true")) {
 				like = true;
 			} else {
 				// support multibyte character.
@@ -57,18 +44,6 @@ public class FilterParameter extends SearchParameter {
 				}
 			}
 		}
-	}
-
-	public RequestOrderBy getOrderBy() {
-		return orderBy;
-	}
-
-	public Integer getLimit() {
-		return limit;
-	}
-
-	public Integer getOffset() {
-		return offset;
 	}
 
 	public boolean isLike() {

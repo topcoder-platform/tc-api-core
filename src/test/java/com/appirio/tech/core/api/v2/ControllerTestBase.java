@@ -21,13 +21,13 @@ import org.springframework.web.context.WebApplicationContext;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = { "file:src/test/webapp/WEB-INF/dispatcher-servlet.xml" })
-public class ControllerTest {
+public class ControllerTestBase {
 
 	@Autowired
 	protected WebApplicationContext webApplicationContext;
 	protected MockMvc mockMvc;
 
-	public ControllerTest() {
+	public ControllerTestBase() {
 		super();
 	}
 

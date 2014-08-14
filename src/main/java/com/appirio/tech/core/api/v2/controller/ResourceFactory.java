@@ -17,13 +17,13 @@ import com.appirio.tech.core.api.v2.service.RESTQueryService;
  */
 public class ResourceFactory {
 
-	private Map<String, RESTQueryService> queryServiceMap;
-	private Map<String, RESTPersistentService> persistentServiceMap;
+	private Map<String, RESTQueryService<? extends AbstractResource>> queryServiceMap;
+	private Map<String, RESTPersistentService<? extends AbstractResource>> persistentServiceMap;
 	private Map<String, RESTActionService> actionServiceMap;
 	private Map<String, Class<? extends AbstractResource>> modelMap;
 	
-	public void setup(Map<String, RESTQueryService> queryServiceMap,
-			Map<String, RESTPersistentService> persistentServiceMap,
+	public void setup(Map<String, RESTQueryService<? extends AbstractResource>> queryServiceMap,
+			Map<String, RESTPersistentService<? extends AbstractResource>> persistentServiceMap,
 			Map<String, RESTActionService> actionServiceMap,
 			Map<String, Class<? extends AbstractResource>> modelMap) {
 		this.queryServiceMap = queryServiceMap;
@@ -32,7 +32,7 @@ public class ResourceFactory {
 		this.modelMap = modelMap;
 	}
 
-	public RESTQueryService getQueryService(String resource) throws ResourceNotMappedException {
+	public RESTQueryService<? extends AbstractResource> getQueryService(String resource) throws ResourceNotMappedException {
 		if(queryServiceMap.containsKey(resource)) {
 			return queryServiceMap.get(resource);
 		} else {
@@ -40,7 +40,7 @@ public class ResourceFactory {
 		}
 	}
 	
-	public RESTPersistentService getPersistentService(String resource) throws ResourceNotMappedException {
+	public RESTPersistentService<? extends AbstractResource> getPersistentService(String resource) throws ResourceNotMappedException {
 		if(persistentServiceMap.containsKey(resource)) {
 			return persistentServiceMap.get(resource);
 		} else {

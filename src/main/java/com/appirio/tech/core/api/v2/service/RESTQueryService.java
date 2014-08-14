@@ -19,7 +19,7 @@ import com.appirio.tech.core.api.v2.request.QueryParameter;
  * @author sudo
  *
  */
-public interface RESTQueryService extends RESTService {
+public interface RESTQueryService<T extends AbstractResource> extends RESTService {
 
 	/**
 	 * returns CMCObject of defined CMCID.
@@ -31,6 +31,6 @@ public interface RESTQueryService extends RESTService {
 	 */
 	AbstractIdResource handleGet(FieldSelector selector, CMCID recordId) throws Exception;
 
-	List<? extends AbstractResource> handleGet(HttpServletRequest request, QueryParameter query) throws Exception;
+	List<T> handleGet(HttpServletRequest request, QueryParameter query) throws Exception;
 	
 }

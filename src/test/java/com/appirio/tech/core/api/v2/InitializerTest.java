@@ -10,7 +10,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.appirio.tech.core.api.mock.MockModel;
+import com.appirio.tech.core.api.mock.a.MockModelA;
+import com.appirio.tech.core.api.mock.b.MockModelB;
 import com.appirio.tech.core.api.v2.controller.ApiController;
 import com.appirio.tech.core.api.v2.controller.ResourceFactory;
 import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
@@ -24,7 +25,7 @@ import com.appirio.tech.core.api.v2.service.RESTQueryService;
  * @author sudo
  *
  */
-public class InitializerTest extends ControllerTest {
+public class InitializerTest extends ControllerTestBase {
 
 	@Test
 	public void testExceptionHandlers() {
@@ -54,7 +55,7 @@ public class InitializerTest extends ControllerTest {
 		ResourceFactory factory = ctrl.getResourceFactory();
 		Assert.assertNotNull(factory);
 		
-		RESTQueryService service = factory.getQueryService(MockModel.RESOURCE_PATH);
+		RESTQueryService service = factory.getQueryService(MockModelA.RESOURCE_PATH);
 		Assert.assertNotNull(service);
 	}
 
@@ -68,7 +69,7 @@ public class InitializerTest extends ControllerTest {
 		ResourceFactory factory = ctrl.getResourceFactory();
 		Assert.assertNotNull(factory);
 		
-		RESTActionService service = factory.getActionService(MockModel.RESOURCE_PATH);
+		RESTActionService service = factory.getActionService(MockModelA.RESOURCE_PATH);
 		Assert.assertNotNull(service);
 	}
 
@@ -82,7 +83,7 @@ public class InitializerTest extends ControllerTest {
 		ResourceFactory factory = ctrl.getResourceFactory();
 		Assert.assertNotNull(factory);
 		
-		RESTPersistentService service = factory.getPersistentService(MockModel.RESOURCE_PATH);
+		RESTPersistentService service = factory.getPersistentService(MockModelB.RESOURCE_PATH);
 		Assert.assertNotNull(service);
 	}
 

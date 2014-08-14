@@ -28,14 +28,6 @@ public class QueryParameter {
 		this.orderBy = orderBy;
 	}
 	
-	public FieldSelector getFieldSelector() {
-		return selector;
-	}
-
-	public FilterParameter getFilterParameter() {
-		return filter;
-	}
-
 	public FieldSelector getSelector() {
 		return selector;
 	}
@@ -52,19 +44,19 @@ public class QueryParameter {
 		this.filter = filter;
 	}
 
-	public LimitQuery getLimit() {
+	public LimitQuery getLimitQuery() {
 		return limit;
 	}
 
-	public void setLimit(LimitQuery limit) {
+	public void setLimitQuery(LimitQuery limit) {
 		this.limit = limit;
 	}
 
-	public OrderByQuery getOrderBy() {
+	public OrderByQuery getOrderByQuery() {
 		return orderBy;
 	}
 
-	public void setOrderBy(OrderByQuery orderBy) {
+	public void setOrderByQuery(OrderByQuery orderBy) {
 		this.orderBy = orderBy;
 	}
 

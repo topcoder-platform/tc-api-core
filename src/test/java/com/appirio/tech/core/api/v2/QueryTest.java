@@ -13,8 +13,8 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import com.appirio.tech.core.api.mock.MockModel;
-import com.appirio.tech.core.api.mock.MockQueryService;
+import com.appirio.tech.core.api.mock.a.MockModelA;
+import com.appirio.tech.core.api.mock.a.MockQueryService;
 
 /**
  * Tests basic queries
@@ -22,7 +22,7 @@ import com.appirio.tech.core.api.mock.MockQueryService;
  * @author sudo
  *
  */
-public class QueryTest extends ControllerTest {
+public class QueryTest extends ControllerTestBase {
 
 	@Test
 	public void testQueryNotFound() throws Exception {
@@ -34,8 +34,15 @@ public class QueryTest extends ControllerTest {
 	}
 	
 	@Test
+	public void testException() throws Exception {
+		mockMvc.perform(get("/api/v2/exception"))
+			.andDo(print())
+			.andExpect(status().isInternalServerError());
+	}
+	
+	@Test
 	public void testQueryFound() throws Exception {
-		mockMvc.perform(get("/api/v2/" + MockModel.RESOURCE_PATH))
+		mockMvc.perform(get("/api/v2/" + MockModelA.RESOURCE_PATH))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -47,11 +54,11 @@ public class QueryTest extends ControllerTest {
 		CMCID id = new CMCID("100");
 		String strTest = "String Test Value";
 		Integer intTest = 9999;
-		MockModel model = new MockModel(id, strTest, intTest);
+		MockModelA model = new MockModelA(id, strTest, intTest);
 		webApplicationContext.getBean(MockQueryService.class).insertModel(model);
 		
 		//Now do test
-		mockMvc.perform(get("/api/v2/" + MockModel.RESOURCE_PATH).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/api/v2/" + MockModelA.RESOURCE_PATH).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("id").exists())
 			.andExpect(jsonPath("result").exists())
@@ -74,12 +81,12 @@ public class QueryTest extends ControllerTest {
 		CMCID id = new CMCID("100");
 		String strTest = "String Test Value";
 		Integer intTest = 9999;
-		MockModel model = new MockModel(id, strTest, intTest);
+		MockModelA model = new MockModelA(id, strTest, intTest);
 		webApplicationContext.getBean(MockQueryService.class).insertModel(model);
 		
 		//Now do test
 		String fieldParam = "id,strTest";
-		mockMvc.perform(get("/api/v2/" + MockModel.RESOURCE_PATH)
+		mockMvc.perform(get("/api/v2/" + MockModelA.RESOURCE_PATH)
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("fields", fieldParam))
 					.andExpect(status().isOk())

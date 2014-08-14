@@ -3,6 +3,7 @@ package com.appirio.tech.core.api.v2.controller;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import java.net.URLDecoder;
 import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.List;
@@ -101,7 +102,7 @@ public class ApiController {
 	@RequestMapping(value={"/exception"}, method={RequestMethod.GET})
 	@ResponseBody
 	public ApiResponse exception() {
-		throw new RuntimeException("test");
+		throw new RuntimeException("Exception test endpoint");
 	}
 	
 
@@ -124,13 +125,13 @@ public class ApiController {
 			selector = FieldSelector.instanceFromV2String(fields);
 		}
 		QueryParameter query = new QueryParameter(selector,
-													new FilterParameter(filter),
+													new FilterParameter(URLDecoder.decode(filter, "UTF-8")),
 													LimitQuery.instanceFromRaw(limit, offset, offsetId),
 													OrderByQuery.instanceFromRaw(orderBy));
-		RESTQueryService service = resourceFactory.getQueryService(resource);
+		RESTQueryService<?> service = resourceFactory.getQueryService(resource);
 
 		List<? extends AbstractResource> models = service.handleGet(request, query);
-		return createFieldSelectorResponse(models, query.getFieldSelector());
+		return createFieldSelectorResponse(models, query.getSelector());
 	}
 
 	@RequestMapping(value="/{resource}/{recordId}", method=GET)
@@ -150,13 +151,13 @@ public class ApiController {
 		}
 
 		QueryParameter query = new QueryParameter(FieldSelector.instanceFromV2String(fields));
-		RESTQueryService service = resourceFactory.getQueryService(resource);
+		RESTQueryService<?> service = resourceFactory.getQueryService(resource);
 
-		AbstractResource model = service.handleGet(query.getFieldSelector(), recordId);
-		return createFieldSelectorResponse(model, query.getFieldSelector());
+		AbstractResource model = service.handleGet(query.getSelector(), recordId);
+		return createFieldSelectorResponse(model, query.getSelector());
 	}
 
-	@RequestMapping(value="/{resource}/{recordId}/{action}", method=RequestMethod.POST)
+	@RequestMapping(value="/{resource}/{recordId}/{action}", method=RequestMethod.POST, params="action=true")
 	@ResponseBody
 	public ApiResponse performAction(@PathVariable String resource,
 			@PathVariable CMCID recordId,

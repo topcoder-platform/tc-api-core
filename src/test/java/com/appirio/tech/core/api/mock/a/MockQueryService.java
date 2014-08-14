@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.appirio.tech.core.api.mock;
+package com.appirio.tech.core.api.mock.a;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.model.AbstractIdResource;
-import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
 import com.appirio.tech.core.api.v2.request.QueryParameter;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
@@ -24,24 +23,24 @@ import com.appirio.tech.core.api.v2.service.RESTQueryService;
  *
  */
 @Service
-public class MockQueryService implements RESTQueryService {
+public class MockQueryService implements RESTQueryService<MockModelA> {
 
-	private Map<CMCID, MockModel> mockStorage = new HashMap<CMCID, MockModel>();
+	private Map<CMCID, MockModelA> mockStorage = new HashMap<CMCID, MockModelA>();
 	
 	public String getResourcePath() {
-		return MockModel.RESOURCE_PATH;
+		return MockModelA.RESOURCE_PATH;
 	}
 
 	public AbstractIdResource handleGet(FieldSelector selector, CMCID recordId) throws Exception {
 		return null;
 	}
 
-	public List<? extends AbstractResource> handleGet(HttpServletRequest request, QueryParameter query) throws Exception {
-		List<MockModel> result = new ArrayList<MockModel>(mockStorage.values());
+	public List<MockModelA> handleGet(HttpServletRequest request, QueryParameter query) throws Exception {
+		List<MockModelA> result = new ArrayList<MockModelA>(mockStorage.values());
 		return result;
 	}
 
-	public void insertModel(MockModel model) {
+	public void insertModel(MockModelA model) {
 		mockStorage.put(model.getId(), model);
 	}
 }

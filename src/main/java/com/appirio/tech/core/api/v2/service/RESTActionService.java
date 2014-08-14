@@ -17,5 +17,7 @@ import com.appirio.tech.core.api.v2.response.ApiResponse;
  *
  */
 public interface RESTActionService extends RESTService {
+	ApiResponse handleAction(String action, HttpServletRequest request) throws Exception;
+	
 	ApiResponse handleAction(CMCID recordId, String action, HttpServletRequest request) throws Exception;
 }

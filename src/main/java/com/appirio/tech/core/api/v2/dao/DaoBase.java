@@ -19,7 +19,7 @@ public interface DaoBase <T extends AbstractIdResource> {
 	List<T> populate(QueryParameter query) throws Exception;
 
 	/**
-	 * Return a single CMCObject of the given record id.
+	 * Return a single object of the given record id.
 	 * Fields will get populated from the defined selector.
 	 * 
 	 * @param selector

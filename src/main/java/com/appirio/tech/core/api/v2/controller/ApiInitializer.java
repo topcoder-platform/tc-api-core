@@ -50,10 +50,10 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 		
 		///////////////////////////////////////////////////////////////////////////
 		//register ResourceFactory getting all REST handlers
-		Map<String, RESTQueryService> queryServiceMap = new HashMap<String, RESTQueryService>();
+		Map<String, RESTQueryService<? extends AbstractResource>> queryServiceMap = new HashMap<String, RESTQueryService<? extends AbstractResource>>();
 		setupService(queryServiceMap, RESTQueryService.class);
 		
-		Map<String, RESTPersistentService> persistentServiceMap = new HashMap<String, RESTPersistentService>();
+		Map<String, RESTPersistentService<? extends AbstractResource>> persistentServiceMap = new HashMap<String, RESTPersistentService<? extends AbstractResource>>();
 		setupService(persistentServiceMap, RESTPersistentService.class);
 		
 		Map<String, RESTActionService> actionServiceMap = new HashMap<String, RESTActionService>();
@@ -75,8 +75,9 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 		logComplete(handlerList, queryServiceMap, persistentServiceMap, actionServiceMap, modelMap);
 	}
 
-	private <T extends RESTService> void setupService(Map<String, T> serviceMap, Class<T> clazz) {
-		Map<String, T> serviceBeans = context.getBeansOfType(clazz);
+	@SuppressWarnings("unchecked")
+	private <T extends RESTService> void setupService(Map<String, T> serviceMap, Class<?> clazz) {
+		Map<String, T> serviceBeans = context.getBeansOfType((Class<T>)clazz);
 		for(T queryService : serviceBeans.values()) {
 			if(serviceMap.containsKey(queryService.getResourcePath())) {
 				throw new ResourceInitializationException("Duplicate Service detected during initialization. " + queryService.getResourcePath());
@@ -91,8 +92,8 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 	 * @param actionServiceMap
 	 * @param modelMap
 	 */
-	private void logComplete(List<ExceptionCallbackHandler> handlerList, Map<String, RESTQueryService> queryServiceMap,
-			Map<String, RESTPersistentService> persistentServiceMap, Map<String, RESTActionService> actionServiceMap,
+	private void logComplete(List<ExceptionCallbackHandler> handlerList, Map<String, RESTQueryService<? extends AbstractResource>> queryServiceMap,
+			Map<String, RESTPersistentService<? extends AbstractResource>> persistentServiceMap, Map<String, RESTActionService> actionServiceMap,
 			Map<String, Class<? extends AbstractResource>> modelMap) {
 		if(logger.isDebugEnabled()) {
 			StringBuilder builder = new StringBuilder();
@@ -106,13 +107,13 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 			
 			i=0;
 			builder.append("\tRESTQueryService...").append("\n");
-			for(RESTQueryService queryService : queryServiceMap.values()) {
+			for(RESTQueryService<?> queryService : queryServiceMap.values()) {
 				builder.append("\t\t:" + i++ + ":" + queryService.getClass().getCanonicalName()).append("\n");
 			}
 			
 			i=0;
 			builder.append("\tRESTPersistentService...").append("\n");
-			for(RESTPersistentService persistentService : persistentServiceMap.values()) {
+			for(RESTPersistentService<?> persistentService : persistentServiceMap.values()) {
 				builder.append("\t\t:" + i++ + ":" + persistentService.getClass().getCanonicalName()).append("\n");
 			}
 			

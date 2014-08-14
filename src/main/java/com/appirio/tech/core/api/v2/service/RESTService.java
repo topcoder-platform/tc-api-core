@@ -3,7 +3,7 @@
  */
 package com.appirio.tech.core.api.v2.service;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.appirio.tech.core.api.v2.model.annotation.ApiMapping;
 
 
 /**
@@ -18,6 +18,6 @@ public interface RESTService {
 	 * 
 	 * @return
 	 */
-	@JsonIgnore
+	@ApiMapping(visible=false)
 	public String getResourcePath();
 }

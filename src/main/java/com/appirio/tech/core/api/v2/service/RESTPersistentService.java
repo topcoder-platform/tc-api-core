@@ -12,13 +12,13 @@ import com.appirio.tech.core.api.v2.model.AbstractIdResource;
  * @author sudo
  *
  */
-public interface RESTPersistentService extends RESTService {
+public interface RESTPersistentService<T extends AbstractIdResource> extends RESTQueryService<T> {
 
-	<T extends AbstractIdResource> CMCID handlePost(HttpServletRequest request, T object) throws Exception;
+	CMCID handlePost(HttpServletRequest request, T object) throws Exception;
 
-	<T extends AbstractIdResource> CMCID handlePut(HttpServletRequest request, T object) throws Exception;
+	CMCID handlePut(HttpServletRequest request, T object) throws Exception;
 	
 	void handleDelete(HttpServletRequest request, CMCID id) throws Exception;
 
-	<T extends AbstractIdResource> DaoBase<T> getResourceDao();
+	DaoBase<T> getResourceDao();
 }
