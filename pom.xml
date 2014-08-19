@@ -1,54 +1,63 @@
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <!--
-  <parent>
-    <groupId>com.appirio.tech.core</groupId>
-    <artifactId>tech.core</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
--->
-  
+
   <groupId>com.appirio.tech.core.api</groupId>
   <artifactId>tech.core.api</artifactId>
   <version>API-1.0-SNAPSHOT</version>
   <name>tech.core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.springframework.version>3.2.10.RELEASE</org.springframework.version>
   </properties>
-  
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
-        <scope>provided</scope>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
     </dependency>
 
-	<dependency>
-		<groupId>com.appirio.tech.core.deps.common</groupId>
-		<artifactId>tech.core.deps.common</artifactId>
-		<version>DEPS-COMMON-1.0-SNAPSHOT</version>
-		<type>pom</type>
-	</dependency>
+    <!-- Appirio provided libraries -->
     <dependency>
-		<groupId>com.appirio.tech.core.deps.spring</groupId>
-		<artifactId>tech.core.deps.spring</artifactId>
-		<version>DEPS-SPRING-1.0-SNAPSHOT</version>
-		<type>pom</type>
+      <groupId>com.appirio.tech.core.deps.common</groupId>
+      <artifactId>tech.core.deps.common</artifactId>
+      <version>DEPS-COMMON-1.0-SNAPSHOT</version>
+      <type>pom</type>
     </dependency>
-	<dependency>
-		<groupId>com.appirio.tech.core.deps.spring.test</groupId>
-		<artifactId>tech.core.deps.spring.test</artifactId>
-		<version>DEPS-SPRING-TEST-1.0-SNAPSHOT</version>
-		<type>pom</type>
-	</dependency>
+    <dependency>
+      <groupId>com.appirio.tech.core.deps.spring</groupId>
+      <artifactId>tech.core.deps.spring</artifactId>
+      <version>DEPS-SPRING-1.0-SNAPSHOT</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>com.appirio.tech.core.deps.spring.test</groupId>
+      <artifactId>tech.core.deps.spring.test</artifactId>
+      <version>DEPS-SPRING-TEST-1.0-SNAPSHOT</version>
+      <type>pom</type>
+    </dependency>
 
+    <!-- Unit Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -56,4 +65,59 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <distributionManagement>
+    <!-- for deployment on the build server -->
+    <repository>
+      <id>appirio-repo</id>
+      <name>Appirio Maven Repository</name>
+      <url>file:///mnt/maven/repository</url>
+    </repository>
+    <snapshotRepository>
+      <id>appirio-repo</id>
+      <name>Appirio Maven Repository</name>
+      <url>file:///mnt/maven/repository</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.1.1</version>
+        <configuration>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.7.1</version>
+        <configuration>
+          <linkXRef>false</linkXRef>
+          <sourceEncoding>UTF-8</sourceEncoding>
+          <targetJdk>1.6</targetJdk>
+          <includes>
+            <include>com/appirio/tech/core/*.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.5.5</version>
+        <configuration>
+          <onlyAnalyze>com.appirio.tech.core.-</onlyAnalyze>
+          <effort>Max</effort>
+          <xmlOutput>true</xmlOutput>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
