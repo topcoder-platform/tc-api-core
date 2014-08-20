@@ -29,7 +29,7 @@ public interface RESTQueryService<T extends AbstractResource> extends RESTServic
 	 * @return
 	 * @throws Exception
 	 */
-	AbstractIdResource handleGet(FieldSelector selector, CMCID recordId) throws Exception;
+	T handleGet(FieldSelector selector, CMCID recordId) throws Exception;
 
 	List<T> handleGet(HttpServletRequest request, QueryParameter query) throws Exception;
 	

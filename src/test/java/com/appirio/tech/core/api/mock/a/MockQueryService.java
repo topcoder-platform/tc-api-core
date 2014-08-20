@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 import com.appirio.tech.core.api.v2.CMCID;
-import com.appirio.tech.core.api.v2.model.AbstractIdResource;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
 import com.appirio.tech.core.api.v2.request.QueryParameter;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
@@ -31,7 +30,7 @@ public class MockQueryService implements RESTQueryService<MockModelA> {
 		return MockModelA.RESOURCE_PATH;
 	}
 
-	public AbstractIdResource handleGet(FieldSelector selector, CMCID recordId) throws Exception {
+	public MockModelA handleGet(FieldSelector selector, CMCID recordId) throws Exception {
 		return null;
 	}
 

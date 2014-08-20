@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.dao.DaoBase;
-import com.appirio.tech.core.api.v2.model.AbstractIdResource;
 import com.appirio.tech.core.api.v2.request.FieldSelector;
 import com.appirio.tech.core.api.v2.request.QueryParameter;
 import com.appirio.tech.core.api.v2.response.ApiResponse;
@@ -31,7 +30,7 @@ public class MockPersistentService implements RESTActionService, RESTPersistentS
 		return MockModelB.RESOURCE_PATH;
 	}
 
-	public AbstractIdResource handleGet(FieldSelector selector, CMCID recordId) throws Exception {
+	public MockModelB handleGet(FieldSelector selector, CMCID recordId) throws Exception {
 		return null;
 	}
 
