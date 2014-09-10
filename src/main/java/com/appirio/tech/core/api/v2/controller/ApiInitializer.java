@@ -19,6 +19,7 @@ import com.appirio.tech.core.api.v2.exception.ResourceInitializationException;
 import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
 import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.service.RESTActionService;
+import com.appirio.tech.core.api.v2.service.RESTMetadataService;
 import com.appirio.tech.core.api.v2.service.RESTPersistentService;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
 import com.appirio.tech.core.api.v2.service.RESTService;
@@ -53,6 +54,9 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 		Map<String, RESTQueryService<? extends AbstractResource>> queryServiceMap = new HashMap<String, RESTQueryService<? extends AbstractResource>>();
 		setupService(queryServiceMap, RESTQueryService.class);
 		
+		Map<String, RESTMetadataService> metadataServiceMap = new HashMap<String, RESTMetadataService>();
+		setupService(metadataServiceMap, RESTMetadataService.class);
+
 		Map<String, RESTPersistentService<? extends AbstractResource>> persistentServiceMap = new HashMap<String, RESTPersistentService<? extends AbstractResource>>();
 		setupService(persistentServiceMap, RESTPersistentService.class);
 		
@@ -69,20 +73,20 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 		}
 		
 		ResourceFactory factory = new ResourceFactory();
-		factory.setup(queryServiceMap, persistentServiceMap, actionServiceMap, modelMap);
+		factory.setup(queryServiceMap, metadataServiceMap, persistentServiceMap, actionServiceMap, modelMap);
 		ctrl.setResourceFactory(factory);
 
-		logComplete(handlerList, queryServiceMap, persistentServiceMap, actionServiceMap, modelMap);
+		logComplete(handlerList, queryServiceMap, metadataServiceMap, persistentServiceMap, actionServiceMap, modelMap);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T extends RESTService> void setupService(Map<String, T> serviceMap, Class<?> clazz) {
 		Map<String, T> serviceBeans = context.getBeansOfType((Class<T>)clazz);
-		for(T queryService : serviceBeans.values()) {
-			if(serviceMap.containsKey(queryService.getResourcePath())) {
-				throw new ResourceInitializationException("Duplicate Service detected during initialization. " + queryService.getResourcePath());
+		for(T serviceBean : serviceBeans.values()) {
+			if(serviceMap.containsKey(serviceBean.getResourcePath())) {
+				throw new ResourceInitializationException("Duplicate Service detected during initialization. " + serviceBean.getResourcePath());
 			}
-			serviceMap.put(queryService.getResourcePath(), (T)queryService);
+			serviceMap.put(serviceBean.getResourcePath(), (T)serviceBean);
 		}
 	}
 
@@ -93,6 +97,7 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 	 * @param modelMap
 	 */
 	private void logComplete(List<ExceptionCallbackHandler> handlerList, Map<String, RESTQueryService<? extends AbstractResource>> queryServiceMap,
+			Map<String, RESTMetadataService> metadataServiceMap,
 			Map<String, RESTPersistentService<? extends AbstractResource>> persistentServiceMap, Map<String, RESTActionService> actionServiceMap,
 			Map<String, Class<? extends AbstractResource>> modelMap) {
 		if(logger.isDebugEnabled()) {
@@ -111,6 +116,12 @@ public class ApiInitializer implements ApplicationListener<ContextRefreshedEvent
 				builder.append("\t\t:" + i++ + ":" + queryService.getClass().getCanonicalName()).append("\n");
 			}
 			
+			i=0;
+			builder.append("\tRESTMetadataService...").append("\n");
+			for(RESTMetadataService metadataService : metadataServiceMap.values()) {
+				builder.append("\t\t:" + i++ + ":" + metadataService.getClass().getCanonicalName()).append("\n");
+			}
+
 			i=0;
 			builder.append("\tRESTPersistentService...").append("\n");
 			for(RESTPersistentService<?> persistentService : persistentServiceMap.values()) {

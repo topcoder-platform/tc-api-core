@@ -23,7 +23,7 @@ import com.appirio.tech.core.api.v2.request.FieldSelector;
 public class ResourceHelper {
 
 	/**
-	 * Translates getter/setter method names to underscore field name
+	 * Translates getter/setter method names to API field name
 	 * which will be used as API field label
 	 * 
 	 * @param methodName
@@ -31,7 +31,7 @@ public class ResourceHelper {
 	 * @throws CMCParseException when the specified method is not getter/setter/is-getter
 	 * @since va1
 	 */
-	protected static String getApiFieldName(String methodName) {
+	public static String getApiFieldName(String methodName) {
 		if(methodName.startsWith("get") || 
 				methodName.startsWith("set")) {
 			return Introspector.decapitalize(methodName.substring(3));
@@ -95,6 +95,7 @@ public class ResourceHelper {
 	 * @since va1
 	 */
 	public static void setSerializeFields(AbstractResource cobj, FieldSelector selector, Map<Integer, Set<String>> objectFieldMap) {
+		if(selector==null) return;
 		Set<String> serializeFields = new HashSet<String>();
 		serializeFields = selector.getSelectedFields();
 		if(serializeFields.isEmpty()) {

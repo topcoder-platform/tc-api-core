@@ -35,7 +35,8 @@ public @interface ApiMapping {
 	boolean queryDefault() default true;
 	
 	/**
-	 * Set false if we want to hide the method from api
+	 * Set false if we want to hide the method from api.
+	 * Has same effect as Jackson's @JsonIgnore annotation.
 	 * @return
 	 */
 	boolean visible() default true;

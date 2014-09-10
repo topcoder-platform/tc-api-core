@@ -18,10 +18,12 @@ public class ApiResponse {
 	public class Result {
 		private Boolean success;
 		private Integer status;
+		private Object metadata;
 		private Object content;
-		public Result(Boolean success, Integer status, Object content) {
+		public Result(Boolean success, Integer status, Object metadata, Object content) {
 			this.success = success;
 			this.status = status;
+			this.metadata = metadata;
 			this.content = content;
 		}
 		public Boolean getSuccess() {
@@ -30,12 +32,15 @@ public class ApiResponse {
 		public Integer getStatus() {
 			return status;
 		}
+		public Object getMetadata() {
+			return metadata;
+		}
 		public Object getContent() {
 			return content;
 		}
 		@Override
 		public String toString() {
-			return "{success:" + success + "},{status:" + status + "},{content:" + content + "}";
+			return "{success:" + success + "},{status:" + status + "},{metadata:" + metadata + "},{content:" + content + "}";
 		}
 	}
 
@@ -55,7 +60,10 @@ public class ApiResponse {
 		this.result = result;
 	}
 	public void setResult(Boolean success, Integer status, Object content) {
-		this.result = new Result(success, status, content);
+		this.result = new Result(success, status, null, content);
+	}
+	public void setResult(Boolean success, Integer status, Object metadata, Object content) {
+		this.result = new Result(success, status, metadata, content);
 	}
 	public ApiVersion getVersion() {
 		return version;

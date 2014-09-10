@@ -8,6 +8,7 @@ import java.util.Map;
 import com.appirio.tech.core.api.v2.exception.ResourceNotMappedException;
 import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.service.RESTActionService;
+import com.appirio.tech.core.api.v2.service.RESTMetadataService;
 import com.appirio.tech.core.api.v2.service.RESTPersistentService;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
 
@@ -18,15 +19,18 @@ import com.appirio.tech.core.api.v2.service.RESTQueryService;
 public class ResourceFactory {
 
 	private Map<String, RESTQueryService<? extends AbstractResource>> queryServiceMap;
+	private Map<String, RESTMetadataService> metadataMap;
 	private Map<String, RESTPersistentService<? extends AbstractResource>> persistentServiceMap;
 	private Map<String, RESTActionService> actionServiceMap;
 	private Map<String, Class<? extends AbstractResource>> modelMap;
 	
 	public void setup(Map<String, RESTQueryService<? extends AbstractResource>> queryServiceMap,
+			Map<String, RESTMetadataService> metadataMap,
 			Map<String, RESTPersistentService<? extends AbstractResource>> persistentServiceMap,
 			Map<String, RESTActionService> actionServiceMap,
 			Map<String, Class<? extends AbstractResource>> modelMap) {
 		this.queryServiceMap = queryServiceMap;
+		this.metadataMap = metadataMap;
 		this.persistentServiceMap = persistentServiceMap;
 		this.actionServiceMap = actionServiceMap;
 		this.modelMap = modelMap;
@@ -59,6 +63,15 @@ public class ResourceFactory {
 	public Class<? extends AbstractResource> getResourceModel(String resource) throws Exception {
 		if(modelMap.containsKey(resource)) {
 			return modelMap.get(resource);
+		} else {
+			throw new ResourceNotMappedException("unknown resource");
+		}
+	}
+
+	public RESTMetadataService getMetadataService(String resource) {
+		System.out.println(metadataMap.keySet());
+		if(metadataMap.containsKey(resource)) {
+			return metadataMap.get(resource);
 		} else {
 			throw new ResourceNotMappedException("unknown resource");
 		}

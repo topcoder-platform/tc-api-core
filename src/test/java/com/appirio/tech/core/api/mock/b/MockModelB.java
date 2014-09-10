@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.model.AbstractIdResource;
+import com.appirio.tech.core.api.v2.model.annotation.ApiMapping;
 
 /**
  * @author sudo
@@ -21,6 +22,8 @@ public class MockModelB extends AbstractIdResource {
 	private String strTest;
 	private Integer intTest;
 	private String dummyField = "dummy";
+	private String apiHidden = "dummy";
+	private String apiDefaultHidden = "default_hidden";
 	
 	public MockModelB() {}
 	
@@ -52,6 +55,24 @@ public class MockModelB extends AbstractIdResource {
 	}
 	public void setDummyField(String dummyField) {
 		this.dummyField = dummyField;
+	}
+
+	@ApiMapping(visible=false)
+	public String getApiHidden() {
+		return apiHidden;
+	}
+
+	public void setApiHidden(String apiHidden) {
+		this.apiHidden = apiHidden;
+	}
+
+	@ApiMapping(queryDefault=false)
+	public String getApiDefaultHidden() {
+		return apiDefaultHidden;
+	}
+
+	public void setApiDefaultHidden(String apiDefaultHidden) {
+		this.apiDefaultHidden = apiDefaultHidden;
 	}
 
 	public String getResourcePath() {
