@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.appirio.tech.core.api.v2.ApiVersion;
 import com.appirio.tech.core.api.v2.CMCID;
 import com.appirio.tech.core.api.v2.exception.ExceptionContent;
+import com.appirio.tech.core.api.v2.exception.ResourceNotMappedException;
 import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
 import com.appirio.tech.core.api.v2.model.AbstractResource;
 import com.appirio.tech.core.api.v2.model.ResourceHelper;
@@ -36,6 +37,7 @@ import com.appirio.tech.core.api.v2.request.QueryParameter;
 import com.appirio.tech.core.api.v2.response.ApiFieldSelectorResponse;
 import com.appirio.tech.core.api.v2.response.ApiResponse;
 import com.appirio.tech.core.api.v2.service.RESTActionService;
+import com.appirio.tech.core.api.v2.service.RESTMetadataService;
 import com.appirio.tech.core.api.v2.service.RESTQueryService;
 
 /**
@@ -115,6 +117,7 @@ public class ApiController {
 			@RequestParam(value="offset", required=false) String offset,
 			@RequestParam(value="offsetId", required=false) String offsetId,
 			@RequestParam(value="orderBy", required=false) String orderBy,
+			@RequestParam(value="metadata", required=false) String metadata,
 			HttpServletRequest request) throws Exception {
 
 		FieldSelector selector;
@@ -127,10 +130,22 @@ public class ApiController {
 													FilterParameter.fromEncodedString(filter),
 													LimitQuery.instanceFromRaw(limit, offset, offsetId),
 													OrderByQuery.instanceFromRaw(orderBy));
-		RESTQueryService<?> service = resourceFactory.getQueryService(resource);
 
+		RESTQueryService<?> service = resourceFactory.getQueryService(resource);
 		List<? extends AbstractResource> models = service.handleGet(request, query);
-		return createFieldSelectorResponse(models, query.getSelector());
+		
+		//attach metadata if requested and MetadataService exists for this resource
+		Object metadataObject = null;
+		if(metadata!=null && Boolean.valueOf(metadata)) {
+			try {
+				RESTMetadataService metaService = resourceFactory.getMetadataService(resource);
+				metadataObject = metaService.getMetadata(request, query);
+			} catch (ResourceNotMappedException e) {
+				metadataObject = "metadata not supported";
+			}
+		}
+		
+		return createFieldSelectorResponse(models, metadataObject, query.getSelector());
 	}
 
 	@RequestMapping(value="/{resource}/{recordId}", method=GET)
@@ -202,14 +217,14 @@ public class ApiController {
 		return response;
 	}
 
-	private ApiFieldSelectorResponse createFieldSelectorResponse(List<? extends AbstractResource> object, FieldSelector selector) {
+	private ApiFieldSelectorResponse createFieldSelectorResponse(List<? extends AbstractResource> object, Object metadata, FieldSelector selector) {
 		ApiFieldSelectorResponse response = new ApiFieldSelectorResponse();
 		Map<Integer, Set<String>> fieldSelectionMap = new HashMap<Integer, Set<String>>();
 		for(AbstractResource resource : object) {
 			ResourceHelper.setSerializeFields(resource, selector, fieldSelectionMap);
 		}
 		response.setId((new UID()).toString());
-		response.setResult(true, HttpStatus.OK.value(), object);
+		response.setResult(true, HttpStatus.OK.value(), metadata, object);
 		response.setVersion(ApiVersion.v2);
 		response.setFieldSelectionMap(fieldSelectionMap);
 		return response;
