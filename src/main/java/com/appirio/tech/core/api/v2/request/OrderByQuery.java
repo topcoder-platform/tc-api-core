@@ -35,32 +35,32 @@ public class OrderByQuery {
 	 * 
 	 * @param orderBy
 	 */
-    public static OrderByQuery instanceFromRaw(String orderBy) {
-        OrderByQuery query = new OrderByQuery();
-        query.setSortOrder(SortOrder.ASC_NULLS_FIRST); // this is the default.
-        if (orderBy != null) {
-            String[] order = orderBy.split(" ");
-            if (order.length > 0) {
-                query.setOrderByField(order[0]);
-                if (order.length > 1) {
-                    if (order[1].equalsIgnoreCase("asc")) {
-                        if (order.length > 2) {
-                            if (order[3].equalsIgnoreCase("last")) {
-                                query.setSortOrder(SortOrder.ASC_NULLS_LAST);
-                            }
-                        }
-                    } else {
-                        if (order.length > 2) {
-                            if (order[3].equalsIgnoreCase("last")) {
-                                query.setSortOrder(SortOrder.DESC_NULLS_LAST);
-                            } else {
-                                query.setSortOrder(SortOrder.DESC_NULLS_FIRST);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return query;
-    }
+	public static OrderByQuery instanceFromRaw(String orderBy) {
+		OrderByQuery query = new OrderByQuery();
+		query.setSortOrder(SortOrder.ASC_NULLS_FIRST); // this is the default.
+		if (orderBy != null) {
+			String[] order = orderBy.split(" ");
+			if (order.length > 0) {
+				query.setOrderByField(order[0]);
+				if (order.length > 1) {
+					if (order[1].equalsIgnoreCase("asc")) {
+						if (order.length > 2) {
+							if (order[3].equalsIgnoreCase("last")) {
+								query.setSortOrder(SortOrder.ASC_NULLS_LAST);
+							}
+						}
+					} else {
+						if (order.length > 2) {
+							if (order[3].equalsIgnoreCase("last")) {
+								query.setSortOrder(SortOrder.DESC_NULLS_LAST);
+							} else {
+								query.setSortOrder(SortOrder.DESC_NULLS_FIRST);
+							}
+						}
+					}
+				}
+			}
+		}
+		return query;
+	}
 }
