@@ -3,7 +3,6 @@ package com.appirio.tech.core.api.v2.controller;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -198,8 +197,6 @@ public class ApiController {
 		for(ExceptionCallbackHandler handler : exceptionHandlers) {
 			if(handler.isHandle(ex)) {
 				exceptionContent = handler.getExceptionContent(ex, request, res);
-				UID uid = new UID();
-				response.setId(uid.toString());
 				response.setResult(false, exceptionContent.getHttpStatus().value(), exceptionContent);
 				res.setStatus(exceptionContent.getHttpStatus().value());
 				return response;
@@ -211,7 +208,6 @@ public class ApiController {
 
 	private ApiResponse createResponse(final Object object) {
 		ApiResponse response = new ApiResponse();
-		response.setId((new UID()).toString());
 		response.setResult(true, HttpStatus.OK.value(), object);
 		response.setVersion(ApiVersion.v2);
 		return response;
@@ -223,7 +219,6 @@ public class ApiController {
 		for(AbstractResource resource : object) {
 			ResourceHelper.setSerializeFields(resource, selector, fieldSelectionMap);
 		}
-		response.setId((new UID()).toString());
 		response.setResult(true, HttpStatus.OK.value(), metadata, object);
 		response.setVersion(ApiVersion.v2);
 		response.setFieldSelectionMap(fieldSelectionMap);
@@ -232,7 +227,6 @@ public class ApiController {
 
 	private ApiFieldSelectorResponse createFieldSelectorResponse(final AbstractResource object, FieldSelector selector) {
 		ApiFieldSelectorResponse response = new ApiFieldSelectorResponse();
-		response.setId((new UID()).toString());
 		response.setResult(true, HttpStatus.OK.value(), object);
 		response.setVersion(ApiVersion.v2);
 		Map<Integer, Set<String>> fieldSelectionMap = new HashMap<Integer, Set<String>>();

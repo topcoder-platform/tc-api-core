@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = { "file:src/test/webapp/WEB-INF/dispatcher-servlet.xml" })
+@ContextConfiguration(locations = { "classpath:dispatcher-servlet.xml" })
 public class ControllerTestBase {
 
 	@Autowired

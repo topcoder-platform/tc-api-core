@@ -3,6 +3,8 @@
  */
 package com.appirio.tech.core.api.v2.response;
 
+import java.rmi.server.UID;
+
 import com.appirio.tech.core.api.v2.ApiVersion;
 
 
@@ -46,7 +48,13 @@ public class ApiResponse {
 
 	private String id;
 	private Result result;
-	private ApiVersion version = ApiVersion.v2;
+	private ApiVersion version;
+	
+	public ApiResponse() {
+		id = new UID().toString();
+		version = ApiVersion.v2;
+	}
+	
 	public String getId() {
 		return id;
 	}

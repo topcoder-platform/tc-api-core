@@ -21,6 +21,10 @@ public class ApiFieldSelectorResponse extends ApiResponse {
 
 	private Map<Integer, Set<String>> fieldSelectionMap; //Key: Object id (System.identyHashCode()), Value: Set of field names that needs to get serialized
 	
+	public ApiFieldSelectorResponse() {
+		super();
+	}
+	
 	@JsonIgnore
 	@ApiMapping(visible=false)
 	public Map<Integer, Set<String>> getFieldSelectionMap() {
