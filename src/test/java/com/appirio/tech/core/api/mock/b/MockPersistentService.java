@@ -12,16 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-import com.appirio.tech.core.api.v2.CMCID;
-import com.appirio.tech.core.api.v2.dao.DaoBase;
-import com.appirio.tech.core.api.v2.metadata.CountableMetadata;
-import com.appirio.tech.core.api.v2.metadata.Metadata;
-import com.appirio.tech.core.api.v2.request.FieldSelector;
-import com.appirio.tech.core.api.v2.request.QueryParameter;
-import com.appirio.tech.core.api.v2.response.ApiResponse;
-import com.appirio.tech.core.api.v2.service.AbstractMetadataService;
-import com.appirio.tech.core.api.v2.service.RESTActionService;
-import com.appirio.tech.core.api.v2.service.RESTPersistentService;
+import com.appirio.tech.core.api.v3.TCID;
+import com.appirio.tech.core.api.v3.dao.DaoBase;
+import com.appirio.tech.core.api.v3.metadata.CountableMetadata;
+import com.appirio.tech.core.api.v3.metadata.Metadata;
+import com.appirio.tech.core.api.v3.request.FieldSelector;
+import com.appirio.tech.core.api.v3.request.QueryParameter;
+import com.appirio.tech.core.api.v3.response.ApiResponse;
+import com.appirio.tech.core.api.v3.service.AbstractMetadataService;
+import com.appirio.tech.core.api.v3.service.RESTActionService;
+import com.appirio.tech.core.api.v3.service.RESTPersistentService;
 
 /**
  * Mock Service class that handles all the REST calls.
@@ -32,13 +32,13 @@ import com.appirio.tech.core.api.v2.service.RESTPersistentService;
 @Component
 public class MockPersistentService extends AbstractMetadataService implements RESTActionService, RESTPersistentService<MockModelB> {
 
-	private Map<CMCID, MockModelB> mockStorage = new HashMap<CMCID, MockModelB>();
+	private Map<TCID, MockModelB> mockStorage = new HashMap<TCID, MockModelB>();
 
 	public String getResourcePath() {
 		return MockModelB.RESOURCE_PATH;
 	}
 
-	public MockModelB handleGet(FieldSelector selector, CMCID recordId) throws Exception {
+	public MockModelB handleGet(FieldSelector selector, TCID recordId) throws Exception {
 		return mockStorage.get(recordId);
 	}
 
@@ -47,17 +47,17 @@ public class MockPersistentService extends AbstractMetadataService implements RE
 		return result;
 	}
 
-	public CMCID handlePost(HttpServletRequest request, MockModelB object) throws Exception {
+	public TCID handlePost(HttpServletRequest request, MockModelB object) throws Exception {
 		/* Not Implemented for mock yet */
 		return null;
 	}
 
-	public CMCID handlePut(HttpServletRequest request, MockModelB object) throws Exception {
+	public TCID handlePut(HttpServletRequest request, MockModelB object) throws Exception {
 		/* Not Implemented for mock yet */
 		return null;
 	}
 
-	public void handleDelete(HttpServletRequest request, CMCID id) throws Exception {
+	public void handleDelete(HttpServletRequest request, TCID id) throws Exception {
 		/* Not Implemented for mock yet */
 	}
 
@@ -71,7 +71,7 @@ public class MockPersistentService extends AbstractMetadataService implements RE
 		return null;
 	}
 
-	public ApiResponse handleAction(CMCID recordId, String action, HttpServletRequest request) throws Exception {
+	public ApiResponse handleAction(TCID recordId, String action, HttpServletRequest request) throws Exception {
 		/* Not Implemented for mock yet */
 		return null;
 	}
@@ -88,7 +88,7 @@ public class MockPersistentService extends AbstractMetadataService implements RE
 		mockStorage.put(model.getId(), model);
 	}
 
-	public Map<CMCID, MockModelB> getStorage() {
+	public Map<TCID, MockModelB> getStorage() {
 		return mockStorage;
 	}
 }

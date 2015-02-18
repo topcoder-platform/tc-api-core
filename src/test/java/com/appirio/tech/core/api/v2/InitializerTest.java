@@ -12,12 +12,12 @@ import org.junit.Test;
 
 import com.appirio.tech.core.api.mock.a.MockModelA;
 import com.appirio.tech.core.api.mock.b.MockModelB;
-import com.appirio.tech.core.api.v2.controller.ApiController;
-import com.appirio.tech.core.api.v2.controller.ResourceFactory;
-import com.appirio.tech.core.api.v2.exception.handler.ExceptionCallbackHandler;
-import com.appirio.tech.core.api.v2.service.RESTActionService;
-import com.appirio.tech.core.api.v2.service.RESTPersistentService;
-import com.appirio.tech.core.api.v2.service.RESTQueryService;
+import com.appirio.tech.core.api.v3.controller.ApiController;
+import com.appirio.tech.core.api.v3.controller.ResourceFactory;
+import com.appirio.tech.core.api.v3.exception.handler.ExceptionCallbackHandler;
+import com.appirio.tech.core.api.v3.service.RESTActionService;
+import com.appirio.tech.core.api.v3.service.RESTPersistentService;
+import com.appirio.tech.core.api.v3.service.RESTQueryService;
 
 /**
  * Tests initializing properties after Spring context loads.

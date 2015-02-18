@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 
 import com.appirio.tech.core.api.mock.a.MockModelA;
 import com.appirio.tech.core.api.mock.a.MockQueryService;
+import com.appirio.tech.core.api.v3.TCID;
 
 /**
  * Tests basic queries
@@ -51,7 +52,7 @@ public class QueryTest extends ControllerTestBase {
 	public void testQueryModel() throws Exception {
 		
 		//Setup model into MockStorage
-		CMCID id = new CMCID("100");
+		TCID id = new TCID("100");
 		String strTest = "String Test Value";
 		Integer intTest = 9999;
 		MockModelA model = new MockModelA(id, strTest, intTest);
@@ -78,7 +79,7 @@ public class QueryTest extends ControllerTestBase {
 	public void testQueryFieldParameter() throws Exception {
 		
 		//Setup model into MockStorage
-		CMCID id = new CMCID("100");
+		TCID id = new TCID("100");
 		String strTest = "String Test Value";
 		Integer intTest = 9999;
 		MockModelA model = new MockModelA(id, strTest, intTest);

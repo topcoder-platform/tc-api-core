@@ -6,8 +6,8 @@ package com.appirio.tech.core.api.mock.a;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.stereotype.Component;
 
-import com.appirio.tech.core.api.v2.CMCID;
-import com.appirio.tech.core.api.v2.model.AbstractIdResource;
+import com.appirio.tech.core.api.v3.TCID;
+import com.appirio.tech.core.api.v3.model.AbstractIdResource;
 
 /**
  * @author sudo
@@ -24,7 +24,7 @@ public class MockModelA extends AbstractIdResource {
 	
 	public MockModelA() {}
 	
-	public MockModelA(CMCID id, String strTest, Integer intTest) {
+	public MockModelA(TCID id, String strTest, Integer intTest) {
 		super.setId(id);
 		this.strTest = strTest;
 		this.intTest = intTest;

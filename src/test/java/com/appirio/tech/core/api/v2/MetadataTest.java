@@ -15,6 +15,7 @@ import com.appirio.tech.core.api.mock.a.MockModelA;
 import com.appirio.tech.core.api.mock.a.MockQueryService;
 import com.appirio.tech.core.api.mock.b.MockModelB;
 import com.appirio.tech.core.api.mock.b.MockPersistentService;
+import com.appirio.tech.core.api.v3.TCID;
 
 /**
  * Tests metadata options.
@@ -59,7 +60,7 @@ public class MetadataTest extends ControllerTestBase {
 
 	private void setupData() {
 		//Setup model into MockStorage
-		CMCID id = new CMCID("100");
+		TCID id = new TCID("100");
 		String strTest = "String Test Value";
 		Integer intTest = 9999;
 		MockModelA modelA = new MockModelA(id, strTest, intTest);
