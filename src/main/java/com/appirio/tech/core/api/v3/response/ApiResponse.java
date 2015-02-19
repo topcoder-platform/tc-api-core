@@ -52,7 +52,7 @@ public class ApiResponse {
 	
 	public ApiResponse() {
 		id = new UID().toString();
-		version = ApiVersion.v2;
+		version = ApiVersion.v3;
 	}
 	
 	public String getId() {

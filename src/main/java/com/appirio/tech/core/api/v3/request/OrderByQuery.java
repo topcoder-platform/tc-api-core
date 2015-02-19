@@ -38,7 +38,7 @@ public class OrderByQuery {
 	public static OrderByQuery instanceFromRaw(String orderBy) {
 		OrderByQuery query = new OrderByQuery();
 		query.setSortOrder(SortOrder.ASC_NULLS_FIRST); // this is the default.
-		if (orderBy != null) {
+		if (orderBy != null && !orderBy.isEmpty()) {
 			String[] order = orderBy.split(" ");
 			if (order.length > 0) {
 				query.setOrderByField(order[0]);

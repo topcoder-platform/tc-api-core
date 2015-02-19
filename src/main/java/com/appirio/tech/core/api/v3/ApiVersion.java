@@ -4,5 +4,6 @@ public enum ApiVersion {
 	va,
 	va1,
 	vb1,
-	v2;
+	v2,
+	v3;
 }

@@ -96,7 +96,7 @@ public class ApiController {
 	@RequestMapping(value={"/"}, method={RequestMethod.GET})
 	@ResponseBody
 	public ApiResponse version() {
-		return createResponse("API Version: " + ApiVersion.v2);
+		return createResponse("API Version: " + ApiVersion.v3);
 	}
 	
 	@RequestMapping(value={"/exception"}, method={RequestMethod.GET})
@@ -116,7 +116,7 @@ public class ApiController {
 			@RequestParam(value="offset", required=false) String offset,
 			@RequestParam(value="offsetId", required=false) String offsetId,
 			@RequestParam(value="orderBy", required=false) String orderBy,
-			@RequestParam(value="metadata", required=false) String metadata,
+			@RequestParam(value="include", required=false) String include,
 			HttpServletRequest request) throws Exception {
 
 		FieldSelector selector;
@@ -135,7 +135,7 @@ public class ApiController {
 		
 		//attach metadata if requested and MetadataService exists for this resource
 		Object metadataObject = null;
-		if(metadata!=null && Boolean.valueOf(metadata)) {
+		if(include!=null && include.startsWith("metadata")) {
 			try {
 				RESTMetadataService metaService = resourceFactory.getMetadataService(resource);
 				metadataObject = metaService.getMetadata(request, query);
@@ -209,7 +209,7 @@ public class ApiController {
 	private ApiResponse createResponse(final Object object) {
 		ApiResponse response = new ApiResponse();
 		response.setResult(true, HttpStatus.OK.value(), object);
-		response.setVersion(ApiVersion.v2);
+		response.setVersion(ApiVersion.v3);
 		return response;
 	}
 
@@ -220,7 +220,7 @@ public class ApiController {
 			ResourceHelper.setSerializeFields(resource, selector, fieldSelectionMap);
 		}
 		response.setResult(true, HttpStatus.OK.value(), metadata, object);
-		response.setVersion(ApiVersion.v2);
+		response.setVersion(ApiVersion.v3);
 		response.setFieldSelectionMap(fieldSelectionMap);
 		return response;
 	}
@@ -228,7 +228,7 @@ public class ApiController {
 	private ApiFieldSelectorResponse createFieldSelectorResponse(final AbstractResource object, FieldSelector selector) {
 		ApiFieldSelectorResponse response = new ApiFieldSelectorResponse();
 		response.setResult(true, HttpStatus.OK.value(), object);
-		response.setVersion(ApiVersion.v2);
+		response.setVersion(ApiVersion.v3);
 		Map<Integer, Set<String>> fieldSelectionMap = new HashMap<Integer, Set<String>>();
 		ResourceHelper.setSerializeFields(object, selector, fieldSelectionMap);
 		response.setFieldSelectionMap(fieldSelectionMap);
