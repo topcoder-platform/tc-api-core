@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.appirio.tech.core.api.v2;
+package com.appirio.tech.core.api.v3;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -29,7 +29,7 @@ public class MetadataTest extends ControllerTestBase {
 	public void testMetadataDoesNotCotain() throws Exception {
 		setupData();
 		
-		mockMvc.perform(get("/api/v2/" + MockModelA.RESOURCE_PATH)
+		mockMvc.perform(get("/api/v3/" + MockModelA.RESOURCE_PATH)
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("metadata", "false"))
 					.andExpect(status().isOk())
@@ -41,17 +41,17 @@ public class MetadataTest extends ControllerTestBase {
 	public void testMetadataDoCotain() throws Exception {
 		setupData();
 		
-		mockMvc.perform(get("/api/v2/" + MockModelA.RESOURCE_PATH)
+		mockMvc.perform(get("/api/v3/" + MockModelA.RESOURCE_PATH)
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("metadata", "true"))
+				.param("include", "metadata"))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("result.metadata").value("metadata not supported"));
 					//.andDo(print());
 
 		MockPersistentService mockSevice = webApplicationContext.getBean(MockPersistentService.class);
-		mockMvc.perform(get("/api/v2/" + MockModelB.RESOURCE_PATH)
+		mockMvc.perform(get("/api/v3/" + MockModelB.RESOURCE_PATH)
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("metadata", "true"))
+				.param("include", "metadata"))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("result.metadata.fields").exists())
 					.andExpect(jsonPath("result.metadata.totalCount").value(mockSevice.getStorage().size()))

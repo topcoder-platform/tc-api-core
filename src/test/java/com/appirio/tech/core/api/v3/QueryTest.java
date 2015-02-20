@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.appirio.tech.core.api.v2;
+package com.appirio.tech.core.api.v3;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -27,23 +27,23 @@ public class QueryTest extends ControllerTestBase {
 
 	@Test
 	public void testQueryNotFound() throws Exception {
-		mockMvc.perform(get("/api/v2"))
+		mockMvc.perform(get("/api/v3"))
 			.andExpect(status().isNotFound());
 
-		mockMvc.perform(get("/api/v2/dummy_resource"))
+		mockMvc.perform(get("/api/v3/dummy_resource"))
 			.andExpect(status().isNotFound());
 	}
 	
 	@Test
 	public void testException() throws Exception {
-		mockMvc.perform(get("/api/v2/exception"))
+		mockMvc.perform(get("/api/v3/exception"))
 			.andDo(print())
 			.andExpect(status().isInternalServerError());
 	}
 	
 	@Test
 	public void testQueryFound() throws Exception {
-		mockMvc.perform(get("/api/v2/" + MockModelA.RESOURCE_PATH))
+		mockMvc.perform(get("/api/v3/" + MockModelA.RESOURCE_PATH))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -59,11 +59,11 @@ public class QueryTest extends ControllerTestBase {
 		webApplicationContext.getBean(MockQueryService.class).insertModel(model);
 		
 		//Now do test
-		mockMvc.perform(get("/api/v2/" + MockModelA.RESOURCE_PATH).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/api/v3/" + MockModelA.RESOURCE_PATH).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("id").exists())
 			.andExpect(jsonPath("result").exists())
-			.andExpect(jsonPath("version").value("v2"))
+			.andExpect(jsonPath("version").value("v3"))
 			.andExpect(jsonPath("result.success").value(true))
 			.andExpect(jsonPath("result.status").value(HttpStatus.SC_OK))
 			.andExpect(jsonPath("result.content").isArray())
@@ -87,7 +87,7 @@ public class QueryTest extends ControllerTestBase {
 		
 		//Now do test
 		String fieldParam = "id,strTest";
-		mockMvc.perform(get("/api/v2/" + MockModelA.RESOURCE_PATH)
+		mockMvc.perform(get("/api/v3/" + MockModelA.RESOURCE_PATH)
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("fields", fieldParam))
 					.andExpect(status().isOk())
