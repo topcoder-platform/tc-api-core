@@ -15,7 +15,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -29,7 +28,6 @@ import com.appirio.tech.core.api.v3.response.ApiResponse;
 import com.appirio.tech.core.api.v3.response.ApiResponseFactory;
 import com.appirio.tech.core.auth.AuthUser;
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Optional;
 
 /**
  * @author sudo
@@ -59,7 +57,6 @@ public class MockQueryService implements GetResource<MockModelA> {
 	public ApiResponse getObjects(
 			@Auth AuthUser authUser,
 			@APIQueryParam(repClass = MockModelA.class) QueryParameter query,
-			@QueryParam("include") Optional<String> includeIn,
 			@Context HttpServletRequest request) throws Exception {
 		List<MockModelA> result = new ArrayList<MockModelA>(mockStorage.values());
 		return ApiResponseFactory.createFieldSelectorResponse(result, query.getSelector());

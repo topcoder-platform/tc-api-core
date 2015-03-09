@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import com.appirio.tech.core.api.v3.TCID;
@@ -15,7 +14,6 @@ import com.appirio.tech.core.api.v3.request.QueryParameter;
 import com.appirio.tech.core.api.v3.response.ApiResponse;
 import com.appirio.tech.core.auth.AuthUser;
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Optional;
 
 public interface GetResource<T> {
 
@@ -57,7 +55,6 @@ public interface GetResource<T> {
 	public abstract ApiResponse getObjects(
 			@Auth AuthUser authUser,
 			/*@APIQueryParam(repClass = User.class)*/ QueryParameter query,
-			@QueryParam(value = "include") Optional<String> includeIn,
 			@Context HttpServletRequest request) throws Exception;
 
 }

@@ -19,7 +19,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -39,7 +38,6 @@ import com.appirio.tech.core.api.v3.response.ApiResponse;
 import com.appirio.tech.core.api.v3.response.ApiResponseFactory;
 import com.appirio.tech.core.auth.AuthUser;
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Optional;
 
 /**
  * Mock Service class that handles all the REST calls.
@@ -72,7 +70,6 @@ public class MockPersistentService implements GetResource<MockModelB>, DDLResour
 	public ApiResponse getObjects(
 			@Auth AuthUser authUser,
 			@APIQueryParam(repClass = MockModelB.class) QueryParameter query,
-			@QueryParam("include") Optional<String> includeIn,
 			@Context HttpServletRequest request) throws Exception {
 		return ApiResponseFactory.createFieldSelectorResponse(new ArrayList<MockModelB>(mockStorage.values()),
 				getMetadata(request, query), query.getSelector());

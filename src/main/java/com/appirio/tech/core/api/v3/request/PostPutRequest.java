@@ -3,8 +3,8 @@
  */
 package com.appirio.tech.core.api.v3.request;
 
-import com.appirio.tech.core.api.v3.controller.ResourceInitializationException;
 import com.appirio.tech.core.api.v3.dropwizard.APIApplication;
+import com.appirio.tech.core.api.v3.exception.ResourceInitializationException;
 import com.appirio.tech.core.api.v3.model.AbstractIdResource;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
