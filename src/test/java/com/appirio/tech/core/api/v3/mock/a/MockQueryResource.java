@@ -30,12 +30,14 @@ import com.appirio.tech.core.auth.AuthUser;
 import com.codahale.metrics.annotation.Timed;
 
 /**
+ * Test resource
+ * 
  * @author sudo
  *
  */
 @Path("mock_a_models")
 @Produces(MediaType.APPLICATION_JSON)
-public class MockQueryService implements GetResource<MockModelA> {
+public class MockQueryResource implements GetResource<MockModelA> {
 
 	private Map<TCID, MockModelA> mockStorage = new HashMap<TCID, MockModelA>();
 	
@@ -44,7 +46,7 @@ public class MockQueryService implements GetResource<MockModelA> {
 	@Path("/{resourceId}")
 	@Timed
 	public ApiResponse getObject(
-			@Auth AuthUser authUser,
+			@Auth(required=false) AuthUser authUser,
 			@PathParam("resourceId") TCID recordId,
 			@APIFieldParam(repClass = MockModelA.class) FieldSelector selector, @Context HttpServletRequest request)
 			throws Exception {
@@ -55,7 +57,7 @@ public class MockQueryService implements GetResource<MockModelA> {
 	@GET
 	@Timed
 	public ApiResponse getObjects(
-			@Auth AuthUser authUser,
+			@Auth(required=false) AuthUser authUser,
 			@APIQueryParam(repClass = MockModelA.class) QueryParameter query,
 			@Context HttpServletRequest request) throws Exception {
 		List<MockModelA> result = new ArrayList<MockModelA>(mockStorage.values());

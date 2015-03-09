@@ -19,7 +19,7 @@ import com.appirio.tech.core.api.v3.dropwizard.APIApplication;
 import com.appirio.tech.core.api.v3.dropwizard.APIBaseConfiguration;
 import com.appirio.tech.core.api.v3.mock.a.MockModelA;
 import com.appirio.tech.core.api.v3.mock.b.MockModelB;
-import com.appirio.tech.core.api.v3.mock.b.MockPersistentService;
+import com.appirio.tech.core.api.v3.mock.b.MockPersistentResource;
 import com.appirio.tech.core.api.v3.request.PostPutRequest;
 import com.appirio.tech.core.api.v3.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,7 +71,7 @@ public class EndpointTest {
 
 	@Test
 	public void testPost() throws Exception {
-		MockPersistentService.clearData();
+		MockPersistentResource.clearData();
 		
 		//Prepare 2 objects
 		MockModelB modelA = new MockModelB();
@@ -118,7 +118,7 @@ public class EndpointTest {
 
 	@Test
 	public void testPut() throws Exception {
-		MockPersistentService.clearData();
+		MockPersistentResource.clearData();
 
 		//Insert new object
 		MockModelB modelB = new MockModelB();
@@ -153,8 +153,8 @@ public class EndpointTest {
 
 	@Test
 	public void testDelete() throws Exception {
-		MockPersistentService.clearData();
-		Map<TCID, MockModelB> storageMap = MockPersistentService.getStorage();
+		MockPersistentResource.clearData();
+		Map<TCID, MockModelB> storageMap = MockPersistentResource.getStorage();
 		
 		//Insert 1 object
 		MockModelB modelA = new MockModelB();

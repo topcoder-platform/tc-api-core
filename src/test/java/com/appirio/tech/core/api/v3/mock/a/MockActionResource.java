@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  */
 //@Path("mock_a_models")
-public class MockActionService implements RESTActionService {
+public class MockActionResource implements RESTActionService {
 
 	@Override
 	@ApiMapping(visible = false)

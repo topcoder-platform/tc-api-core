@@ -47,7 +47,7 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Path("mock_b_models")
 @Produces(MediaType.APPLICATION_JSON)
-public class MockPersistentService implements GetResource<MockModelB>, DDLResource {
+public class MockPersistentResource implements GetResource<MockModelB>, DDLResource {
 
 	private AtomicInteger integer = new AtomicInteger(100);
 	private static Map<TCID, MockModelB> mockStorage = new HashMap<TCID, MockModelB>();
@@ -57,7 +57,7 @@ public class MockPersistentService implements GetResource<MockModelB>, DDLResour
 	@Path("/{resourceId}")
 	@Timed
 	public ApiResponse getObject(
-			@Auth AuthUser authUser,
+			@Auth(required=false) AuthUser authUser,
 			@PathParam("resourceId") TCID recordId,
 			@APIFieldParam(repClass = MockModelB.class) FieldSelector selector,
 			@Context HttpServletRequest request) throws Exception {
@@ -68,7 +68,7 @@ public class MockPersistentService implements GetResource<MockModelB>, DDLResour
 	@GET
 	@Timed
 	public ApiResponse getObjects(
-			@Auth AuthUser authUser,
+			@Auth(required=false) AuthUser authUser,
 			@APIQueryParam(repClass = MockModelB.class) QueryParameter query,
 			@Context HttpServletRequest request) throws Exception {
 		return ApiResponseFactory.createFieldSelectorResponse(new ArrayList<MockModelB>(mockStorage.values()),
@@ -78,8 +78,10 @@ public class MockPersistentService implements GetResource<MockModelB>, DDLResour
 	@Override
 	@POST
 	@Timed
-	public ApiResponse createObject(@Valid PostPutRequest postRequest, @Context HttpServletRequest request)
-			throws Exception {
+	public ApiResponse createObject(
+			@Auth(required=false) AuthUser authUser,
+			@Valid PostPutRequest postRequest,
+			@Context HttpServletRequest request) throws Exception {
 
 		MockModelB resourceData = (MockModelB)postRequest.getParamObject(MockModelB.class);;
 
@@ -101,7 +103,10 @@ public class MockPersistentService implements GetResource<MockModelB>, DDLResour
 	@PUT
 	@Path("/{resourceId}")
 	@Timed
-	public ApiResponse updateObject(@PathParam("resourceId") String resourceId, @Valid PostPutRequest putRequest,
+	public ApiResponse updateObject(
+			@Auth(required=false) AuthUser authUser,
+			@PathParam("resourceId") String resourceId,
+			@Valid PostPutRequest putRequest,
 			@Context HttpServletRequest request) throws Exception {
 
 		MockModelB resourceData = (MockModelB)putRequest.getParamObject(MockModelB.class);
@@ -123,8 +128,10 @@ public class MockPersistentService implements GetResource<MockModelB>, DDLResour
 	@DELETE
 	@Path("/{resourceId}")
 	@Timed
-	public ApiResponse deleteObject(@PathParam("resourceId") String resourceId, @Context HttpServletRequest request)
-			throws Exception {
+	public ApiResponse deleteObject(
+			@Auth(required=false) AuthUser authUser,
+			@PathParam("resourceId") String resourceId,
+			@Context HttpServletRequest request) throws Exception {
 		mockStorage.remove(new TCID(resourceId));
 		return ApiResponseFactory.createResponse(new TCID(resourceId));
 	}

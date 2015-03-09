@@ -1,5 +1,7 @@
 package com.appirio.tech.core.api.v3.resource;
 
+import io.dropwizard.auth.Auth;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.DELETE;
@@ -11,6 +13,7 @@ import javax.ws.rs.core.Context;
 
 import com.appirio.tech.core.api.v3.request.PostPutRequest;
 import com.appirio.tech.core.api.v3.response.ApiResponse;
+import com.appirio.tech.core.auth.AuthUser;
 import com.codahale.metrics.annotation.Timed;
 
 public interface DDLResource {
@@ -29,6 +32,7 @@ public interface DDLResource {
 	@POST
 	@Timed
 	public abstract ApiResponse createObject(
+			@Auth AuthUser authUser,
 			@Valid PostPutRequest postRequest,
 			@Context HttpServletRequest request) throws Exception;
 
@@ -47,6 +51,7 @@ public interface DDLResource {
 	@Path("/{resourceId}")
 	@Timed
 	public abstract ApiResponse updateObject(
+			@Auth AuthUser authUser,
 			@PathParam("resourceId") String resourceId,
 			@Valid PostPutRequest putRequest,
 			@Context HttpServletRequest request) throws Exception;
@@ -65,6 +70,7 @@ public interface DDLResource {
 	@Path("/{resourceId}")
 	@Timed
 	public abstract ApiResponse deleteObject(
+			@Auth AuthUser authUser,
 			@PathParam("resourceId") String resourceId,
 			@Context HttpServletRequest request) throws Exception;
 
