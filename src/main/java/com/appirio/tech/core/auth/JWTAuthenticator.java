@@ -28,6 +28,7 @@ import com.google.common.base.Optional;
 public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 
 	public static final String JWT_USER_ID = "userId";
+	private static final Base64 decoder = new Base64(true);
 
 	private static final Logger logger = LoggerFactory.getLogger(JWTAuthenticator.class);
 
@@ -40,7 +41,7 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 	@Override
 	public Optional<AuthUser> authenticate(String token) throws AuthenticationException {
 		//@SuppressWarnings("static-access")
-		JWTVerifier jwtVerifier = new JWTVerifier(Base64.decodeBase64(clientSecret), clientId);
+		JWTVerifier jwtVerifier = new JWTVerifier(decoder.decodeBase64(clientSecret), clientId);
 		Map<String, Object> decoded;
 		try {
 			decoded = jwtVerifier.verify(token);
