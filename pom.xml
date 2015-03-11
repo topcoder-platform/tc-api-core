@@ -5,7 +5,7 @@
 
   <groupId>com.appirio.tech.core.api</groupId>
   <artifactId>tech.core.api</artifactId>
-  <version>API-1.1-SNAPSHOT</version>
+  <version>API-3.0-SNAPSHOT</version>
   <name>tech.core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
