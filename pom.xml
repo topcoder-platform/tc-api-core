@@ -124,19 +124,6 @@
     </snapshotRepository>
   </distributionManagement>
 
-  <repositories>
-    <repository>
-      <id>Appirio Technology Maven Repository</id>
-      <url>http://maven.appirio.net:8080/</url>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <releases>
-        <updatePolicy>always</updatePolicy>
-      </releases>
-    </repository>
-  </repositories>
-
   <reporting>
     <plugins>
       <plugin>
