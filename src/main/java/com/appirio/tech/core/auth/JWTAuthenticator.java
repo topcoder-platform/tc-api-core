@@ -40,7 +40,9 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 	@Override
 	public Optional<AuthUser> authenticate(String token) throws AuthenticationException {
 		//@SuppressWarnings("static-access")
-		JWTVerifier jwtVerifier = new JWTVerifier(Base64.decodeBase64(clientSecret), clientId);
+		// Fixing bug
+		//JWTVerifier jwtVerifier = new JWTVerifier(Base64.decodeBase64(clientSecret), clientId);
+		JWTVerifier jwtVerifier = new JWTVerifier(clientSecret.getBytes(), clientId);
 		Map<String, Object> decoded;
 		try {
 			decoded = jwtVerifier.verify(token);
