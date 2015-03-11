@@ -161,7 +161,7 @@
           <sourceEncoding>UTF-8</sourceEncoding>
           <targetJdk>1.6</targetJdk>
           <includes>
-            <include>com/appirio/tech/core/*.java</include>
+            <include>com/appirio/tech/core/**/*.java</include>
           </includes>
         </configuration>
       </plugin>
