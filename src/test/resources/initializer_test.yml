@@ -1,10 +1,10 @@
 server:
   applicationConnectors:
     - type: http
-      port: 8080
+      port: 9080
   adminConnectors:
     - type: http
-      port: 8081
+      port: 9081
 
 # Logging settings.
 logging:
