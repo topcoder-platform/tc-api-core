@@ -66,7 +66,7 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 	}
 	
 	@Override
-	public void run(APIBaseConfiguration configuration, Environment environment) throws Exception {
+	public void run(T configuration, Environment environment) throws Exception {
 		//delegate.run(this, configuration, environment);
 		configureCors(configuration, environment);
 		
