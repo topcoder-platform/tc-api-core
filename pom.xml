@@ -5,7 +5,7 @@
 
   <groupId>com.appirio.tech.core.api</groupId>
   <artifactId>tech.core.api</artifactId>
-  <version>API-3.0.0.1-SNAPSHOT</version>
+  <version>API-3.0.0.2-SNAPSHOT</version>
   <name>tech.core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
@@ -89,25 +89,6 @@
       <scope>test</scope>
        -->
     </dependency>
-
-<dependency>
-    <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-    <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
-    <version>2.16</version>
-    <!-- 
-    <scope>test</scope>
-     -->
-    <exclusions>
-        <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
 
 <!-- FOR Authentication -->
     <!-- Auth0 dependencies -->
