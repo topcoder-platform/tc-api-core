@@ -31,6 +31,13 @@ public class TCID implements Serializable {
 			setId(id.toString());
 		}
 	}
+	
+	public TCID(Long id) {
+		if(id!=null) {
+			setId(id.toString());
+		}
+	}
+
 
 	@JsonValue
 	public String getId() {

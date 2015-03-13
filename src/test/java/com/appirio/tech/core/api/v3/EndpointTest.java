@@ -15,8 +15,6 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import com.appirio.tech.core.api.v3.dropwizard.APIApplication;
-import com.appirio.tech.core.api.v3.dropwizard.APIBaseConfiguration;
 import com.appirio.tech.core.api.v3.mock.a.MockModelA;
 import com.appirio.tech.core.api.v3.mock.b.MockModelB;
 import com.appirio.tech.core.api.v3.mock.b.MockPersistentResource;
@@ -40,8 +38,8 @@ public class EndpointTest {
 	private static final ObjectMapper JACKSON_OBJECT_MAPPER = new ObjectMapper();
 
 	@ClassRule
-	public static final DropwizardAppRule<APIBaseConfiguration> RULE = new DropwizardAppRule<APIBaseConfiguration>(
-			APIApplication.class, "src/test/resources/initializer_test.yml");
+	public static final DropwizardAppRule<TestConfiguration> RULE = new DropwizardAppRule<TestConfiguration>(
+			TestApplication.class, "src/test/resources/initializer_test.yml");
 
 	@Test
 	public void testRoot() throws Exception {
