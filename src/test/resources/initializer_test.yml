@@ -1,0 +1,18 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 9080
+  adminConnectors:
+    - type: http
+      port: 9081
+
+# Logging settings.
+logging:
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+  # Logger-specific levels.
+  loggers:
+    # Sets the level for 'com.appirio.tech' to DEBUG.
+    com.appirio.tech: DEBUG
+  appenders:
+    - type: console

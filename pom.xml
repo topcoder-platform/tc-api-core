@@ -5,15 +5,16 @@
 
   <groupId>com.appirio.tech.core.api</groupId>
   <artifactId>tech.core.api</artifactId>
-  <version>API-1.0-SNAPSHOT</version>
+  <version>API-3.0.0.2-SNAPSHOT</version>
   <name>tech.core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.springframework.version>3.2.10.RELEASE</org.springframework.version>
-  </properties>
+    <dropwizard.version>0.7.1</dropwizard.version>
+    <amazon.aws.version>[1.6.12,1.7)</amazon.aws.version>
+</properties>
 
   <build>
     <plugins>
@@ -22,8 +23,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
     </plugins>
@@ -31,39 +32,89 @@
 
   <dependencies>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- Appirio provided libraries -->
-    <dependency>
-      <groupId>com.appirio.tech.core.deps.common</groupId>
-      <artifactId>tech.core.deps.common</artifactId>
-      <version>DEPS-COMMON-1.0-SNAPSHOT</version>
-      <type>pom</type>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-core</artifactId>
+      <version>${dropwizard.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.appirio.tech.core.deps.spring</groupId>
-      <artifactId>tech.core.deps.spring</artifactId>
-      <version>DEPS-SPRING-1.0-SNAPSHOT</version>
-      <type>pom</type>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-auth</artifactId>
+      <version>${dropwizard.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.appirio.tech.core.deps.spring.test</groupId>
-      <artifactId>tech.core.deps.spring.test</artifactId>
-      <version>DEPS-SPRING-TEST-1.0-SNAPSHOT</version>
-      <type>pom</type>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-assets</artifactId>
+      <version>${dropwizard.version}</version>
     </dependency>
-
-    <!-- Unit Test dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-spdy</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-hibernate</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-migrations</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-views-freemarker</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-views-mustache</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-jdbi</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.4.182</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-testing</artifactId>
+      <version>${dropwizard.version}</version>
+      <!-- 
       <scope>test</scope>
+       -->
     </dependency>
+
+<!-- FOR Authentication -->
+    <!-- Auth0 dependencies -->
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.4</version>
+    </dependency>
+<!-- FOR V3API -->
+    <!-- Scan classes with annotation on APIApplication -->
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+      <version>0.9.9-RC1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+    </dependency>
+
   </dependencies>
 
   <distributionManagement>
@@ -80,19 +131,6 @@
     </snapshotRepository>
   </distributionManagement>
 
-  <repositories>
-    <repository>
-      <id>Appirio Technology Maven Repository</id>
-      <url>http://maven.appirio.net:8080/</url>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <releases>
-        <updatePolicy>always</updatePolicy>
-      </releases>
-    </repository>
-  </repositories>
-
   <reporting>
     <plugins>
       <plugin>
@@ -102,6 +140,11 @@
         <configuration>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.18.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -117,7 +160,7 @@
           <sourceEncoding>UTF-8</sourceEncoding>
           <targetJdk>1.6</targetJdk>
           <includes>
-            <include>com/appirio/tech/core/*.java</include>
+            <include>com/appirio/tech/core/**/*.java</include>
           </includes>
         </configuration>
       </plugin>
