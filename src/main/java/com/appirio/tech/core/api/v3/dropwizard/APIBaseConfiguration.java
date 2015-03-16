@@ -17,8 +17,13 @@ import io.dropwizard.Configuration;
  */
 public class APIBaseConfiguration extends Configuration {
 	
+<<<<<<< HEAD
 	boolean useResourceAutoRegistering = false;
 	
+=======
+	/* TODO: Cleanup after sample is fixed.
+	 * 
+>>>>>>> sudo-v3api
 	List<String> v3services;
 	
 	Map<String, String> corsSettings;
@@ -39,6 +44,7 @@ public class APIBaseConfiguration extends Configuration {
 	public void setV3services(List<String> v3services) {
 		this.v3services = v3services;
 	}
+<<<<<<< HEAD
 	
 	public Map<String, String> getCorsSettings() {
 		return corsSettings;
@@ -47,4 +53,7 @@ public class APIBaseConfiguration extends Configuration {
 	public void setCorsSettings(Map<String, String> corsSettings) {
 		this.corsSettings = corsSettings;
 	}
+=======
+	*/
+>>>>>>> sudo-v3api
 }

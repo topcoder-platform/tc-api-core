@@ -47,7 +47,7 @@ public class QueryParameterProvider implements InjectableProvider<APIQueryParam,
 			String offset = null;
 			String offsetId = null;
 			String orderBy = null;
-			String include = null;
+			//String include = null; TODO: implement V3 "include" parameter
 			
 			MultivaluedMap<String, String> params = c.getUriInfo().getQueryParameters();
 			// Populate URI for query param and value is present
@@ -66,9 +66,10 @@ public class QueryParameterProvider implements InjectableProvider<APIQueryParam,
 					offsetId = value;
 				} else if (key.equals("orderBy") && value!=null) {
 					orderBy = value;
-				} else if (key.equals("include") && value!=null) {
+				}/* TODO: implement V3 "include" parameter
+				 else if (key.equals("include") && value!=null) {
 					include = value;
-				}
+				}*/
 			}
 			
 			// Populate FieldSelector. If value isn't present, assign default fields to populate
