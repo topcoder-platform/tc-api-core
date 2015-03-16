@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
  * @author sudo
  * 
  */
-public class APIApplication extends Application<APIBaseConfiguration> {
+public class APIApplication<T extends APIBaseConfiguration> extends Application<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(APIApplication.class);
 
@@ -52,7 +52,7 @@ public class APIApplication extends Application<APIBaseConfiguration> {
 	}
 
 	@Override
-	public void initialize(Bootstrap<APIBaseConfiguration> bootstrap) {
+	public void initialize(Bootstrap<T> bootstrap) {
 		//V3 API communicates in ISO8601 format for DateTime
 		bootstrap.getObjectMapper().setDateFormat(ISO8601DateFormat.getInstance());
 		JACKSON_OBJECT_MAPPER = bootstrap.getObjectMapper();
@@ -89,6 +89,6 @@ public class APIApplication extends Application<APIBaseConfiguration> {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new APIApplication().run(args);
+		new APIApplication<>().run(args);
 	}
 }

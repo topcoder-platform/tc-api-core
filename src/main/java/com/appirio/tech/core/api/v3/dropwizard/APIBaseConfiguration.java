@@ -16,6 +16,8 @@ import io.dropwizard.Configuration;
  */
 public class APIBaseConfiguration extends Configuration {
 	
+	/* TODO: Cleanup after sample is fixed.
+	 * 
 	List<String> v3services;
 	
 	public List<String> getV3services() {
@@ -25,4 +27,5 @@ public class APIBaseConfiguration extends Configuration {
 	public void setV3services(List<String> v3services) {
 		this.v3services = v3services;
 	}
+	*/
 }

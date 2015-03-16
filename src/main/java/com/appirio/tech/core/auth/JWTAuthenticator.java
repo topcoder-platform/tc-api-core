@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +27,9 @@ import com.google.common.base.Optional;
 public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 
 	public static final String JWT_USER_ID = "userId";
-	private static final Base64 decoder = new Base64(true);
 
 	private static final Logger logger = LoggerFactory.getLogger(JWTAuthenticator.class);
 
-	private static final String clientId = "JFDo7HMkf0q2CkVFHojy3zHWafziprhT";
 	private static final String clientSecret = "0fjm47MSE1ea18WRPX9v3K6EM3iI8dc0OF5VNc-NMTNWEiwBwsmfjEYqOBW9HLhY";
 	
 	/**
@@ -40,8 +37,6 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 	 */
 	@Override
 	public Optional<AuthUser> authenticate(String token) throws AuthenticationException {
-		//@SuppressWarnings("static-access")
-		//JWTVerifier jwtVerifier = new JWTVerifier(decoder.decodeBase64(clientSecret), clientId);
 		JWTVerifier jwtVerifier = new JWTVerifier(clientSecret.getBytes());
 		Map<String, Object> decoded;
 		try {
@@ -56,7 +51,5 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 			logger.debug("Error occured while decoding JWT token: " + e.getLocalizedMessage());
 			throw new AuthenticationException("Authentication error occured: " + e.getLocalizedMessage());
 		}
-		//return Optional.absent();
 	}
-
 }

@@ -3,11 +3,15 @@
  */
 package com.appirio.tech.core.api.v3;
 
+import io.dropwizard.Application;
+import io.dropwizard.Configuration;
+import io.dropwizard.testing.junit.ConfigOverride;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jetty.http.HttpStatus;
@@ -39,9 +43,19 @@ public class EndpointTest {
 	 */
 	private static final ObjectMapper JACKSON_OBJECT_MAPPER = new ObjectMapper();
 
+	public class MyRule<C extends Configuration> extends DropwizardAppRule<C> {
+		public MyRule(Class<? extends Application<C>> applicationClass,
+                             @Nullable String configPath,
+                             ConfigOverride... configOverrides) {
+			super(applicationClass, configPath, configOverrides);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
 	@ClassRule
 	public static final DropwizardAppRule<APIBaseConfiguration> RULE = new DropwizardAppRule<APIBaseConfiguration>(
-			APIApplication.class, "src/test/resources/initializer_test.yml");
+				(Class<? extends Application<APIBaseConfiguration>>)APIApplication.class,
+				"src/test/resources/initializer_test.yml");
 
 	@Test
 	public void testRoot() throws Exception {
