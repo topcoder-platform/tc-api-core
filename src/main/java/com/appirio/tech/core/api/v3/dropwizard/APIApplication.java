@@ -32,13 +32,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 /**
  * Application entry point for DropWizard framework.
- * This class is the standard class to run API V3 based RESTful apps. When running app from this class,
- * API V3 library will load model/service/exception that has extended/inherited defined classes/interfaces
- * and will communicate via V3 protocol automatically.
- * In case, all request will go through {@link APIController}
- * 
- * Application has freedom to create their own main() to run DropWizard apps, in which case, individual app
- * need to implement V3 protocol.
+ * This class is the standard class to run API V3 based RESTful apps.
  * 
  * @author sudo
  * 
@@ -88,6 +82,12 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		environment.jersey().register(new RuntimeExceptionMapper());
 	}
 
+	/**
+	 * Temporary CORS fix by Kohata. Under review.
+	 * 
+	 * @param configuration
+	 * @param environment
+	 */
 	protected void configureCors(APIBaseConfiguration configuration, Environment environment) {
 		// http://jitterted.com/tidbits/2014/09/12/cors-for-dropwizard-0-7-x/
 		Map<String, String> corsSettings = configuration.getCorsSettings();
