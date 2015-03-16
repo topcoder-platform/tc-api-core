@@ -3,10 +3,9 @@
  */
 package com.appirio.tech.core.api.v3.dropwizard;
 
-import java.util.List;
-import java.util.Map;
-
 import io.dropwizard.Configuration;
+
+import java.util.Map;
 
 /**
  * Configuration class to be passed upon DropWizard boot sequence.
@@ -17,14 +16,7 @@ import io.dropwizard.Configuration;
  */
 public class APIBaseConfiguration extends Configuration {
 	
-<<<<<<< HEAD
 	boolean useResourceAutoRegistering = false;
-	
-=======
-	/* TODO: Cleanup after sample is fixed.
-	 * 
->>>>>>> sudo-v3api
-	List<String> v3services;
 	
 	Map<String, String> corsSettings;
 	
@@ -37,15 +29,6 @@ public class APIBaseConfiguration extends Configuration {
 		this.useResourceAutoRegistering = useResourceAutoRegistering;
 	}
 
-	public List<String> getV3services() {
-		return v3services;
-	}
-
-	public void setV3services(List<String> v3services) {
-		this.v3services = v3services;
-	}
-<<<<<<< HEAD
-	
 	public Map<String, String> getCorsSettings() {
 		return corsSettings;
 	}
@@ -53,7 +36,4 @@ public class APIBaseConfiguration extends Configuration {
 	public void setCorsSettings(Map<String, String> corsSettings) {
 		this.corsSettings = corsSettings;
 	}
-=======
-	*/
->>>>>>> sudo-v3api
 }
