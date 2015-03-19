@@ -88,8 +88,8 @@ public class EndpointTest {
 		modelB.setStrTest("Test String B");
 		
 		//Insert first object
-		PostPutRequest requestA = new PostPutRequest();
-		requestA.setParam(JACKSON_OBJECT_MAPPER.valueToTree(modelA));
+		PostPutRequest<MockModelB> requestA = new PostPutRequest<MockModelB>();
+		requestA.setParam(modelA);
 		
 		Client client = new Client();
 		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
@@ -99,8 +99,8 @@ public class EndpointTest {
 		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
 		
 		//Insert second object
-		PostPutRequest requestB = new PostPutRequest();
-		requestB.setParam(JACKSON_OBJECT_MAPPER.valueToTree(modelB));
+		PostPutRequest<MockModelB> requestB = new PostPutRequest<MockModelB>();
+		requestB.setParam(modelB);
 		
 		response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
 				.accept("application/json").type("application/json").post(ClientResponse.class, requestB);
@@ -130,8 +130,8 @@ public class EndpointTest {
 		modelB.setIntTest(200);
 		modelB.setStrTest("Test String B");
 		
-		PostPutRequest request = new PostPutRequest();
-		request.setParam(JACKSON_OBJECT_MAPPER.valueToTree(modelB));
+		PostPutRequest<MockModelB> request = new PostPutRequest<MockModelB>();
+		request.setParam(modelB);
 		Client client = new Client();
 		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
 				.accept("application/json").type("application/json").post(ClientResponse.class, request);
@@ -142,7 +142,7 @@ public class EndpointTest {
 		modelB.setId(id);
 		modelB.setIntTest(500); //New value that should get updated
 		modelB.setStrTest("Test String Updated"); //New value that should get updated
-		request.setParam(JACKSON_OBJECT_MAPPER.valueToTree(modelB));
+		request.setParam(modelB);
 		client.resource(String.format("http://localhost:%d/v3/mock_b_models/%s", RULE.getLocalPort(), id))
 				.accept("application/json").type("application/json").put(ClientResponse.class, request);
 		
@@ -166,8 +166,8 @@ public class EndpointTest {
 		modelA.setIntTest(100);
 		modelA.setStrTest("Test String A");
 		
-		PostPutRequest requestA = new PostPutRequest();
-		requestA.setParam(JACKSON_OBJECT_MAPPER.valueToTree(modelA));
+		PostPutRequest<MockModelB> requestA = new PostPutRequest<MockModelB>();
+		requestA.setParam(modelA);
 		Client client = new Client();
 		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
 				.accept("application/json").type("application/json").post(ClientResponse.class, requestA);

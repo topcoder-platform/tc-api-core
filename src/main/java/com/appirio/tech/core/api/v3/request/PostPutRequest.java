@@ -3,21 +3,16 @@
  */
 package com.appirio.tech.core.api.v3.request;
 
-import com.appirio.tech.core.api.v3.dropwizard.APIApplication;
-import com.appirio.tech.core.api.v3.exception.ResourceInitializationException;
-import com.appirio.tech.core.api.v3.model.AbstractIdResource;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Represents the format of a post / put request to the API.
  */
-public class PostPutRequest {
+public class PostPutRequest<T> {
 	/**
 	 * The param field in the json request to represent a resource.
 	 */
-	private JsonNode param;
+	private T param;
 
 	/**
 	 * The method.
@@ -45,7 +40,7 @@ public class PostPutRequest {
 	 * 
 	 * @return the param.
 	 */
-	public JsonNode getParam() {
+	public T getParam() {
 		return param;
 	}
 
@@ -55,7 +50,7 @@ public class PostPutRequest {
 	 * @param param
 	 *            the param.
 	 */
-	public void setParam(JsonNode param) {
+	public void setParam(T param) {
 		this.param = param;
 	}
 
@@ -133,39 +128,5 @@ public class PostPutRequest {
 	 */
 	public void setDebug(boolean debug) {
 		this.debug = debug;
-	}
-
-	/**
-	 * Utility method to get Content Reresentation Class
-	 * TODO: use generics to return exact type and @Validate
-	 * 
-	 * @param resource
-	 * @param putRequest
-	 * @param resourceModel
-	 * @param resourceData
-	 * @return
-	 */
-	@JsonIgnore
-	public AbstractIdResource getParamObject(Class<? extends AbstractIdResource> resourceModel) {
-		AbstractIdResource resourceData;
-		if (getParam() == null) {
-			// the resource model data is not specified, throw
-			// ResourceInitializationException
-			throw new ResourceInitializationException(String.format(
-					"There is no data for [%s] resource in post request", resourceModel.toString()));
-		} else {
-			try {
-				// deserialize param data in post request (json data) to the
-				// resource object.
-				// Note: current version of ObjectMapper doesn't directly support #readValue(JsonNode, object) so putting into String
-				resourceData = APIApplication.JACKSON_OBJECT_MAPPER.readValue(
-						APIApplication.JACKSON_OBJECT_MAPPER.writeValueAsString(getParam()), resourceModel);
-			} catch (Exception ex) {
-				// error when deserialize from json data
-				throw new ResourceInitializationException(String.format(
-						"Fail to initialize [%s] resource from post request", resourceModel.toString()), ex);
-			}
-		}
-		return resourceData;
 	}
 }

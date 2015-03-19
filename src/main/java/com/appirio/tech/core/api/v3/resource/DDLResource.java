@@ -16,7 +16,7 @@ import com.appirio.tech.core.api.v3.response.ApiResponse;
 import com.appirio.tech.core.auth.AuthUser;
 import com.codahale.metrics.annotation.Timed;
 
-public interface DDLResource {
+public interface DDLResource<T> {
 
 	/**
 	 * Handles the post request.
@@ -33,7 +33,7 @@ public interface DDLResource {
 	@Timed
 	public abstract ApiResponse createObject(
 			@Auth AuthUser authUser,
-			@Valid PostPutRequest postRequest,
+			@Valid PostPutRequest<T> postRequest,
 			@Context HttpServletRequest request) throws Exception;
 
 	/**
@@ -53,7 +53,7 @@ public interface DDLResource {
 	public abstract ApiResponse updateObject(
 			@Auth AuthUser authUser,
 			@PathParam("resourceId") String resourceId,
-			@Valid PostPutRequest putRequest,
+			@Valid PostPutRequest<T> putRequest,
 			@Context HttpServletRequest request) throws Exception;
 
 	/**

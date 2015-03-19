@@ -47,7 +47,7 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Path("mock_b_models")
 @Produces(MediaType.APPLICATION_JSON)
-public class MockPersistentResource implements GetResource<MockModelB>, DDLResource {
+public class MockPersistentResource implements GetResource<MockModelB>, DDLResource<MockModelB> {
 
 	private AtomicInteger integer = new AtomicInteger(100);
 	private static Map<TCID, MockModelB> mockStorage = new HashMap<TCID, MockModelB>();
@@ -80,10 +80,10 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	@Timed
 	public ApiResponse createObject(
 			@Auth(required=false) AuthUser authUser,
-			@Valid PostPutRequest postRequest,
+			@Valid PostPutRequest<MockModelB> postRequest,
 			@Context HttpServletRequest request) throws Exception {
 
-		MockModelB resourceData = (MockModelB)postRequest.getParamObject(MockModelB.class);;
+		MockModelB resourceData = postRequest.getParam();
 
 		// call the RESTPersistentService.handlePost
 		TCID id = new TCID(integer.getAndIncrement());
@@ -106,10 +106,10 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	public ApiResponse updateObject(
 			@Auth(required=false) AuthUser authUser,
 			@PathParam("resourceId") String resourceId,
-			@Valid PostPutRequest putRequest,
+			@Valid PostPutRequest<MockModelB> putRequest,
 			@Context HttpServletRequest request) throws Exception {
 
-		MockModelB resourceData = (MockModelB)putRequest.getParamObject(MockModelB.class);
+		MockModelB resourceData = putRequest.getParam();
 		resourceData.setId(new TCID(resourceId));
 
 		MockModelB modelB = mockStorage.get(resourceData.getId());
