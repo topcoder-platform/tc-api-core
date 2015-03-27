@@ -30,7 +30,8 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 
 	private static final Logger logger = LoggerFactory.getLogger(JWTAuthenticator.class);
 
-	private static final String clientSecret = "0fjm47MSE1ea18WRPX9v3K6EM3iI8dc0OF5VNc-NMTNWEiwBwsmfjEYqOBW9HLhY";
+	//TODO: temporary impl
+	public static String clientSecret = "0fjm47MSE1ea18WRPX9v3K6EM3iI8dc0OF5VNc-NMTNWEiwBwsmfjEYqOBW9HLhY";
 	
 	/**
 	 * @param token    raw JWT string in Authentication header
