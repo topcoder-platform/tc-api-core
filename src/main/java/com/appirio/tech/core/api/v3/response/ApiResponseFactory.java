@@ -28,7 +28,7 @@ public class ApiResponseFactory {
 		ApiResponse response = new ApiResponse();
 		response.setId((new UID()).toString());
 		response.setResult(true, HttpStatus.OK_200, object);
-		response.setVersion(ApiVersion.v2);
+		response.setVersion(ApiVersion.v3);
 		return response;
 	}
 
