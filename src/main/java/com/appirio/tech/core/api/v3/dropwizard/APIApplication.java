@@ -29,6 +29,8 @@ import com.appirio.tech.core.api.v3.request.inject.QueryParameterProvider;
 import com.appirio.tech.core.auth.JWTAuthProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.sun.jersey.api.container.filter.LoggingFilter;
+import com.sun.jersey.api.core.ResourceConfig;
 
 /**
  * Application entry point for DropWizard framework.
@@ -63,6 +65,10 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 	public void run(T configuration, Environment environment) throws Exception {
 		//delegate.run(this, configuration, environment);
 		configureCors(configuration, environment);
+		
+		// Register Logging filter
+	    environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, LoggingFilter.class.getName());
+	    environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, LoggingFilter.class.getName());
 		
 		environment.jersey().setUrlPattern("/v3/*");
 		
