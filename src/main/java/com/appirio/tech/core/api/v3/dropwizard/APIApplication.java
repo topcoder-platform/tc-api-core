@@ -82,8 +82,13 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		//Register V3 API query/put/post/delete parameter objects to map into annotated instances
 		environment.jersey().register(new FieldSelectorProvider());
 		environment.jersey().register(new QueryParameterProvider());
+		
 		//Register Authentication Provider to validate JWT with @Auth annotation
-		environment.jersey().register(new JWTAuthProvider(configuration.getAuthDomain()));
+		String authDomain = configuration.getAuthDomain();
+		if(authDomain==null || authDomain.length()==0)
+			authDomain = "topcoder-dev.com"; // default
+		environment.jersey().register(new JWTAuthProvider(authDomain));
+		
 		//Register ExceptionMapper to catch all exception and wrap to V3 format
 		environment.jersey().register(new RuntimeExceptionMapper());
 	}
