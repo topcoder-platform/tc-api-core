@@ -50,6 +50,8 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 			return Optional.of(user);
 		} catch (TokenExpiredException | InvalidTokenException e) {
 			logger.info(String.format("Authentication failed with: %s, token: %s", e.getLocalizedMessage(), token));
+			if(e instanceof TokenExpiredException)
+				throw e; // re-throw TokenExpiredException to tell JWTAuthProvider an expiration occurred.
 			return Optional.absent();
 		} catch (JWTException e) {
 			logger.error("Error occurred in authentication with error: " + e.getLocalizedMessage(), e);

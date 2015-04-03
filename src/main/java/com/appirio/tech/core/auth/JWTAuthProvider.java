@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.appirio.tech.core.api.v3.exception.APIRuntimeException;
+import com.appirio.tech.core.api.v3.util.jwt.TokenExpiredException;
 import com.google.common.base.Optional;
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.model.Parameter;
@@ -72,6 +73,9 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 						}
 					}
 				}
+			} catch (TokenExpiredException e) {
+				logger.debug("Credential expired: " + credentials);
+				throw new APIRuntimeException(HttpStatus.UNAUTHORIZED_401, "jwt expired");
 			} catch (AuthenticationException e) {
 				logger.warn("Error authenticating credentials. " + e.getMessage());
 				throw new APIRuntimeException(HttpStatus.INTERNAL_SERVER_ERROR_500, "Error authenticating credentials", e);
