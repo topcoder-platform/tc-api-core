@@ -133,8 +133,8 @@ public class JWTAuthenticatorTest {
 		testAuthenticate_InvalidToken(new InvalidTokenException("Invalid token"));
 	}
 
-	@Test
-	public void testAuthenticate_ReturnsAbsentWhenExpiredToken() throws Exception {
+	@Test(expected=TokenExpiredException.class)
+	public void testAuthenticate_ThrowsTokenExpiredExceptionWhenExpiredToken() throws Exception {
 		// cause TokenExpiredException in verifyToken(token)
 		testAuthenticate_InvalidToken(new TokenExpiredException("Expired token"));
 	}
@@ -144,7 +144,7 @@ public class JWTAuthenticatorTest {
 		// cause JWTException in verifyToken(token)
 		testAuthenticate_InvalidToken(new JWTException("Bad Token", "Fatal Error"));
 	}
-
+	
 	
 	public void testAuthenticate_InvalidToken(final JWTException errorInVeriFyingToken) throws Exception {
 		// data

@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import com.appirio.tech.core.api.v3.TCID;
 import com.appirio.tech.core.api.v3.exception.APIRuntimeException;
+import com.appirio.tech.core.api.v3.util.jwt.TokenExpiredException;
 import com.google.common.base.Optional;
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.core.HttpRequestContext;
@@ -141,6 +142,35 @@ public class JWTAuthProviderTest {
 		
 		assertNull(user);
 		
+		// verify mock
+		verify(authenticator).authenticate(anyString());
+	}
+	
+	@Test
+	public void testGetValue_401ErrorWhenTokenIsExpired() throws Exception {
+
+		// mock: context
+		HttpContext ctx = mockContext("TOKEN-DUMMY");
+		// mock: authenticator
+		@SuppressWarnings("unchecked")
+		Authenticator<String, AuthUser> authenticator =
+				(Authenticator<String, AuthUser>) mock(Authenticator.class);
+		// throw AuthenticationException
+		when(authenticator.authenticate(anyString())).thenThrow(new TokenExpiredException("Token is expired."));
+
+		// test
+		boolean required = true;
+		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
+				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
+		try {
+			jwtAuth.getValue(ctx);
+			fail("APIRuntimeException should be thrown in the previous step.");
+		} catch (APIRuntimeException e) {
+			// 401 unauthorized
+			assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getHttpStatus());
+			// jwt expired
+			assertEquals(e.getMessage(), "jwt expired");
+		}
 		// verify mock
 		verify(authenticator).authenticate(anyString());
 	}
