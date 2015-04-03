@@ -1,3 +1,5 @@
+authDomain: topcoder-dev.com
+
 server:
   applicationConnectors:
     - type: http

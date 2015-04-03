@@ -83,7 +83,7 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		environment.jersey().register(new FieldSelectorProvider());
 		environment.jersey().register(new QueryParameterProvider());
 		//Register Authentication Provider to validate JWT with @Auth annotation
-		environment.jersey().register(new JWTAuthProvider());
+		environment.jersey().register(new JWTAuthProvider(configuration.getAuthDomain()));
 		//Register ExceptionMapper to catch all exception and wrap to V3 format
 		environment.jersey().register(new RuntimeExceptionMapper());
 	}
