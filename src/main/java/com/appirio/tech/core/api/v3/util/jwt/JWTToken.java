@@ -23,7 +23,7 @@ public class JWTToken {
 	public static final String CLAIM_ISSUED_TIME = "iat";
 	public static final String CLAIM_EXPIRATION_TIME = "exp";
 	
-	public static final int DEFAULT_EXP_SECONDS = 30 * 60; //30 mins
+	public static final int DEFAULT_EXP_SECONDS = 10 * 60; //10 mins
 	
 	public static final String ISSUER_TEMPLATE = "https://api.%s";
 	
