@@ -34,10 +34,23 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 
 	private static final Logger logger = LoggerFactory.getLogger(JWTAuthProvider.class);
 	
+	public static final String DEFAULT_AUTH_DOMAIN = "topcoder-dev.com";
+	
 	private String secret;
 	
 	private String authDomain;
-	
+
+	/**
+	 * constructs with this("topcoder-dev.com")
+	 */
+	public JWTAuthProvider() {
+		this(DEFAULT_AUTH_DOMAIN);
+	}
+
+	/**
+	 * 
+	 * @param authDomain topcoder-dev.com|topcoder-qa.com|topcoder.com
+	 */
 	public JWTAuthProvider(String authDomain) {
 		this.authDomain = authDomain;
 		loadSecret();

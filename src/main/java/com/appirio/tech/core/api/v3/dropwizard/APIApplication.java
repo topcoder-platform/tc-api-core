@@ -86,7 +86,7 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		//Register Authentication Provider to validate JWT with @Auth annotation
 		String authDomain = configuration.getAuthDomain();
 		if(authDomain==null || authDomain.length()==0)
-			authDomain = "topcoder-dev.com"; // default
+			authDomain = JWTAuthProvider.DEFAULT_AUTH_DOMAIN; // default
 		environment.jersey().register(new JWTAuthProvider(authDomain));
 		
 		//Register ExceptionMapper to catch all exception and wrap to V3 format
