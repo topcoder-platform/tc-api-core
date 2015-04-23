@@ -46,6 +46,7 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 
 			AuthUser user = new AuthUser();
 			user.setUserId(new TCID((String)decoded.get(JWT_USER_ID)));
+			user.setToken(token);
 			return Optional.of(user);
 		} catch (InvalidKeyException | NoSuchAlgorithmException | IllegalStateException | SignatureException
 				| IOException | JWTVerifyException e) {

@@ -5,7 +5,7 @@
 
   <groupId>com.appirio.tech.core.api</groupId>
   <artifactId>tech.core.api</artifactId>
-  <version>API-3.0.0.2-SNAPSHOT</version>
+  <version>API-3.0.0.3-SNAPSHOT</version>
   <name>tech.core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
@@ -114,7 +114,7 @@
       <artifactId>guava</artifactId>
       <version>18.0</version>
     </dependency>
-
+ 
   </dependencies>
 
   <distributionManagement>
