@@ -46,12 +46,10 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 		try {
 			JWTToken jwt = verifyToken(token);
 			AuthUser user = new AuthUser();
-<<<<<<< HEAD
-			user.setUserId(new TCID((String)decoded.get(JWT_USER_ID)));
-			user.setToken(token);
-=======
+
 			user.setUserId(new TCID(jwt.getUserId()));
->>>>>>> f41564f0c5f5300e8840517a10d4cc481640592a
+			user.setToken(token);
+
 			return Optional.of(user);
 		} catch (TokenExpiredException | InvalidTokenException e) {
 			logger.info(String.format("Authentication failed with: %s, token: %s", e.getLocalizedMessage(), token));
