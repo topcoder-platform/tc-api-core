@@ -8,8 +8,7 @@ public class TCBeanMapperFactory extends BeanMapperFactory {
 
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-    public ResultSetMapper mapperFor(Class type, StatementContext ctx)
-    {
-        return new TCBeanMapper(type);
-    }
+	public ResultSetMapper mapperFor(Class type, StatementContext ctx) {
+		return new TCBeanMapper(type);
+	}
 }

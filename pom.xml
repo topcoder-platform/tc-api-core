@@ -27,6 +27,26 @@
           <target>1.7</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+              <goals>
+                <goal>replace</goal>
+              </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includes>
+            <include>${basedir}/target/**/*.yml</include>
+            <include>${basedir}/target/**/*.properties</include>
+          </includes>
+          <tokenValueMap>${basedir}/token.properties</tokenValueMap>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

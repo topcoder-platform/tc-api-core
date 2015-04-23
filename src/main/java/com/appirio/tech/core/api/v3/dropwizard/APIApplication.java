@@ -29,6 +29,8 @@ import com.appirio.tech.core.api.v3.request.inject.QueryParameterProvider;
 import com.appirio.tech.core.auth.JWTAuthProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.sun.jersey.api.container.filter.LoggingFilter;
+import com.sun.jersey.api.core.ResourceConfig;
 
 /**
  * Application entry point for DropWizard framework.
@@ -64,6 +66,10 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		//delegate.run(this, configuration, environment);
 		configureCors(configuration, environment);
 		
+		// Register Logging filter
+	    environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, LoggingFilter.class.getName());
+	    environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, LoggingFilter.class.getName());
+		
 		environment.jersey().setUrlPattern("/v3/*");
 		
 		//Find all Resource class and register them to jersey.
@@ -76,8 +82,13 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		//Register V3 API query/put/post/delete parameter objects to map into annotated instances
 		environment.jersey().register(new FieldSelectorProvider());
 		environment.jersey().register(new QueryParameterProvider());
+		
 		//Register Authentication Provider to validate JWT with @Auth annotation
-		environment.jersey().register(new JWTAuthProvider());
+		String authDomain = configuration.getAuthDomain();
+		if(authDomain==null || authDomain.length()==0)
+			authDomain = JWTAuthProvider.DEFAULT_AUTH_DOMAIN; // default
+		environment.jersey().register(new JWTAuthProvider(authDomain));
+		
 		//Register ExceptionMapper to catch all exception and wrap to V3 format
 		environment.jersey().register(new RuntimeExceptionMapper());
 	}
