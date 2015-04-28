@@ -47,12 +47,12 @@ public class AuthUser {
 		String subjectID = this.getUserId().toString();
 
 		WebResource res = client.resource("http://localhost:8080/roles?filter=" 
-											+ URLEncoder.encode("name="+role+"&subjectID="+subjectID)
+											+ URLEncoder.encode("ID="+role+"&subjectID="+subjectID)
 											+ "&fields=&limit=&orderBy=");
 
 		ApiResponse response = res.accept(
 		        MediaType.APPLICATION_JSON_TYPE).
-		        header("X-Authorization", "Bearer <jwt>").
+		        header("Authorization", "Bearer "+this.getToken()).
 		        get(ApiResponse.class);
 
 		if (response.getResult().getStatus() == 200)
