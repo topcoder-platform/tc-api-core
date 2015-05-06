@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
 
 import com.appirio.tech.core.api.v3.exception.APIRuntimeException;
@@ -21,6 +22,8 @@ import com.appirio.tech.core.api.v3.response.ApiResponse;
 @Provider
 public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
 
+	private static Logger logger = Logger.getLogger(RuntimeExceptionMapper.class);
+	
 	@Override
 	public Response toResponse(RuntimeException exception) {
 		ApiResponse apiResponse = new ApiResponse();
@@ -40,6 +43,8 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
 			//all others returning Internal Server Error (500)
 			String message = exception.getLocalizedMessage();
 			apiResponse.setResult(true, status, message);
+			
+			logger.error("Internal Server Error occurred. cause: "+exception.getMessage(), exception);
 		}
 		
 		return Response.serverError()
