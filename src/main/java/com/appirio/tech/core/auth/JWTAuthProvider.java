@@ -70,6 +70,9 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 
 		@Override
 		public AuthUser getValue(HttpContext c) {
+			//If @Auth is not required, don't do any validation and just return null
+			if(!required) return null;
+			
 			String credentials = null;
 			try {
 				final String header = c.getRequest().getHeaderValue(HttpHeaders.AUTHORIZATION);
