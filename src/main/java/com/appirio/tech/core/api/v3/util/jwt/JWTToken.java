@@ -108,6 +108,11 @@ public class JWTToken {
 		return exp - issuedAt;
 	}
 	
+	/**
+	 * Creates iss field data from the domain.
+	 * @param authDomain
+	 * @return
+	 */
 	public String createIssuerFor(String authDomain) {
 		if(authDomain==null || authDomain.length()==0)
 			throw new IllegalArgumentException("authDomain must be specifeid.");

@@ -74,6 +74,7 @@ public class JWTAuthProviderTest {
 		// mock: context
 		HttpContext ctx = mockContext(null);
 		// mock: authenticator
+		
 		@SuppressWarnings("unchecked")
 		Authenticator<String, AuthUser> authenticator =
 				(Authenticator<String, AuthUser>) mock(Authenticator.class);
@@ -143,7 +144,8 @@ public class JWTAuthProviderTest {
 		assertNull(user);
 		
 		// verify mock
-		verify(authenticator).authenticate(anyString());
+		// Authenticator#Authenticator() should not be invoked.
+		verify(authenticator, never()).authenticate(anyString());
 	}
 	
 	@Test
