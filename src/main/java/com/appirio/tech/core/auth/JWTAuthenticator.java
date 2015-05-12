@@ -49,6 +49,7 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 
 			user.setUserId(new TCID(jwt.getUserId()));
 			user.setToken(token);
+			user.setAuthDomain(authDomain);
 
 			return Optional.of(user);
 		} catch (TokenExpiredException | InvalidTokenException e) {

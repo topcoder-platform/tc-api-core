@@ -25,6 +25,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 public class AuthUser {
 	private TCID userId;
 	private String token;
+	private String authDomain;
 	
 	public TCID getUserId() {
 		return userId;
@@ -42,6 +43,10 @@ public class AuthUser {
 		this.token = token;
 	}
 
+	public String getAuthDomain() { return authDomain; }
+
+	public void setAuthDomain(String authDomain) { this.authDomain = authDomain; }
+	
 	public boolean hasRole(String role) {
 
 		String subjectId = this.getUserId().toString();
@@ -62,7 +67,9 @@ public class AuthUser {
 		Client client = Client.create(config);
 
 		try {
-			WebResource res = client.resource("http://localhost:8080/v3/"
+			WebResource res = client.resource("http://"
+					+ this.authDomain
+					+ ":8080/v3/"
 					+ resource.toString()
 					+ "/"
 					+ resourceId.toString()
