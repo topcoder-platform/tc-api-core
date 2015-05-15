@@ -3,6 +3,8 @@
  */
 package com.appirio.tech.core.api.v3.resource.old;
 
+import com.appirio.tech.core.api.v3.model.annotation.ApiRepresentation;
+
 
 
 
@@ -16,6 +18,6 @@ package com.appirio.tech.core.api.v3.resource.old;
  * @author sudo
  *
  */
-//@JsonFilter("ApiResponseFilter")
+@ApiRepresentation
 public interface RESTResource {
 }

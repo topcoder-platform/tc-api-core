@@ -104,19 +104,19 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 		}
 	}
 	
-	protected String getSecret() {
+	public String getSecret() {
 		return secret;
 	}
 
-	protected void setSecret(String secret) {
+	public void setSecret(String secret) {
 		this.secret = secret;
 	}
 
-	protected String getAuthDomain() {
+	public String getAuthDomain() {
 		return authDomain;
 	}
 
-	protected void setAuthDomain(String authDomain) {
+	public void setAuthDomain(String authDomain) {
 		this.authDomain = authDomain;
 	}
 
