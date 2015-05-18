@@ -3,18 +3,15 @@
  */
 package com.appirio.tech.core.auth;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.ws.rs.core.MediaType;
-
 import com.appirio.tech.core.api.v3.TCID;
-import com.appirio.tech.core.api.v3.exception.APIRuntimeException;
 import com.appirio.tech.core.api.v3.response.ApiResponse;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+
+import javax.ws.rs.core.MediaType;
+import java.net.URLEncoder;
 
 /**
  * A call to hold user information that was authenticated using API V3 authentication mechanism
@@ -46,7 +43,7 @@ public class AuthUser {
 	public String getAuthDomain() { return authDomain; }
 
 	public void setAuthDomain(String authDomain) { this.authDomain = authDomain; }
-	
+
 	public boolean hasRole(String role) {
 
 		String subjectId = this.getUserId().toString();
