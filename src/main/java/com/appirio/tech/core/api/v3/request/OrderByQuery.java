@@ -56,6 +56,9 @@ public class OrderByQuery {
 							} else {
 								query.setSortOrder(SortOrder.DESC_NULLS_FIRST);
 							}
+						} else {
+							//default is "nulls first"
+							query.setSortOrder(SortOrder.DESC_NULLS_FIRST);
 						}
 					}
 				}
