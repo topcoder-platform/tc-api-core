@@ -20,5 +20,6 @@ public class AuthUser {
 	public void setUserId(TCID userId) {
 		this.userId = userId;
 	}
+	public void setUserId(String userId) { this.userId = new TCID(userId); }
 	
 }

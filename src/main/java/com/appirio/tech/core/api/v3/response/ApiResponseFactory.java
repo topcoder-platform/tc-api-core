@@ -3,6 +3,7 @@
  */
 package com.appirio.tech.core.api.v3.response;
 
+import java.net.URI;
 import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,17 @@ public class ApiResponseFactory {
 		response.setId((new UID()).toString());
 		response.setResult(true, HttpStatus.OK_200, object);
 		response.setVersion(ApiVersion.v3);
+		return response;
+	}
+
+	public static ApiResponse createCreatedResponse(final String id, final URI locationUri) {
+		ApiResponse response = new ApiResponse();
+		response.setId((new UID()).toString());
+		response.setResult(true, HttpStatus.CREATED_201, id);
+		response.setVersion(ApiVersion.v3);
+
+		// TODO: Set Header with locationUri
+		// Location: locationUri
 		return response;
 	}
 
