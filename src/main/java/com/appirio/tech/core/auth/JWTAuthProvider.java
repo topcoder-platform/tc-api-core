@@ -142,7 +142,6 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 			if(key==null || key.length()==0)
 				throw new Exception("'secret' has not been set in auth.properties.");
 			setSecret(key);
-			logger.info("Loaded the secret data successfully.");
 		} catch (Exception e) {
 			logger.error("Failed to load the secret data.", e);
 		}

@@ -3,6 +3,9 @@
  */
 package com.appirio.tech.core.api.v3.request;
 
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -13,6 +16,11 @@ public class PostPutRequest<T> {
 	 * The param field in the json request to represent a resource.
 	 */
 	private T param;
+	
+	/**
+	 * The options
+	 */
+	private Map<String, Object> options;
 
 	/**
 	 * The method.
@@ -52,6 +60,46 @@ public class PostPutRequest<T> {
 	 */
 	public void setParam(T param) {
 		this.param = param;
+	}
+
+	/**
+	 * Gets the options
+	 * @return options
+	 */
+	public Map<String, Object> getOptions() {
+		return options;
+	}
+	
+	/**
+	 * Returns the value to which the specified key is mapped in the options.
+	 * @param key
+	 * @return option value
+	 */
+	public Object getOption(String key) {
+		if (key==null || options==null || !options.containsKey(key))
+			return null;
+		return options.get(key);
+	}
+	
+	/**
+	 * Returns the value converted as String to which the specified key is mapped in the options.
+	 * @param key
+	 * @return option value
+	 */
+	public String getOptionString(String key) {
+		Object val = getOption(key);
+		return (val instanceof String) ? (String) val : String.valueOf(val);
+	}
+	
+
+	/**
+	 * Sets the options
+	 * 
+	 * @param options
+	 *            the options.
+	 */
+	public void setOptions(Map<String, Object> options) {
+		this.options = options;
 	}
 
 	/**
