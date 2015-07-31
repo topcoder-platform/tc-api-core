@@ -88,6 +88,8 @@ public class PostPutRequest<T> {
 	 */
 	public String getOptionString(String key) {
 		Object val = getOption(key);
+		if(val==null)
+			return null;
 		return (val instanceof String) ? (String) val : String.valueOf(val);
 	}
 	
