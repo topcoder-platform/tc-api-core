@@ -70,13 +70,13 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 
 		@Override
 		public AuthUser getValue(HttpContext c) {
-			//If @Auth is not required, don't do any validation and just return null
-			if(!required) return null;
-			
 			String credentials = null;
 			try {
 				final String header = c.getRequest().getHeaderValue(HttpHeaders.AUTHORIZATION);
-				if (header != null) {
+				if(header==null && !required)
+					return null;
+				
+				if(header!=null) {
 					final int space = header.indexOf(' ');
 					if (space > 0) {
 						final String method = header.substring(0, space);
@@ -90,16 +90,22 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 					}
 				}
 			} catch (TokenExpiredException e) {
-				logger.debug("Credential expired: " + credentials);
-				throw new APIRuntimeException(HttpStatus.UNAUTHORIZED_401, "jwt expired");
+				if (required) {
+					logger.debug("Credential expired: " + credentials);
+					throw new APIRuntimeException(HttpStatus.UNAUTHORIZED_401, "jwt expired");
+				}
 			} catch (AuthenticationException e) {
-				logger.warn("Error authenticating credentials. " + e.getMessage());
-				throw new APIRuntimeException(HttpStatus.INTERNAL_SERVER_ERROR_500, "Error authenticating credentials", e);
+				logger.warn("Error in authenticating credentials. " + e.getMessage());
+				if (required) {
+					throw new APIRuntimeException(HttpStatus.INTERNAL_SERVER_ERROR_500, "Error in authenticating credentials", e);
+				}
 			}
+			
 			if (required) {
 				logger.debug("Invalid credential: " + credentials);
 				throw new APIRuntimeException(HttpStatus.UNAUTHORIZED_401, "Valid credentials are required to access this resource.");
 			}
+			
 			return null;
 		}
 	}
