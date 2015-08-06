@@ -122,6 +122,7 @@
       <artifactId>commons-codec</artifactId>
       <version>1.4</version>
     </dependency>
+
 <!-- FOR V3API -->
     <!-- Scan classes with annotation on APIApplication -->
     <dependency>
