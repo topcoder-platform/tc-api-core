@@ -74,7 +74,6 @@ public class JWTAuthProviderTest {
 		// mock: context
 		HttpContext ctx = mockContext(null);
 		// mock: authenticator
-		
 		@SuppressWarnings("unchecked")
 		Authenticator<String, AuthUser> authenticator =
 				(Authenticator<String, AuthUser>) mock(Authenticator.class);
@@ -127,7 +126,8 @@ public class JWTAuthProviderTest {
 	public void testGetValue_NullWhenNotRequiredAndUnauthorized() throws Exception {
 
 		// mock: context
-		HttpContext ctx = mockContext("TOKEN-DUMMY");
+		String token = "TOKEN-DUMMY";
+		HttpContext ctx = mockContext(token);
 		// mock: authenticator
 		@SuppressWarnings("unchecked")
 		Authenticator<String, AuthUser> authenticator =
@@ -144,7 +144,28 @@ public class JWTAuthProviderTest {
 		assertNull(user);
 		
 		// verify mock
-		// Authenticator#Authenticator() should not be invoked.
+		verify(authenticator).authenticate(token);
+	}
+	
+	@Test
+	public void testGetValue_NullWhenNoAuthHeaderAndNotRequired() throws Exception {
+
+		// mock: context
+		HttpContext ctx = mockContext(null);
+		// mock: authenticator
+		@SuppressWarnings("unchecked")
+		Authenticator<String, AuthUser> authenticator =
+				(Authenticator<String, AuthUser>) mock(Authenticator.class);
+
+		// test
+		boolean required = false;
+		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
+				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
+		AuthUser user = jwtAuth.getValue(ctx);
+		
+		assertNull(user);
+		
+		// verify mock
 		verify(authenticator, never()).authenticate(anyString());
 	}
 	
@@ -158,7 +179,7 @@ public class JWTAuthProviderTest {
 		Authenticator<String, AuthUser> authenticator =
 				(Authenticator<String, AuthUser>) mock(Authenticator.class);
 		// throw AuthenticationException
-		when(authenticator.authenticate(anyString())).thenThrow(new TokenExpiredException("Token is expired."));
+		when(authenticator.authenticate(anyString())).thenThrow(new TokenExpiredException("jwt expired"));
 
 		// test
 		boolean required = true;
