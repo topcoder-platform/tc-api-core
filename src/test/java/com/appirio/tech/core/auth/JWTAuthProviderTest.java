@@ -179,7 +179,7 @@ public class JWTAuthProviderTest {
 		Authenticator<String, AuthUser> authenticator =
 				(Authenticator<String, AuthUser>) mock(Authenticator.class);
 		// throw AuthenticationException
-		when(authenticator.authenticate(anyString())).thenThrow(new TokenExpiredException("Token is expired."));
+		when(authenticator.authenticate(anyString())).thenThrow(new TokenExpiredException("jwt expired"));
 
 		// test
 		boolean required = true;

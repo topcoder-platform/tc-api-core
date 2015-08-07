@@ -96,9 +96,8 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 				}
 			} catch (AuthenticationException e) {
 				logger.warn("Error in authenticating credentials. " + e.getMessage());
-				if (required) {
+				if (required)
 					throw new APIRuntimeException(HttpStatus.INTERNAL_SERVER_ERROR_500, "Error in authenticating credentials", e);
-				}
 			}
 			
 			if (required) {
