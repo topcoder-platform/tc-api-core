@@ -19,6 +19,9 @@ public class JWTToken {
 	private static final Logger logger = Logger.getLogger(JWTToken.class);
 
 	public static final String CLAIM_USER_ID = "userId";
+	public static final String CLAIM_HANDLE = "handle";
+	public static final String CLAIM_EMAIL = "email";
+	
 	public static final String CLAIM_ISSUER  = "iss";
 	public static final String CLAIM_ISSUED_TIME = "iat";
 	public static final String CLAIM_EXPIRATION_TIME = "exp";
@@ -28,6 +31,10 @@ public class JWTToken {
 	public static final String ISSUER_TEMPLATE = "https://api.%s";
 	
 	public String userId;
+	
+	public String handle;
+	
+	public String email;
 	
 	public String issuer;
 	
@@ -50,6 +57,8 @@ public class JWTToken {
 		
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(CLAIM_USER_ID, getUserId());
+		claims.put(CLAIM_HANDLE, getHandle());
+		claims.put(CLAIM_EMAIL, getEmail());
 		claims.put(CLAIM_ISSUER, getIssuer());
 		
 		Options options = new Options();
@@ -93,6 +102,8 @@ public class JWTToken {
  			throw new JWTException(token, "Error occurred in verifying token. "+e.getLocalizedMessage(), e);
  		}
 		setUserId((String)map.get(CLAIM_USER_ID));
+		setHandle((String)map.get(CLAIM_HANDLE));
+		setEmail((String)map.get(CLAIM_EMAIL));
 		setIssuer((String)map.get(CLAIM_ISSUER));
 		Integer iat = (Integer)map.get(CLAIM_ISSUED_TIME);
 		Integer exp = (Integer)map.get(CLAIM_EXPIRATION_TIME);
@@ -132,6 +143,28 @@ public class JWTToken {
      */
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+	
+	public String getHandle() {
+		return handle;
+	}
+
+    /**
+     * Set JWT claim "handle" (private).
+     */
+	public void setHandle(String handle) {
+		this.handle = handle;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+    /**
+     * Set JWT claim "email" (private).
+     */
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getIssuer() {

@@ -19,6 +19,8 @@ public class JWTTokenTest {
 		JWTToken jwt = new JWTToken();
 		jwt.setIssuer("ISSUER-DUMMY");
 		jwt.setUserId("USER-ID-DUMMY");
+		jwt.setHandle("HANDLE-DUMMY");
+		jwt.setEmail("EMAIL-DUMMY");
 		jwt.setExpirySeconds(5*60);
 		
 		// generate token
@@ -31,6 +33,8 @@ public class JWTTokenTest {
 		// verify results
 		assertEquals(jwt.getUserId(), jwtDec.getUserId());
 		assertEquals(jwt.getIssuer(), jwtDec.getIssuer());
+		assertEquals(jwt.getHandle(), jwtDec.getHandle());
+		assertEquals(jwt.getEmail(), jwtDec.getEmail());
 		assertEquals(jwt.getExpirySeconds(), jwtDec.getExpirySeconds());
 	}
 	
@@ -108,6 +112,8 @@ public class JWTTokenTest {
 		JWTToken jwt = new JWTToken();
 		jwt.setIssuer("ISSUER-DUMMY");
 		jwt.setUserId("USER-ID-DUMMY");
+		jwt.setHandle("HANDLE-DUMMY");
+		jwt.setEmail("EMAIL-DUMMY");
 		// specify algorithm
 		jwt.setAlgorithm(Algorithm.HS512.name());
 		
@@ -123,6 +129,8 @@ public class JWTTokenTest {
 		// verify results
 		assertEquals(jwt.getUserId(), jwtDec.getUserId());
 		assertEquals(jwt.getIssuer(), jwtDec.getIssuer());
+		assertEquals(jwt.getHandle(), jwtDec.getHandle());
+		assertEquals(jwt.getEmail(), jwtDec.getEmail());
 		assertEquals(jwt.getExpirySeconds(), jwtDec.getExpirySeconds());
 	}
 

@@ -136,7 +136,6 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 	 */
 	protected void loadSecret() {
 		try {
-			logger.info("Loading the secret data..");
 			ResourceBundle res = ResourceBundle.getBundle("auth");
 			String key = res.getString("secret");
 			if(key==null || key.length()==0)
