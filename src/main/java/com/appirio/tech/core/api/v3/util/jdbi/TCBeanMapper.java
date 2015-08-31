@@ -83,9 +83,12 @@ public class TCBeanMapper<T> implements ResultSetMapper<T> {
 			// nested property
 			try {
 				TCBeanMapper m = new TCBeanMapper(fieldType);
-				Object child = fieldType.newInstance();
+				Object child = descriptor.getReadMethod().invoke(bean, new Object[0]);
+				if(child==null) {
+					child = fieldType.newInstance();
+					setValue(bean, path[0], child);
+				}
 				m.setValue(child, shift(path), value);
-				setValue(bean, path[0], child);
 			} catch (Exception e) {
 				throw new IllegalArgumentException(String.format("A bean, %s, was mapped which was not instantiable", fieldType.getName()), e);
 			}
