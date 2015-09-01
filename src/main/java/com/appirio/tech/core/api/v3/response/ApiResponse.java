@@ -5,7 +5,8 @@ package com.appirio.tech.core.api.v3.response;
 
 import java.io.IOException;
 import java.rmi.server.UID;
-
+import java.util.ArrayList;
+import java.util.List;
 
 import com.appirio.tech.core.api.v3.ApiVersion;
 import com.appirio.tech.core.api.v3.dropwizard.APIApplication;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 
 /**
@@ -69,9 +71,31 @@ public class ApiResponse {
 		return APIApplication.JACKSON_OBJECT_MAPPER.readValue(
 				APIApplication.JACKSON_OBJECT_MAPPER.writeValueAsString(getResult().getContent()), typeParameterClass);
 	}
-	
+	/**
+	 * Utility method to return List of Resource content.
+	 * Call example:
+	 * 	getListContentResource(Sample.class)
+	 * 	will return List<Sample>
+	 * 
+	 * @param clazz
+	 * @return
+	 * @throws IOException 
+	 * @throws JsonProcessingException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@JsonIgnore
+	public <T> List<T> getContentResourceList(Class<T> typeParameterClass) throws JsonParseException, JsonMappingException, JsonProcessingException, IOException {
+		TypeFactory factory = TypeFactory.defaultInstance();
+		List<T> list = APIApplication.JACKSON_OBJECT_MAPPER.readValue(
+				APIApplication.JACKSON_OBJECT_MAPPER.writer().writeValueAsString(getResult().getContent()),
+				factory.constructCollectionType(ArrayList.class, typeParameterClass));
+		return list;
+	}
+
 	@Override
 	public String toString() {
 		return "{id:" + id + "}, {result:" + result + "}";
 	}
+
 }

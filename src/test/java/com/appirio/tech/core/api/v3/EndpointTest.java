@@ -20,7 +20,6 @@ import com.appirio.tech.core.api.v3.mock.b.MockModelB;
 import com.appirio.tech.core.api.v3.mock.b.MockPersistentResource;
 import com.appirio.tech.core.api.v3.request.PostPutRequest;
 import com.appirio.tech.core.api.v3.response.ApiResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -32,11 +31,6 @@ import com.sun.jersey.api.client.ClientResponse;
  */
 public class EndpointTest {
 	
-	/**
-	 * The jackson object mapper.
-	 */
-	private static final ObjectMapper JACKSON_OBJECT_MAPPER = new ObjectMapper();
-
 	@ClassRule
 	public static final DropwizardAppRule<TestConfiguration> RULE = new DropwizardAppRule<TestConfiguration>(
 			TestApplication.class, "src/test/resources/initializer_test.yml");
@@ -69,8 +63,7 @@ public class EndpointTest {
 		Assert.assertEquals(ApiVersion.v3, apiResponse.getVersion());
 		Assert.assertNotNull(apiResponse.getId());
 		Assert.assertEquals(HttpStatus.OK_200, (int)apiResponse.getResult().getStatus());
-		@SuppressWarnings("unchecked")
-		List<MockModelA> content = (List<MockModelA>)apiResponse.getResult().getContent();
+		List<MockModelA> content = apiResponse.getContentResourceList(MockModelA.class);
 		Assert.assertTrue(content.size()==0);
 	}
 
