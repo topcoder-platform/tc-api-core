@@ -52,10 +52,12 @@ public class ApiPartialResponsePropertyFilter implements PropertyFilter {
 		}
 		
 		String entityName;
-		if(apiResponse.getResult().getContent() instanceof List) {
-			entityName = ((List)apiResponse.getResult().getContent()).get(0).getClass().getSimpleName();
+		Object content = apiResponse.getResult().getContent();
+		if(content instanceof List) {
+			if(((List) content).isEmpty()) return;
+			entityName = ((List)content).get(0).getClass().getSimpleName();
 		} else {
-			entityName = apiResponse.getResult().getContent().getClass().getSimpleName();
+			entityName = content.getClass().getSimpleName();
 		}
 		map = parse(entityName.toLowerCase(), queryParam.toLowerCase());
 	}
@@ -104,8 +106,7 @@ public class ApiPartialResponsePropertyFilter implements PropertyFilter {
 	}
 
 	private Map<String, Set<String>> parse(String baseName, String queryString) {
-		StringTokenizer tokenizer = new StringTokenizer(queryString, DELIMS,
-				true);
+		StringTokenizer tokenizer = new StringTokenizer(queryString, DELIMS, true);
 		Map<String, Set<String>> newMap = new LinkedHashMap<>();
 		recursiveParse(tokenizer, newMap, baseName);
 		return newMap;

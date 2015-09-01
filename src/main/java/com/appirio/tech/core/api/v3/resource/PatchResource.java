@@ -5,6 +5,8 @@ import io.dropwizard.jersey.PATCH;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 
 import com.appirio.tech.core.api.v3.request.PatchRequest;
@@ -26,9 +28,11 @@ public interface PatchResource {
 	 *             if any error occurs
 	 */
 	@PATCH
+	@Path("/{resourceId}")
 	@Timed
 	public abstract ApiResponse updateObject(
 			@Auth AuthUser authUser,
+			@PathParam("resourceId") String resourceId,
 			@Valid PatchRequest patchRequest,
 			@Context HttpServletRequest request) throws Exception;
 

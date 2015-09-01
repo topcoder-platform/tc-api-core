@@ -13,7 +13,7 @@ public class PatchRequest extends RequestBase {
 	/**
 	 * The param field in the json request to represent a resource.
 	 */
-	private Map<String, Object> param;
+	private Map<String, String> param;
 	
 	/**
 	 * Gets the param.
@@ -21,7 +21,7 @@ public class PatchRequest extends RequestBase {
 	 * 
 	 * @return the param.
 	 */
-	public Map<String, Object> getParam() {
+	public Map<String, String> getParam() {
 		return param;
 	}
 
@@ -31,7 +31,7 @@ public class PatchRequest extends RequestBase {
 	 * @param param
 	 *            the param.
 	 */
-	public void setParam(Map<String, Object> param) {
+	public void setParam(Map<String, String> param) {
 		this.param = param;
 	}
 }
