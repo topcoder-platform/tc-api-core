@@ -54,7 +54,26 @@ public class OrderByQuery {
 		if(getItems().isEmpty()) return null;
 		return getItems().get(0).getSortOrder();
 	}
-
+	/**
+	 * This will over write only the FIRST OrderByItem
+	 * @deprecated V3 supports multiple orderBy fields. Use getItems().get(n).getOrderByField() instead.
+	 */
+	public void setOrderByField(String orderByField) {
+		if(orderByItemList.isEmpty()) {
+			orderByItemList.add(new OrderByItem());
+		}
+		orderByItemList.get(0).orderByField = orderByField;
+	}
+	/**
+	 * This will over write only the FIRST OrderByItem
+	 * @deprecated V3 supports multiple orderBy fields. Use getItems().get(n).setSortOrder() instead.
+	 */
+	public void setSortOrder(SortOrder sortOrder) {
+		if(orderByItemList.isEmpty()) {
+			orderByItemList.add(new OrderByItem());
+		}
+		orderByItemList.get(0).sortOrder = sortOrder;
+	}
 	public List<OrderByItem> getItems() {
 		return orderByItemList;
 	}
