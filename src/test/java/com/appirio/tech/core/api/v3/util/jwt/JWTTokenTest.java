@@ -6,12 +6,15 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import com.auth0.jwt.Algorithm;
 
 public class JWTTokenTest {
 
+	@SuppressWarnings("serial")
 	@Test
 	public void testWalkThrough() throws Exception {
 		// data
@@ -21,6 +24,7 @@ public class JWTTokenTest {
 		jwt.setUserId("USER-ID-DUMMY");
 		jwt.setHandle("HANDLE-DUMMY");
 		jwt.setEmail("EMAIL-DUMMY");
+		jwt.setRoles(new ArrayList<String>(){{add("ROLE1");add("ROLE2");add("ROLE3");}});
 		jwt.setExpirySeconds(5*60);
 		
 		// generate token
@@ -35,6 +39,11 @@ public class JWTTokenTest {
 		assertEquals(jwt.getIssuer(), jwtDec.getIssuer());
 		assertEquals(jwt.getHandle(), jwtDec.getHandle());
 		assertEquals(jwt.getEmail(), jwtDec.getEmail());
+		assertNotNull(jwtDec.getRoles());
+		assertEquals(jwt.getRoles().size(), jwtDec.getRoles().size());
+		for(int i=0; i<jwt.getRoles().size(); i++) {
+			assertEquals(jwt.getRoles().get(i), jwtDec.getRoles().get(i));
+		}
 		assertEquals(jwt.getExpirySeconds(), jwtDec.getExpirySeconds());
 	}
 	

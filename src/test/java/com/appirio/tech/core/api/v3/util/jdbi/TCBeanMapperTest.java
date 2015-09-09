@@ -88,10 +88,11 @@ public class TCBeanMapperTest {
 
 		when(rset.getMetaData()).thenReturn(meta);
 		
-		when(meta.getColumnCount()).thenReturn(3);
+		when(meta.getColumnCount()).thenReturn(4);
 		when(meta.getColumnLabel(1)).thenReturn("id");
 		when(meta.getColumnLabel(2)).thenReturn("simple$s");
 		when(meta.getColumnLabel(3)).thenReturn("nested$simple$i");
+		when(meta.getColumnLabel(4)).thenReturn("simple$i");
 		
 		String id = "123456";
 		String str = "abcdefg";
@@ -99,6 +100,7 @@ public class TCBeanMapperTest {
 		when(rset.getObject(1)).thenReturn(id);
 		when(rset.getObject(2)).thenReturn(str);
 		when(rset.getObject(3)).thenReturn(i);
+		when(rset.getObject(4)).thenReturn(i+1);
 		when(rset.wasNull()).thenReturn(false);
 
 		Nested nested = mapper.map(0, rset, null);
@@ -107,6 +109,7 @@ public class TCBeanMapperTest {
 		assertEquals(id, nested.getId().toString());
 		assertNotNull(nested.getSimple());
 		assertEquals(str, nested.getSimple().getS());
+		assertEquals(i+1, (int)nested.getSimple().getI());
 		assertNotNull(nested.getNested());
 		assertNotNull(nested.getNested().getSimple());
 		assertEquals(i, (int)nested.getNested().getSimple().getI());

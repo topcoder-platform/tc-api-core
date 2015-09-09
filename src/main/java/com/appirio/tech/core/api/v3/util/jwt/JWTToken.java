@@ -2,6 +2,7 @@ package com.appirio.tech.core.api.v3.util.jwt;
 
 import java.security.SignatureException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
@@ -21,6 +22,7 @@ public class JWTToken {
 	public static final String CLAIM_USER_ID = "userId";
 	public static final String CLAIM_HANDLE = "handle";
 	public static final String CLAIM_EMAIL = "email";
+	public static final String CLAIM_ROLES = "roles";
 	
 	public static final String CLAIM_ISSUER  = "iss";
 	public static final String CLAIM_ISSUED_TIME = "iat";
@@ -37,6 +39,8 @@ public class JWTToken {
 	public String email;
 	
 	public String issuer;
+	
+	public List<String> roles;
 	
 	public Integer expirySeconds = DEFAULT_EXP_SECONDS;
 	
@@ -59,6 +63,7 @@ public class JWTToken {
 		claims.put(CLAIM_USER_ID, getUserId());
 		claims.put(CLAIM_HANDLE, getHandle());
 		claims.put(CLAIM_EMAIL, getEmail());
+		claims.put(CLAIM_ROLES, getRoles());
 		claims.put(CLAIM_ISSUER, getIssuer());
 		
 		Options options = new Options();
@@ -85,6 +90,7 @@ public class JWTToken {
 		return verifyAndApply(token, enc.encode(secret));
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected JWTToken verifyAndApply(String token, byte[] secretBytes) throws JWTException {
 		if(token==null)
 			throw new IllegalArgumentException("token must be specified.");
@@ -104,6 +110,7 @@ public class JWTToken {
 		setUserId((String)map.get(CLAIM_USER_ID));
 		setHandle((String)map.get(CLAIM_HANDLE));
 		setEmail((String)map.get(CLAIM_EMAIL));
+		setRoles((List<String>)map.get(CLAIM_ROLES));
 		setIssuer((String)map.get(CLAIM_ISSUER));
 		Integer iat = (Integer)map.get(CLAIM_ISSUED_TIME);
 		Integer exp = (Integer)map.get(CLAIM_EXPIRATION_TIME);
@@ -171,7 +178,19 @@ public class JWTToken {
 		return issuer;
 	}
 
-    /**
+	/**
+	 * Set JWT claim "roles" (private).
+	 * @param roles
+	 */
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
+	
+    public List<String> getRoles() {
+		return roles;
+	}
+
+	/**
      * Set JWT claim "iss".
      */
 	public void setIssuer(String issuer) {
