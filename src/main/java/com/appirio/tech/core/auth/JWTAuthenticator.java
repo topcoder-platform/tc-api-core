@@ -46,9 +46,12 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 		try {
 			JWTToken jwt = verifyToken(token);
 			AuthUser user = new AuthUser();
-
+			// TODO: needs test cases
 			user.setUserId(new TCID(jwt.getUserId()));
 			user.setToken(token);
+			user.setHandle(jwt.getHandle());
+			user.setEmail(jwt.getEmail());
+			user.setRoles(jwt.getRoles());
 			user.setAuthDomain(authDomain);
 
 			return Optional.of(user);

@@ -11,7 +11,9 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import javax.ws.rs.core.MediaType;
+
 import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * A call to hold user information that was authenticated using API V3 authentication mechanism
@@ -20,34 +22,72 @@ import java.net.URLEncoder;
  *
  */
 public class AuthUser {
+	
 	private TCID userId;
+	
 	private String token;
+	
+	private String handle;
+	
+	private String email;
+	
+	private List<String> roles;
+	
 	private String authDomain;
 	
 	public TCID getUserId() {
 		return userId;
 	}
 
-	public void setUserId(TCID userId) {
+	protected void setUserId(TCID userId) {
 		this.userId = userId;
+	}
+	
+	public String getHandle() {
+		return handle;
+	}
+
+	protected void setHandle(String handle) {
+		this.handle = handle;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	protected void setEmail(String email) {
+		this.email = email;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	protected void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 
 	public String getToken() {
 		return token;
 	}
 
-	public void setToken(String token) {
+	protected void setToken(String token) {
 		this.token = token;
 	}
 
 	public String getAuthDomain() { return authDomain; }
 
-	public void setAuthDomain(String authDomain) { this.authDomain = authDomain; }
+	protected void setAuthDomain(String authDomain) { this.authDomain = authDomain; }
 
+	// TODO: needs test cases
 	public boolean hasRole(String role) {
-
+		if(role==null)
+			return false; //TODO: should throw an error?
+		
+		if(this.roles!=null && this.roles.size()>0) {
+			return this.roles.contains(role);
+		}
 		String subjectId = this.getUserId().toString();
-
 		return makeRequest("roles", role, "hasrole", subjectId);
 	}
 
