@@ -4,6 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.dropwizard.auth.AuthenticationException;
 
 import org.junit.Test;
@@ -25,6 +29,12 @@ public class JWTAuthenticatorTest {
 
 		JWTToken jwt = new JWTToken();
 		jwt.setUserId("USER-ID-DUMMY");
+		jwt.setHandle("HANDLE-DUMMY");
+		jwt.setEmail("EMAIL-DUMMY");
+		List<String> roles = new ArrayList<String>();
+		roles.add("ROLE1");
+		roles.add("ROLE2");
+		jwt.setRoles(roles);
 		jwt.setIssuer(jwt.createIssuerFor(authDomain));
 		String token = jwt.generateToken(secret);
 		
@@ -35,6 +45,12 @@ public class JWTAuthenticatorTest {
 		// verify result
 		assertNotNull(result);
 		assertEquals(jwt.getUserId(), result.getUserId());
+		assertEquals(jwt.getHandle(), result.getHandle());
+		assertEquals(jwt.getEmail(),  result.getEmail());
+		assertEquals(jwt.getRoles().size(), result.getRoles().size());
+		for(int i=0; i<jwt.getRoles().size(); i++) {
+			assertEquals(jwt.getRoles().get(i), result.getRoles().get(i));
+		}
 		assertEquals(jwt.getIssuer(), result.getIssuer());
 	}
 	
@@ -97,6 +113,12 @@ public class JWTAuthenticatorTest {
 		String secret = "SECRET-DUMMY";
 		JWTToken jwt = new JWTToken();
 		jwt.setUserId("USER-ID-DUMMY");
+		jwt.setHandle("HANDLE-DUMMY");
+		jwt.setEmail("EMAIL-DUMMY");
+		List<String> roles = new ArrayList<String>();
+		roles.add("ROLE1");
+		roles.add("ROLE2");
+		jwt.setRoles(roles);
 		jwt.setIssuer(jwt.createIssuerFor(authDomain));
 		String token = jwt.generateToken(secret);
 		
@@ -114,6 +136,12 @@ public class JWTAuthenticatorTest {
 		assertNotNull(user);
 		assertNotNull(user.getUserId());
 		assertEquals(jwt.getUserId(), user.getUserId().toString());
+		assertEquals(jwt.getHandle(), user.getHandle());
+		assertEquals(jwt.getEmail(),  user.getEmail());
+		assertEquals(jwt.getRoles().size(), user.getRoles().size());
+		for(int i=0; i<jwt.getRoles().size(); i++) {
+			assertEquals(jwt.getRoles().get(i), user.getRoles().get(i));
+		}
 	}
 	
 	@Test(expected=IllegalArgumentException.class)

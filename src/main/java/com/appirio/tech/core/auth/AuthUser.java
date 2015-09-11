@@ -12,6 +12,8 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
+
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -22,6 +24,8 @@ import java.util.List;
  *
  */
 public class AuthUser {
+	
+	private static final Logger logger = Logger.getLogger(AuthUser.class);
 	
 	private TCID userId;
 	
@@ -79,7 +83,6 @@ public class AuthUser {
 
 	protected void setAuthDomain(String authDomain) { this.authDomain = authDomain; }
 
-	// TODO: needs test cases
 	public boolean hasRole(String role) {
 		if(role==null)
 			return false; //TODO: should throw an error?
@@ -98,7 +101,7 @@ public class AuthUser {
 		return makeRequest("permissions", permission, "ispermitted", subjectId);
 	}
 
-	private boolean makeRequest(String resource, String resourceId, String endPoint, String subjectId) {
+	protected boolean makeRequest(String resource, String resourceId, String endPoint, String subjectId) {
 
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);
@@ -126,6 +129,7 @@ public class AuthUser {
 				return true;
 			}
 		} catch(Exception e) {
+			logger.error("Error in REST call. "+e.getMessage(), e);
 			return false;
 		}
 
