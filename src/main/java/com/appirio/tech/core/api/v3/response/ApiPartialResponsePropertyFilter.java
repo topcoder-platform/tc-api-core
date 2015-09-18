@@ -39,24 +39,24 @@ public class ApiPartialResponsePropertyFilter implements PropertyFilter {
 		
 		//Find fields to return
 		String queryParam = request.getQueryParameters().getFirst("fields");
+		
+		Object content = apiResponse.getResult()!=null ? apiResponse.getResult().getContent() : null;
 		if (queryParam == null || queryParam.trim().isEmpty()) {
-			Object content = apiResponse.getResult().getContent();
-			if(content instanceof Collection){
-				Iterator it = ((Collection)content).iterator();
-				if(it.hasNext()) {
-					queryParam = StringUtils.join(ResourceHelper.getDefaultFields(it.next().getClass()), ",");
-				}
-			} else {
-				if(apiResponse.getResult() != null && apiResponse.getResult().getContent() != null) {
-					queryParam = StringUtils.join(ResourceHelper.getDefaultFields(apiResponse.getResult().getContent().getClass()), ",");
+			if(content != null) {
+				if(content instanceof Collection){
+					Iterator it = ((Collection)content).iterator();
+					if(it.hasNext()) {
+						queryParam = StringUtils.join(ResourceHelper.getDefaultFields(it.next().getClass()), ",");
+					}
+				} else {
+					queryParam = StringUtils.join(ResourceHelper.getDefaultFields(content.getClass()), ",");
 				}
 			}
 		}
 		
-		String entityName;
-		Object content = apiResponse.getResult().getContent();
 		if(content==null)
 			return;
+		String entityName;
 		if(content instanceof List) {
 			if(((List) content).isEmpty()) return;
 			entityName = ((List)content).get(0).getClass().getSimpleName();
