@@ -67,6 +67,27 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 		return ApiResponseFactory.createFieldSelectorResponse(mockStorage.get(recordId), selector);
 	}
 
+	@GET
+	@Path("/responseNull")
+	@Timed
+	public ApiResponse getApiResponseWithNullContent(
+			@Auth(required=false) AuthUser authUser,
+			@APIFieldParam(repClass = MockModelB.class) FieldSelector selector,
+			@Context HttpServletRequest request) throws Exception {
+		return ApiResponseFactory.createResponse(null);
+	}
+
+	@GET
+	@Path("/selectorNull")
+	@Timed
+	public ApiResponse getApiFieldSelectorResponseWithNullContent(
+			@Auth(required=false) AuthUser authUser,
+			@APIFieldParam(repClass = MockModelB.class) FieldSelector selector,
+			@Context HttpServletRequest request) throws Exception {
+		return ApiResponseFactory.createFieldSelectorResponse((MockModelB)null, selector);
+	}
+
+
 	@Override
 	@GET
 	@Timed

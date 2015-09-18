@@ -179,4 +179,33 @@ public class EndpointTest {
 		MockModelA[] content = getResponse.getContentResource(MockModelA[].class);
 		Assert.assertEquals(0, content.length);
 	}
+	
+	@Test
+	public void testGetResposeWithNull() throws Exception {
+		Client client = new Client();
+		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models/responseNull", RULE.getLocalPort()))
+									.get(ClientResponse.class);
+		
+		ApiResponse apiResponse = response.getEntity(ApiResponse.class);
+		Assert.assertEquals(ApiVersion.v3, apiResponse.getVersion());
+		Assert.assertNotNull(apiResponse.getId());
+		Assert.assertEquals(HttpStatus.OK_200, (int)apiResponse.getResult().getStatus());
+		MockModelB content = apiResponse.getContentResource(MockModelB.class);
+		Assert.assertNull(content);
+	}
+	
+	@Test
+	public void testGetFieldSelectorResposeWithNull() throws Exception {
+		Client client = new Client();
+		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models/selectoreNull", RULE.getLocalPort()))
+									.get(ClientResponse.class);
+		
+		ApiResponse apiResponse = response.getEntity(ApiResponse.class);
+		Assert.assertEquals(ApiVersion.v3, apiResponse.getVersion());
+		Assert.assertNotNull(apiResponse.getId());
+		Assert.assertEquals(HttpStatus.OK_200, (int)apiResponse.getResult().getStatus());
+		MockModelB content = apiResponse.getContentResource(MockModelB.class);
+		Assert.assertNull(content);
+	}
+
 }

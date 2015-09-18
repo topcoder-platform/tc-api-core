@@ -47,12 +47,16 @@ public class ApiPartialResponsePropertyFilter implements PropertyFilter {
 					queryParam = StringUtils.join(ResourceHelper.getDefaultFields(it.next().getClass()), ",");
 				}
 			} else {
-				queryParam = StringUtils.join(ResourceHelper.getDefaultFields(apiResponse.getResult().getContent().getClass()), ",");
+				if(apiResponse.getResult() != null && apiResponse.getResult().getContent() != null) {
+					queryParam = StringUtils.join(ResourceHelper.getDefaultFields(apiResponse.getResult().getContent().getClass()), ",");
+				}
 			}
 		}
 		
 		String entityName;
 		Object content = apiResponse.getResult().getContent();
+		if(content==null)
+			return;
 		if(content instanceof List) {
 			if(((List) content).isEmpty()) return;
 			entityName = ((List)content).get(0).getClass().getSimpleName();

@@ -70,9 +70,11 @@ public class ApiResponseFactory {
 		ApiFieldSelectorResponse response = new ApiFieldSelectorResponse();
 		response.setResult(true, HttpStatus.OK_200, object);
 		response.setVersion(ApiVersion.v3);
-		Map<Integer, Set<String>> fieldSelectionMap = new HashMap<Integer, Set<String>>();
-		ResourceHelper.setSerializeFields(object, selector, fieldSelectionMap);
-		response.setFieldSelectionMap(fieldSelectionMap);
+		if(object!=null) {
+			Map<Integer, Set<String>> fieldSelectionMap = new HashMap<Integer, Set<String>>();
+			ResourceHelper.setSerializeFields(object, selector, fieldSelectionMap);
+			response.setFieldSelectionMap(fieldSelectionMap);
+		}
 		return response;
 	}
 
