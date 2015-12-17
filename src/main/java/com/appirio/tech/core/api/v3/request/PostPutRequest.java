@@ -3,6 +3,7 @@
  */
 package com.appirio.tech.core.api.v3.request;
 
+import javax.validation.Valid;
 
 /**
  * Represents the format of a post / put request to the API.
@@ -11,6 +12,7 @@ public class PostPutRequest<T> extends RequestBase {
 	/**
 	 * The param field in the json request to represent a resource.
 	 */
+	@Valid
 	private T param;
 	
 	/**
