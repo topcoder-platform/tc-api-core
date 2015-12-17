@@ -24,6 +24,10 @@ public class FilterParameter extends SearchParameter {
 
 	private boolean like = false;
 
+	// [COR-481]: removed code to decode parameters in filter
+	// the filter parameter has been decoded in Jersey framework.
+	// see: com.sun.jersey.server.impl.application.WebApplicationContext#getQueryParameters()
+	// If you want to decode the filter value again, please use fromEncodedString(String filter).
 	public FilterParameter(String filterValue) {
 		if(filterValue==null || filterValue.isEmpty()) return;
 		
@@ -36,12 +40,7 @@ public class FilterParameter extends SearchParameter {
 			if(data[0].equalsIgnoreCase("like") && data[1].equalsIgnoreCase("true")) {
 				like = true;
 			} else {
-				// support multibyte character.
-				try {
-					put(data[0], URLDecoder.decode(data[1],"UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					put(data[0],data[1]);
-				}
+				put(data[0],data[1]);
 			}
 		}
 	}

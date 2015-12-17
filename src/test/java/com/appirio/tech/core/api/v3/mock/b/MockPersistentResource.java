@@ -7,7 +7,10 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.jersey.PATCH;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,6 +32,7 @@ import com.appirio.tech.core.api.v3.TCID;
 import com.appirio.tech.core.api.v3.metadata.CountableMetadata;
 import com.appirio.tech.core.api.v3.metadata.Metadata;
 import com.appirio.tech.core.api.v3.request.FieldSelector;
+import com.appirio.tech.core.api.v3.request.FilterParameter;
 import com.appirio.tech.core.api.v3.request.PatchRequest;
 import com.appirio.tech.core.api.v3.request.PostPutRequest;
 import com.appirio.tech.core.api.v3.request.QueryParameter;
@@ -95,8 +99,26 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 			@Auth(required=false) AuthUser authUser,
 			@APIQueryParam(repClass = MockModelB.class) QueryParameter query,
 			@Context HttpServletRequest request) throws Exception {
-		return ApiResponseFactory.createFieldSelectorResponse(new ArrayList<MockModelB>(mockStorage.values()),
-				getMetadata(request, query), query.getSelector());
+		List<MockModelB> result = new ArrayList<MockModelB>();
+		Collection<MockModelB> values = mockStorage.values();
+		
+		FilterParameter filter = query.getFilter();
+		Map<String, Object> params = filter.getParamMap();
+		String strParam = (String)params.get("strTest");
+		String intParam = (String)params.get("intTest");
+		for(MockModelB m : values) {
+			boolean hit = (strParam==null && intParam==null);
+			if(!hit)
+				hit = strParam!=null && strParam.equals(m.getStrTest());
+			if(!hit)
+				hit = intParam!=null && Integer.parseInt(intParam) == m.getIntTest();
+			if(hit)
+				result.add(m);
+		}
+		return ApiResponseFactory.createFieldSelectorResponse(
+				result,
+				getMetadata(request, query),
+				query.getSelector());
 	}
 
 	@Override

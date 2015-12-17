@@ -5,6 +5,8 @@ package com.appirio.tech.core.api.v3;
 
 import io.dropwizard.testing.junit.DropwizardAppRule;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -206,6 +208,80 @@ public class EndpointTest {
 		Assert.assertEquals(HttpStatus.OK_200, (int)apiResponse.getResult().getStatus());
 		MockModelB content = apiResponse.getContentResource(MockModelB.class);
 		Assert.assertNull(content);
+	}
+
+	@Test
+	public void testGetWithFilter() throws Exception {
+		// setup
+		MockPersistentResource.clearData();
+		
+		// create 2 objects
+		MockModelB modelA = new MockModelB();
+		modelA.setIntTest(100);
+		modelA.setStrTest("Test String A");
+		
+		MockModelB modelB = new MockModelB();
+		modelB.setIntTest(200);
+		modelB.setStrTest("Test+String+B");
+		
+		Client client = new Client();
+		
+		//Insert first object
+		PostPutRequest<MockModelB> requestA = new PostPutRequest<MockModelB>();
+		requestA.setParam(modelA);
+		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.accept("application/json").type("application/json").post(ClientResponse.class, requestA);
+		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+		
+		//Insert second object
+		PostPutRequest<MockModelB> requestB = new PostPutRequest<MockModelB>();
+		requestB.setParam(modelB);
+		response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.accept("application/json").type("application/json").post(ClientResponse.class, requestB);
+		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+
+		// Get all
+		response = client.resource(
+				String.format("http://localhost:%d/v3/mock_b_models?filter=", RULE.getLocalPort())).get(ClientResponse.class);
+
+		ApiResponse getResponse = response.getEntity(ApiResponse.class);
+		MockModelB[] content = getResponse.getContentResource(MockModelB[].class);
+		Assert.assertEquals(2, content.length);
+
+		// Get with filter
+		String filterValue = "Test+String+B";
+		String filter = "strTest="+filterValue;
+		getResponse = getObjectsWithFilter(client, filter);
+		content = getResponse.getContentResource(MockModelB[].class);
+		Assert.assertEquals(1, content.length);
+		Assert.assertEquals(filterValue, content[0].getStrTest());
+		Assert.assertEquals(modelB.getIntTest(), content[0].getIntTest());
+		
+		filterValue = "Test String A";
+		filter = "strTest="+filterValue;
+		getResponse = getObjectsWithFilter(client, filter);
+		content = getResponse.getContentResource(MockModelB[].class);
+		Assert.assertEquals(1, content.length);
+		Assert.assertEquals(filterValue, content[0].getStrTest());
+		Assert.assertEquals(modelA.getIntTest(), content[0].getIntTest());
+		
+		// n/a
+		getResponse = getObjectsWithFilter(client, null);
+		content = getResponse.getContentResource(MockModelB[].class);
+		Assert.assertEquals(2, content.length);
+	}
+
+	private ApiResponse getObjectsWithFilter(Client client, String filter)
+			throws UnsupportedEncodingException {
+		ClientResponse response;
+		ApiResponse getResponse;
+		filter = filter!=null ? URLEncoder.encode(filter, "UTF-8") : "";
+		System.out.println("Filter(encoded) is " + filter);
+		response = client.resource(
+				String.format("http://localhost:%d/v3/mock_b_models?filter=", RULE.getLocalPort())+filter).get(ClientResponse.class);
+
+		getResponse = response.getEntity(ApiResponse.class);
+		return getResponse;
 	}
 
 }

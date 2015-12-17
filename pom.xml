@@ -5,7 +5,7 @@
 
   <groupId>com.appirio.tech.core.api</groupId>
   <artifactId>tech.core.api</artifactId>
-  <version>API-3.0.0.8-SNAPSHOT</version>
+  <version>API-3.0.0.9-SNAPSHOT</version>
   <name>tech.core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
@@ -23,8 +23,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>

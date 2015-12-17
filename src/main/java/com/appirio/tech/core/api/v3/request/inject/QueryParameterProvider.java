@@ -3,13 +3,11 @@
  */
 package com.appirio.tech.core.api.v3.request.inject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map.Entry;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import com.appirio.tech.core.api.v3.exception.APIParseException;
 import com.appirio.tech.core.api.v3.model.ResourceHelper;
 import com.appirio.tech.core.api.v3.request.FieldSelector;
 import com.appirio.tech.core.api.v3.request.FilterParameter;
@@ -80,14 +78,10 @@ public class QueryParameterProvider implements InjectableProvider<APIQueryParam,
 				selector = ResourceHelper.getDefaultFieldSelector(repClass);
 			}
 			
-			try {
-				return new QueryParameter(selector,
-						FilterParameter.fromEncodedString(filter),
-						LimitQuery.instanceFromRaw(limit, offset, offsetId),
-						OrderByQuery.instanceFromRaw(orderBy));
-			} catch (UnsupportedEncodingException e) {
-				throw new APIParseException("Failed to parse Query Parameter", e);
-			}
+			return new QueryParameter(selector,
+					new FilterParameter(filter),
+					LimitQuery.instanceFromRaw(limit, offset, offsetId),
+					OrderByQuery.instanceFromRaw(orderBy));
 		}
 	}
 
