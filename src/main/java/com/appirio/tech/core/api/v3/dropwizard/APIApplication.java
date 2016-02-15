@@ -32,8 +32,9 @@ import com.appirio.tech.core.auth.JWTAuthProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.sun.jersey.api.container.filter.LoggingFilter;
 import com.sun.jersey.api.core.ResourceConfig;
+import com.sun.jersey.spi.container.ContainerRequestFilter;
+import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 /**
  * Application entry point for DropWizard framework.
@@ -72,15 +73,14 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		JACKSON_OBJECT_MAPPER.setFilters(filters);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run(T configuration, Environment environment) throws Exception {
 		//delegate.run(this, configuration, environment);
 		configureCors(configuration, environment);
-		
-		// Register Logging filter
-		environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, LoggingFilter.class.getName());
-		environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, LoggingFilter.class.getName());
-		
+		// Register filters
+		configureFilters(configuration, environment);
+
 		environment.jersey().setUrlPattern("/v3/*");
 		
 		//Find all Resource class and register them to jersey if auto registering is set true.
@@ -108,9 +108,38 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		environment.jersey().register(new RuntimeExceptionMapper());
 	}
 
+	private void configureFilters(T configuration, Environment environment) {
+		if(configuration.getFilters()==null)
+			return;
+		for (String filter : configuration.getFilters()) {
+			if(filter==null || filter.trim().length()==0)
+				continue;
+			configureFilter(environment, filter);
+		}
+	}
+
+	private void configureFilter(Environment environment, String filter) {
+		@SuppressWarnings("rawtypes")
+		Class filterClass = null;
+		try {
+			filterClass = Class.forName(filter);
+		} catch (Exception e) {
+			logger.error(String.format("Filter '%s' is invalid class name.", filter), e);
+		}
+		if(filterClass==null)
+			return;
+		
+		if(ContainerRequestFilter.class.isAssignableFrom(filterClass)) {
+			logger.info(String.format("Registering Request filter: '%s'", filter));
+			environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, filter);
+		}
+		if(ContainerResponseFilter.class.isAssignableFrom(filterClass)) {
+			logger.info(String.format("Registering Response filter: '%s'", filter));
+			environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, filter);
+		}
+	}
+
 	/**
-	 * Temporary CORS fix by Kohata. Under review.
-	 * 
 	 * @param configuration
 	 * @param environment
 	 */

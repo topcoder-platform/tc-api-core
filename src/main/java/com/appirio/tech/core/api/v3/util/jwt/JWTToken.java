@@ -14,6 +14,8 @@ import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTSigner.Options;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JWTToken {
 	
@@ -82,6 +84,10 @@ public class JWTToken {
 		return verifyAndApply(token, secret, this.encoder);
 	}
 	
+	public JWTToken apply(String token) throws JWTException {
+		return apply(parse(token));
+	}
+	
 	protected JWTToken verifyAndApply(String token, String secret, SecretEncoder enc) throws JWTException {
 		if(secret==null || secret.length()==0)
 			throw new IllegalArgumentException("secret must be specified.");
@@ -90,7 +96,6 @@ public class JWTToken {
 		return verifyAndApply(token, enc.encode(secret));
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected JWTToken verifyAndApply(String token, byte[] secretBytes) throws JWTException {
 		if(token==null)
 			throw new IllegalArgumentException("token must be specified.");
@@ -107,6 +112,14 @@ public class JWTToken {
  		} catch (Exception e) {
  			throw new JWTException(token, "Error occurred in verifying token. "+e.getLocalizedMessage(), e);
  		}
+		return apply(map);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected JWTToken apply(Map<String, Object> map) {
+		if(map==null || map.size()==0)
+			return this;
+		
 		setUserId((String)map.get(CLAIM_USER_ID));
 		setHandle((String)map.get(CLAIM_HANDLE));
 		setEmail((String)map.get(CLAIM_EMAIL));
@@ -116,7 +129,27 @@ public class JWTToken {
 		Integer exp = (Integer)map.get(CLAIM_EXPIRATION_TIME);
 		if(exp!=null)
 			setExpirySeconds(calcExpirySeconds(exp, iat));
+		
 		return this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected Map<String, Object> parse(String token) throws JWTException {
+		if (token==null || token.length()==0)
+			throw new IllegalArgumentException("token must be specified.");
+		
+		String[] pieces = token.split("\\.");
+		if (pieces.length != 3)
+			throw new InvalidTokenException(token, "Wrong number of segments in jwt: " + pieces.length);
+		
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String jsonString = new String(Base64.decodeBase64(pieces[1]), "UTF-8");
+			JsonNode jwtClaim = mapper.readValue(jsonString, JsonNode.class);
+			return mapper.treeToValue(jwtClaim, Map.class);
+		} catch (Exception e) {
+			throw new InvalidTokenException(token, e);
+		}
 	}
 
 	protected Integer calcExpirySeconds(Integer exp, Integer iat) {

@@ -1,12 +1,11 @@
 package com.appirio.tech.core.api.v3.util.jwt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -159,4 +158,97 @@ public class JWTTokenTest {
 		// test
 		auth0Jwt.verifyAndApply(aoth0Token, secret);
 	}
+	
+	@Test
+	public void testApply() throws Exception {
+		//data
+		String tokenText = "TOKEN";
+
+		// testee
+		JWTToken token = spy(new JWTToken());
+		doReturn(token).when(token).apply(tokenText);
+		
+		// test
+		JWTToken result = token.apply(tokenText);
+		
+		// verify
+		assertEquals(token, result);
+		verify(token).apply(tokenText);
+	}
+	
+	
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testParse() throws Exception {
+		//data
+		String userId = "USER-ID";
+		String email = "EMAIL@TOPCODER.COM";
+		String handle = "HANDLE";
+		String issuer = "ISSUER";
+		@SuppressWarnings("serial")
+		List<String> roles = new ArrayList<String>(){ {add("ROLE1"); add("ROLE2"); } };
+		String secret = "SECRET";
+		
+		// testee
+		JWTToken token = new JWTToken();
+		token.setUserId(userId);
+		token.setEmail(email);
+		token.setHandle(handle);
+		token.setIssuer(issuer);
+		token.setRoles(roles);
+		String tokenText = token.generateToken(secret);
+		
+		
+		// test
+		Map<String, Object> result = token.parse(tokenText);
+		
+		// verify
+		assertEquals(userId, result.get(JWTToken.CLAIM_USER_ID));
+		assertEquals(handle, result.get(JWTToken.CLAIM_HANDLE));
+		assertEquals(email, result.get(JWTToken.CLAIM_EMAIL));
+		assertEquals(issuer, result.get(JWTToken.CLAIM_ISSUER));
+		
+		assertTrue(result.get(JWTToken.CLAIM_ROLES) instanceof List);
+		assertTrue(((List)result.get(JWTToken.CLAIM_ROLES)).contains(roles.get(0)));
+		assertTrue(((List)result.get(JWTToken.CLAIM_ROLES)).contains(roles.get(1)));	
+	}
+	
+	@Test
+	public void testParse_InvalidTokenException_WhenInvalidFormatToken() throws Exception {
+		//data
+		String invalidToken = "INVALID.TOKEN";
+		
+		// testee
+		JWTToken token = new JWTToken();
+
+		// test
+		try {
+			token.parse(invalidToken);
+			fail("IllegalArgumentException should be thrown in the previous step.");
+		} catch (InvalidTokenException e) {
+			String msgPiece = "Wrong number of segments in jwt";
+			assertTrue(
+				"Error message should contain \""+msgPiece+"\". The actual message: "+e.getMessage(),
+				e.getMessage().contains(msgPiece));
+		}
+	}
+	
+	
+	@Test
+	public void testParse_InvalidTokenException_WhenInvalidFormatToken2() throws Exception {
+		//data
+		String invalidToken = "NOT.VALID.TOKEN";
+		
+		// testee
+		JWTToken token = new JWTToken();
+
+		// test
+		try {
+			token.parse(invalidToken);
+			fail("IllegalArgumentException should be thrown in the previous step.");
+		} catch (InvalidTokenException e) {
+			// e.getMessage() is an error from 3rd party library. 
+		}
+	}
+
 }

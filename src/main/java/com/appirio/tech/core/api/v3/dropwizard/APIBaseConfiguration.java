@@ -5,6 +5,7 @@ package com.appirio.tech.core.api.v3.dropwizard;
 
 import io.dropwizard.Configuration;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -22,6 +23,8 @@ public class APIBaseConfiguration extends Configuration {
 	boolean useResourceAutoRegistering = false;
 	
 	Map<String, String> corsSettings;
+	
+	List<String> filters;
 	
 	@Valid
 	@NotNull
@@ -49,5 +52,13 @@ public class APIBaseConfiguration extends Configuration {
 
 	public void setAuthDomain(String authDomain) {
 		this.authDomain = authDomain;
+	}
+
+	public List<String> getFilters() {
+		return filters;
+	}
+
+	public void setFilters(List<String> filters) {
+		this.filters = filters;
 	}
 }
