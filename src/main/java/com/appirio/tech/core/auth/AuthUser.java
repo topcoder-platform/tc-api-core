@@ -86,12 +86,13 @@ public class AuthUser {
 	public boolean hasRole(String role) {
 		if(role==null)
 			return false; //TODO: should throw an error?
-		
-		if(this.roles!=null && this.roles.size()>0) {
-			return this.roles.contains(role);
-		}
-		String subjectId = this.getUserId().toString();
-		return makeRequest("roles", role, "hasrole", subjectId);
+
+		// TODO: Need a fix
+		// Currently checking with roles in JWT. [SUP-3098]
+		// This has the potential issue that any change in role assignment is not reflected immediately.
+		if(this.roles==null || this.roles.size()==0)
+			return false;
+		return this.roles.contains(role);
 	}
 
 	public boolean isPermitted(String permission) {
