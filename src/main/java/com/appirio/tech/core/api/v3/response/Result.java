@@ -24,21 +24,7 @@ public class Result {
 	public Object getContent() {
 		return content;
 	}
-	
-	public void setSuccess(Boolean success) {
-        this.success = success;
-    }
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-    public void setMetadata(Object metadata) {
-        this.metadata = metadata;
-    }
-    public void setContent(Object content) {
-        this.content = content;
-    }
-
-    @Override
+	@Override
 	public String toString() {
 		return "{success:" + success + "},{status:" + status + "},{metadata:" + metadata + "},{content:" + content + "}";
 	}
