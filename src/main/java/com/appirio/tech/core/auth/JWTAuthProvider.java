@@ -136,18 +136,18 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 		return new JWTAuthInjectable(authenticator, a.required());
 	}
 	
+	private static final String PROP_KEY_JWT_SECRET = "TC_JWT_KEY";
+	
 	/**
 	 * load secret 
 	 */
 	protected void loadSecret() {
-		try {
-			ResourceBundle res = ResourceBundle.getBundle("auth");
-			String key = res.getString("secret");
-			if(key==null || key.length()==0)
-				throw new Exception("'secret' has not been set in auth.properties.");
-			setSecret(key);
-		} catch (Exception e) {
-			logger.error("Failed to load the secret data.", e);
-		}
+		String key = System.getenv(PROP_KEY_JWT_SECRET);
+		if(key==null)
+			key = System.getProperty(PROP_KEY_JWT_SECRET);
+		if(key==null)
+			logger.warn(PROP_KEY_JWT_SECRET + " is not found in both of environment variables and system properties.");
+		
+		setSecret(key);
 	}
 }

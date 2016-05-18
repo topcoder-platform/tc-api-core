@@ -3,10 +3,10 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.appirio.tech.core.api</groupId>
-  <artifactId>tech.core.api</artifactId>
-  <version>API-3.0.0.11-SNAPSHOT</version>
-  <name>tech.core.api</name>
+  <groupId>com.topcoder</groupId>
+  <artifactId>core.api</artifactId>
+  <version>3.0.1</version>
+  <name>core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
 
@@ -25,26 +25,6 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <version>1.5.3</version>
-        <executions>
-          <execution>
-            <phase>prepare-package</phase>
-              <goals>
-                <goal>replace</goal>
-              </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>${basedir}/target/**/*.yml</include>
-            <include>${basedir}/target/**/*.properties</include>
-          </includes>
-          <tokenValueMap>${basedir}/token.properties</tokenValueMap>
         </configuration>
       </plugin>
     </plugins>
