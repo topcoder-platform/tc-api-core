@@ -21,7 +21,9 @@ import javax.validation.constraints.NotNull;
 public class APIBaseConfiguration extends Configuration {
 	
 	boolean useResourceAutoRegistering = false;
-	
+
+	Map<String, String> systemProperties;
+
 	Map<String, String> corsSettings;
 	
 	List<String> filters;
@@ -36,6 +38,14 @@ public class APIBaseConfiguration extends Configuration {
 
 	public void setUseResourceAutoRegistering(boolean useResourceAutoRegistering) {
 		this.useResourceAutoRegistering = useResourceAutoRegistering;
+	}
+	
+	public Map<String, String> getSystemProperties() {
+		return systemProperties;
+	}
+
+	public void setSystemProperties(Map<String, String> systemProperties) {
+		this.systemProperties = systemProperties;
 	}
 
 	public Map<String, String> getCorsSettings() {

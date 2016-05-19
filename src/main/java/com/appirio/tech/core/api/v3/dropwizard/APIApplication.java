@@ -76,7 +76,9 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 	@SuppressWarnings("unchecked")
 	@Override
 	public void run(T configuration, Environment environment) throws Exception {
-		//delegate.run(this, configuration, environment);
+		// apply system properties defined in configuration
+		applySystemProperties(configuration, environment);
+		// delegate.run(this, configuration, environment);
 		configureCors(configuration, environment);
 		// Register filters
 		configureFilters(configuration, environment);
@@ -139,6 +141,27 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		}
 	}
 
+	/**
+	 * @param configuration
+	 * @param environment
+	 */
+	protected void applySystemProperties(APIBaseConfiguration configuration, Environment environment) {
+		// 
+		Map<String, String> systemProperties = configuration.getSystemProperties();
+		if(systemProperties != null && !systemProperties.isEmpty()) {
+			for(Iterator<String> keys = systemProperties.keySet().iterator(); keys.hasNext();) {
+				String key = keys.next();
+				String value = systemProperties.get(key);
+				if(System.getProperty(key)!=null) {
+					logger.info("System propery["+key+"] = "+System.getProperty(key));
+					continue;
+				}
+				System.setProperty(key, value);
+				logger.info("System propery["+key+"] -> "+value);
+			}
+		}
+	}
+	
 	/**
 	 * @param configuration
 	 * @param environment
