@@ -30,12 +30,15 @@ public class JWTAuthProviderTest {
 	@Test
 	public void testConstructor() throws Exception {
 		
+		String secret = "SECRET-DUMMY";
 		String authDomain = "AUTH-DOMAIN-DUMMY";
+		
+		System.setProperty(JWTAuthProvider.PROP_KEY_JWT_SECRET, secret);
 		
 		JWTAuthProvider provider = new JWTAuthProvider(authDomain);
 		
 		assertEquals("AUTH-DOMAIN-DUMMY", provider.getAuthDomain());
-		assertEquals("SECRET-DUMMY", provider.getSecret());
+		assertEquals(secret, provider.getSecret());
 	}
 	
 	@Test

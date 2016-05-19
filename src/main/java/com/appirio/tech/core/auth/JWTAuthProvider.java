@@ -136,7 +136,7 @@ public class JWTAuthProvider implements InjectableProvider<Auth, Parameter> {
 		return new JWTAuthInjectable(authenticator, a.required());
 	}
 	
-	private static final String PROP_KEY_JWT_SECRET = "TC_JWT_KEY";
+	public static final String PROP_KEY_JWT_SECRET = "TC_JWT_KEY";
 	
 	/**
 	 * load secret 

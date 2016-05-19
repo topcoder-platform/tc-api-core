@@ -22,6 +22,7 @@ import com.appirio.tech.core.api.v3.mock.b.MockModelB;
 import com.appirio.tech.core.api.v3.mock.b.MockPersistentResource;
 import com.appirio.tech.core.api.v3.request.PostPutRequest;
 import com.appirio.tech.core.api.v3.response.ApiResponse;
+import com.appirio.tech.core.auth.JWTAuthProvider;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -32,10 +33,16 @@ import com.sun.jersey.api.client.ClientResponse;
  * 
  */
 public class EndpointTest {
-	
+
+	// Setting "TC_JWT_KEY"
+	static {
+		System.setProperty(JWTAuthProvider.PROP_KEY_JWT_SECRET, "SECRET-DUMMY");
+	}
+
 	@ClassRule
 	public static final DropwizardAppRule<TestConfiguration> RULE = new DropwizardAppRule<TestConfiguration>(
 			TestApplication.class, "src/test/resources/initializer_test.yml");
+	
 	/*
 	@SuppressWarnings("unchecked")
 	@ClassRule
