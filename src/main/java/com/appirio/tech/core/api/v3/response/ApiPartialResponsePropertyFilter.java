@@ -98,7 +98,7 @@ public class ApiPartialResponsePropertyFilter implements PropertyFilter {
 	public void depositSchemaProperty(PropertyWriter writer,
 			JsonObjectFormatVisitor objectVisitor, SerializerProvider provider)
 			throws JsonMappingException {
-		writer.depositSchemaProperty(objectVisitor);
+		writer.depositSchemaProperty(objectVisitor, provider);
 	}
 
 	protected boolean include(String beanName, String propertyName) {
@@ -135,4 +135,5 @@ public class ApiPartialResponsePropertyFilter implements PropertyFilter {
 		}
 		return set;
 	}
+
 }

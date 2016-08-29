@@ -4,11 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import io.dropwizard.auth.AuthenticationException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.dropwizard.auth.AuthenticationException;
+import java.util.Optional;
 
 import org.junit.Test;
 
@@ -16,7 +16,7 @@ import com.appirio.tech.core.api.v3.util.jwt.InvalidTokenException;
 import com.appirio.tech.core.api.v3.util.jwt.JWTException;
 import com.appirio.tech.core.api.v3.util.jwt.JWTToken;
 import com.appirio.tech.core.api.v3.util.jwt.TokenExpiredException;
-import com.google.common.base.Optional;
+
 
 public class JWTAuthenticatorTest {
 

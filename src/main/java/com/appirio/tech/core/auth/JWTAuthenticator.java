@@ -6,6 +6,8 @@ package com.appirio.tech.core.auth;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +16,6 @@ import com.appirio.tech.core.api.v3.util.jwt.InvalidTokenException;
 import com.appirio.tech.core.api.v3.util.jwt.JWTException;
 import com.appirio.tech.core.api.v3.util.jwt.JWTToken;
 import com.appirio.tech.core.api.v3.util.jwt.TokenExpiredException;
-import com.google.common.base.Optional;
 
 /**
  * @author sudo
@@ -59,7 +60,7 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 			if(e instanceof TokenExpiredException)
 				throw e; // re-throw TokenExpiredException to tell JWTAuthProvider an expiration occurred.
 			
-			return Optional.absent();
+			return Optional.empty();
 		} catch (JWTException e) {
 			logger.error("Error occurred in authentication with error: " + e.getLocalizedMessage(), e);
 			throw new AuthenticationException("Error occurred in authentication.", e);

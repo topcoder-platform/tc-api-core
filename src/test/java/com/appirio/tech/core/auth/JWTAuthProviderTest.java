@@ -17,8 +17,7 @@ import org.junit.Test;
 
 import com.appirio.tech.core.api.v3.exception.APIRuntimeException;
 import com.appirio.tech.core.api.v3.util.jwt.TokenExpiredException;
-import com.google.common.base.Optional;
-
+import java.util.Optional;
 
 public class JWTAuthProviderTest {
 	
@@ -73,7 +72,7 @@ public class JWTAuthProviderTest {
 		ContainerRequestContext requestContext = createMockRequestContext(authHeader);
 		@SuppressWarnings("unchecked")
 		Authenticator<String, AuthUser> authenticator = mock(Authenticator.class);
-		doReturn(Optional.absent()).when(authenticator).authenticate(token); // unauthenticated
+		doReturn(Optional.empty()).when(authenticator).authenticate(token); // unauthenticated
 		
 		// test
 		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();

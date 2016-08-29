@@ -9,6 +9,7 @@ import io.dropwizard.auth.Authenticator;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Optional;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.appirio.tech.core.api.v3.exception.APIRuntimeException;
 import com.appirio.tech.core.api.v3.util.jwt.TokenExpiredException;
-import com.google.common.base.Optional;
+
 
 /**
  * @author sudo
