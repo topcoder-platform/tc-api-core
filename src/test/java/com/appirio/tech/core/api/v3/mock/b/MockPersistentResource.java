@@ -64,7 +64,7 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	@Path("/{resourceId}")
 	@Timed
 	public ApiResponse getObject(
-			@Auth(required=false) AuthUser authUser,
+			@Auth AuthUser authUser,
 			@PathParam("resourceId") TCID recordId,
 			@APIFieldParam(repClass = MockModelB.class) FieldSelector selector,
 			@Context HttpServletRequest request) throws Exception {
@@ -75,7 +75,7 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	@Path("/responseNull")
 	@Timed
 	public ApiResponse getApiResponseWithNullContent(
-			@Auth(required=false) AuthUser authUser,
+			@Auth AuthUser authUser,
 			@APIFieldParam(repClass = MockModelB.class) FieldSelector selector,
 			@Context HttpServletRequest request) throws Exception {
 		return ApiResponseFactory.createResponse(null);
@@ -85,7 +85,7 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	@Path("/selectorNull")
 	@Timed
 	public ApiResponse getApiFieldSelectorResponseWithNullContent(
-			@Auth(required=false) AuthUser authUser,
+			@Auth AuthUser authUser,
 			@APIFieldParam(repClass = MockModelB.class) FieldSelector selector,
 			@Context HttpServletRequest request) throws Exception {
 		return ApiResponseFactory.createFieldSelectorResponse((MockModelB)null, selector);
@@ -96,7 +96,7 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	@GET
 	@Timed
 	public ApiResponse getObjects(
-			@Auth(required=false) AuthUser authUser,
+			@Auth AuthUser authUser,
 			@APIQueryParam(repClass = MockModelB.class) QueryParameter query,
 			@Context HttpServletRequest request) throws Exception {
 		List<MockModelB> result = new ArrayList<MockModelB>();
@@ -125,7 +125,7 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	@POST
 	@Timed
 	public ApiResponse createObject(
-			@Auth(required=false) AuthUser authUser,
+			@Auth AuthUser authUser,
 			@Valid PostPutRequest<MockModelB> postRequest,
 			@Context HttpServletRequest request) throws Exception {
 
@@ -150,7 +150,7 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	@Path("/{resourceId}")
 	@Timed
 	public ApiResponse updateObject(
-			@Auth(required=false) AuthUser authUser,
+			@Auth AuthUser authUser,
 			@PathParam("resourceId") String resourceId,
 			@Valid PostPutRequest<MockModelB> putRequest,
 			@Context HttpServletRequest request) throws Exception {
@@ -175,7 +175,7 @@ public class MockPersistentResource implements GetResource<MockModelB>, DDLResou
 	@Path("/{resourceId}")
 	@Timed
 	public ApiResponse deleteObject(
-			@Auth(required=false) AuthUser authUser,
+			@Auth AuthUser authUser,
 			@PathParam("resourceId") String resourceId,
 			@Context HttpServletRequest request) throws Exception {
 		mockStorage.remove(new TCID(resourceId));

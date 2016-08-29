@@ -6,16 +6,17 @@ import static org.mockito.Mockito.*;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 
-import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.MDC;
 import org.junit.Test;
 
 import com.appirio.tech.core.api.v3.util.jwt.JWTToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerResponse;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
 
 public class LoggingFilterTest {
 
@@ -31,16 +32,18 @@ public class LoggingFilterTest {
 		String authHeader = String.format("Bearer %s", tokentext);
 		
 		// mock
-		ContainerRequest request = mock(ContainerRequest.class);
-		doReturn(authHeader).when(request).getHeaderValue(HttpHeaders.AUTHORIZATION);
+		ContainerRequestContext request = mock(ContainerRequestContext.class);
 		
 		// testee
-		LoggingFilter filter = new LoggingFilter();
+		LoggingFilter filter = spy(new LoggingFilter());
+		doReturn(authHeader).when(filter).getAuthorizationHeader(request);
+		
+		// test
 		String result = filter.getUserInfo(request);
 		
 		// verify
 		assertEquals(String.format("%s,%s", token.getHandle(), token.getUserId()), result);
-		verify(request).getHeaderValue(HttpHeaders.AUTHORIZATION);
+		verify(filter).getAuthorizationHeader(request);
 	}
 	
 	@Test
@@ -53,8 +56,8 @@ public class LoggingFilterTest {
 		ByteArrayInputStream in = new ByteArrayInputStream(body.getBytes("UTF-8"));
 		
 		// mock
-		ContainerRequest request = mock(ContainerRequest.class);
-		doReturn(in).when(request).getEntityInputStream();
+		ContainerRequestContext request = mock(ContainerRequestContext.class);
+		doReturn(in).when(request).getEntityStream();
 		
 		// testee
 		LoggingFilter filter = new LoggingFilter();
@@ -62,7 +65,7 @@ public class LoggingFilterTest {
 		
 		// verify
 		assertEquals(body.replaceAll("\\n", ""), result);
-		verify(request).getEntityInputStream();
+		verify(request).getEntityStream();
 	}
 	
 	@Test
@@ -73,9 +76,11 @@ public class LoggingFilterTest {
 		URI requestUri = new URI(baseUri + path);
 		
 		// mock
-		ContainerRequest request = mock(ContainerRequest.class);
-		doReturn(requestUri).when(request).getRequestUri();
-		doReturn(baseUri).when(request).getBaseUri();
+		ContainerRequestContext request = mock(ContainerRequestContext.class);
+		UriInfo uri = mock(UriInfo.class);
+		doReturn(uri).when(request).getUriInfo();
+		doReturn(requestUri).when(uri).getRequestUri();
+		doReturn(baseUri).when(uri).getBaseUri();
 
 		// testee
 		LoggingFilter filter = new LoggingFilter();
@@ -83,8 +88,8 @@ public class LoggingFilterTest {
 		
 		// verify
 		assertEquals(path, result);
-		verify(request, atLeastOnce()).getRequestUri();
-		verify(request, atLeastOnce()).getBaseUri();
+		verify(uri, atLeastOnce()).getRequestUri();
+		verify(uri, atLeastOnce()).getBaseUri();
 	}
 	
 	@Test
@@ -94,7 +99,7 @@ public class LoggingFilterTest {
 		Object entity = new ObjectMapper().readTree(jasonBody);
 		
 		// mock
-		ContainerResponse response = mock(ContainerResponse.class);
+		ContainerResponseContext response = mock(ContainerResponseContext.class);
 		doReturn(entity).when(response).getEntity();
 		
 		// testee
@@ -112,7 +117,7 @@ public class LoggingFilterTest {
 		String textBody = "DUMMY-BODY";
 		
 		// mock
-		ContainerResponse response = mock(ContainerResponse.class);
+		ContainerResponseContext response = mock(ContainerResponseContext.class);
 		doReturn(textBody).when(response).getEntity();
 		
 		// testee
@@ -167,10 +172,10 @@ public class LoggingFilterTest {
 		MDC.put(LoggingFilter.MDC_KEY_REQUESTBODY, requestBody);
 		
 		// mock
-		ContainerRequest request = mock(ContainerRequest.class);
+		ContainerRequestContext request = mock(ContainerRequestContext.class);
 		doReturn(method).when(request).getMethod();
 		
-		ContainerResponse response = mock(ContainerResponse.class);
+		ContainerResponseContext response = mock(ContainerResponseContext.class);
 		doReturn(status).when(response).getStatus();
 		
 		// testee
@@ -206,7 +211,7 @@ public class LoggingFilterTest {
 		String requestBody = "REQUEST-BODY-DUMMY";
 
 		// mock
-		ContainerRequest request = mock(ContainerRequest.class);
+		ContainerRequestContext request = mock(ContainerRequestContext.class);
 
 		// testee
 		LoggingFilter filter = spy(new LoggingFilter());

@@ -24,6 +24,8 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 
 	private static final Logger logger = LoggerFactory.getLogger(JWTAuthenticator.class);
 
+	public static final String DEFAULT_AUTH_DOMAIN = "topcoder-dev.com";
+
 	private String secret;
 	
 	private String authDomain;
@@ -31,11 +33,9 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 	public JWTAuthenticator(String authDomain, String secret) {
 		if(secret==null || secret.length()==0)
 			throw new IllegalArgumentException("secret must be specified.");
-		if(authDomain==null || authDomain.length()==0)
-			throw new IllegalArgumentException("authDomain must be specified.");
 		
 		this.secret = secret;
-		this.authDomain = authDomain;
+		this.authDomain = (authDomain==null || authDomain.length()==0) ? DEFAULT_AUTH_DOMAIN : authDomain;
 	}
 
 	/**
@@ -58,6 +58,7 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 			logger.info(String.format("Authentication failed with: %s, token: %s", e.getLocalizedMessage(), token));
 			if(e instanceof TokenExpiredException)
 				throw e; // re-throw TokenExpiredException to tell JWTAuthProvider an expiration occurred.
+			
 			return Optional.absent();
 		} catch (JWTException e) {
 			logger.error("Error occurred in authentication with error: " + e.getLocalizedMessage(), e);
@@ -68,11 +69,11 @@ public class JWTAuthenticator implements Authenticator<String, AuthUser> {
 	protected JWTToken verifyToken(String token) throws JWTException {
 		JWTToken jwt = new JWTToken(token, getSecret());
 		if(!jwt.isValidIssuerFor(getAuthDomain())) {
-			throw new InvalidTokenException(String.format("The issuer is invalid: %s", jwt.getIssuer()));
+			throw new InvalidTokenException(token, String.format("The issuer is invalid: %s", jwt.getIssuer()));
 		}
 		return jwt;
 	}
-
+	
 	protected String getSecret() {
 		return secret;
 	}

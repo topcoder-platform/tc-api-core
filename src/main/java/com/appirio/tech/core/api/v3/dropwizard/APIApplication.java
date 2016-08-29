@@ -4,6 +4,8 @@
 package com.appirio.tech.core.api.v3.dropwizard;
 
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
@@ -14,27 +16,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Singleton;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration.Dynamic;
 import javax.ws.rs.Path;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
 
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.glassfish.jersey.server.spi.internal.ValueFactoryProvider;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.appirio.tech.core.api.v3.exception.ResourceInitializationException;
 import com.appirio.tech.core.api.v3.model.annotation.ApiJacksonAnnotationIntrospector;
+import com.appirio.tech.core.api.v3.request.annotation.APIFieldParam;
+import com.appirio.tech.core.api.v3.request.annotation.APIQueryParam;
 import com.appirio.tech.core.api.v3.request.inject.FieldSelectorProvider;
+import com.appirio.tech.core.api.v3.request.inject.FieldSelectorProvider.FieldSelectorFactory;
+import com.appirio.tech.core.api.v3.request.inject.FieldSelectorProvider.FieldSelectorInjectionResolver;
 import com.appirio.tech.core.api.v3.request.inject.QueryParameterProvider;
+import com.appirio.tech.core.api.v3.request.inject.QueryParameterProvider.QueryParameterFactory;
+import com.appirio.tech.core.api.v3.request.inject.QueryParameterProvider.QueryParameterInjectionResolver;
 import com.appirio.tech.core.api.v3.response.ApiResponseFilter;
+import com.appirio.tech.core.auth.AllowAnonymousFeature;
+import com.appirio.tech.core.auth.AuthUser;
 import com.appirio.tech.core.auth.JWTAuthProvider;
+import com.appirio.tech.core.auth.JWTAuthenticator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.spi.container.ContainerRequestFilter;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
+
+
 
 /**
  * Application entry point for DropWizard framework.
@@ -70,10 +88,9 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		JACKSON_OBJECT_MAPPER.setAnnotationIntrospector(intr);
 		SimpleFilterProvider filters = new SimpleFilterProvider();
 		filters.setFailOnUnknownId(false);
-		JACKSON_OBJECT_MAPPER.setFilters(filters);
+		JACKSON_OBJECT_MAPPER.setFilterProvider(filters);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void run(T configuration, Environment environment) throws Exception {
 		// apply system properties defined in configuration
@@ -83,8 +100,6 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		// Register filters
 		configureFilters(configuration, environment);
 
-		environment.jersey().setUrlPattern("/v3/*");
-		
 		//Find all Resource class and register them to jersey if auto registering is set true.
 		if(configuration.isUseResourceAutoRegistering()) {
 			for(Object resource : getAllResources()) {
@@ -94,21 +109,49 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		}
 		
 		//Register V3 API query/put/post/delete parameter objects to map into annotated instances
-		environment.jersey().register(new FieldSelectorProvider());
-		environment.jersey().register(new QueryParameterProvider());
+		environment.jersey().getResourceConfig().register(new FieldSelectorProvider.Binder());
+		environment.jersey().getResourceConfig().register(new QueryParameterProvider.Binder());
 		
 		//Register V3 API response filter for GET call (handling partial response and includes param)
-		environment.jersey().getResourceConfig().getContainerResponseFilters().add(new ApiResponseFilter(JACKSON_OBJECT_MAPPER));
-		
-		//Register Authentication Provider to validate JWT with @Auth annotation
-		String authDomain = configuration.getAuthDomain();
-		if(authDomain==null || authDomain.length()==0)
-			authDomain = JWTAuthProvider.DEFAULT_AUTH_DOMAIN; // default
-		environment.jersey().register(new JWTAuthProvider(authDomain));
+		environment.jersey().register(new ApiResponseFilter(JACKSON_OBJECT_MAPPER));
 		
 		//Register ExceptionMapper to catch all exception and wrap to V3 format
 		environment.jersey().register(new RuntimeExceptionMapper());
+		
+		JWTAuthenticator authenticator = new JWTAuthenticator(configuration.getAuthDomain(), getSecret());
+		environment.jersey().register(new AuthDynamicFeature(
+		        new JWTAuthProvider.Builder<AuthUser>()
+		        	.setAuthenticator(authenticator)
+		            .buildAuthFilter()));
+		
+		environment.jersey().register(new AllowAnonymousFeature(
+		        new JWTAuthProvider.Builder<AuthUser>()
+		        	.setRequired(false)
+		        	.setAuthenticator(authenticator)
+		            .buildAuthFilter()));
+		
+		environment.jersey().register(RolesAllowedDynamicFeature.class);
+		
+	    // Binder to inject a custom Principal object into parameters annotated with @Auth
+	    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(AuthUser.class));
+	    
 	}
+	
+	public static final String PROP_KEY_JWT_SECRET = "TC_JWT_KEY";
+
+	/**
+	 * secret 
+	 */
+	protected String getSecret() {
+		String key = System.getenv(PROP_KEY_JWT_SECRET);
+		if(key!=null)
+			return key;
+		key = System.getProperty(PROP_KEY_JWT_SECRET);
+		if(key==null)
+			logger.warn(PROP_KEY_JWT_SECRET + " is not found in both of environment variables and system properties.");
+		return key;
+	}
+
 
 	private void configureFilters(T configuration, Environment environment) {
 		if(configuration.getFilters()==null)
@@ -131,13 +174,10 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		if(filterClass==null)
 			return;
 		
-		if(ContainerRequestFilter.class.isAssignableFrom(filterClass)) {
-			logger.info(String.format("Registering Request filter: '%s'", filter));
-			environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, filter);
-		}
-		if(ContainerResponseFilter.class.isAssignableFrom(filterClass)) {
-			logger.info(String.format("Registering Response filter: '%s'", filter));
-			environment.jersey().property(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, filter);
+		if(ContainerRequestFilter.class.isAssignableFrom(filterClass) ||
+				ContainerResponseFilter.class.isAssignableFrom(filterClass)) {
+			logger.info(String.format("Registering Filter: '%s'", filter));
+			environment.jersey().register(filter);
 		}
 	}
 

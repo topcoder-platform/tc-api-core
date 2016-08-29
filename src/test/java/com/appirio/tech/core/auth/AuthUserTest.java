@@ -28,7 +28,6 @@ public class AuthUserTest {
 		// verify
 		assertTrue(result1);
 		assertFalse(result2);
-		verify(authUser, never()).makeRequest(anyString(), anyString(), anyString(), anyString());
 	}
 	
 	@Test

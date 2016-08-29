@@ -5,6 +5,7 @@ systemProperties:
   FOO: foo
 
 server:
+  rootPath: '/v3/*'
   applicationConnectors:
     - type: http
       port: 9080

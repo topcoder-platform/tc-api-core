@@ -7,24 +7,30 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import com.appirio.tech.core.api.v3.dropwizard.APIApplication;
 import com.appirio.tech.core.api.v3.mock.a.MockModelA;
 import com.appirio.tech.core.api.v3.mock.b.MockModelB;
 import com.appirio.tech.core.api.v3.mock.b.MockPersistentResource;
 import com.appirio.tech.core.api.v3.request.PostPutRequest;
 import com.appirio.tech.core.api.v3.response.ApiResponse;
-import com.appirio.tech.core.auth.JWTAuthProvider;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
+import com.appirio.tech.core.api.v3.util.jwt.JWTToken;
+import com.appirio.tech.core.auth.JWTAuthenticator;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 
 /**
  * V3 API test point.
@@ -35,40 +41,35 @@ import com.sun.jersey.api.client.ClientResponse;
 public class EndpointTest {
 
 	// Setting "TC_JWT_KEY"
+	static final String JWT_SECRET = "SECRET-DUMMY";
 	static {
-		System.setProperty(JWTAuthProvider.PROP_KEY_JWT_SECRET, "SECRET-DUMMY");
+		System.setProperty(APIApplication.PROP_KEY_JWT_SECRET, JWT_SECRET);
 	}
 
 	@ClassRule
 	public static final DropwizardAppRule<TestConfiguration> RULE = new DropwizardAppRule<TestConfiguration>(
 			TestApplication.class, "src/test/resources/initializer_test.yml");
 	
-	/*
-	@SuppressWarnings("unchecked")
-	@ClassRule
-	public static final DropwizardAppRule<APIBaseConfiguration> RULE = new DropwizardAppRule<APIBaseConfiguration>(
-				(Class<? extends Application<APIBaseConfiguration>>)APIApplication.class,
-				"src/test/resources/initializer_test.yml");
-	*/
-
 	@Test
 	public void testRoot() throws Exception {
 		
-		Client client = new Client();
-		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_a_models", RULE.getLocalPort()))
-									.get(ClientResponse.class);
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_a_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader()).get();
 		
 		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
+		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
 	}
-
+	
 	@Test
 	public void testV3Protocol() throws Exception {
-		Client client = new Client();
-		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_a_models", RULE.getLocalPort()))
-									.get(ClientResponse.class);
 		
-		ApiResponse apiResponse = response.getEntity(ApiResponse.class);
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_a_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader()).get(Response.class);
+
+		
+		ApiResponse apiResponse = response.readEntity(ApiResponse.class);
 		Assert.assertEquals(ApiVersion.v3, apiResponse.getVersion());
 		Assert.assertNotNull(apiResponse.getId());
 		Assert.assertEquals(HttpStatus.OK_200, (int)apiResponse.getResult().getStatus());
@@ -93,30 +94,35 @@ public class EndpointTest {
 		PostPutRequest<MockModelB> requestA = new PostPutRequest<MockModelB>();
 		requestA.setParam(modelA);
 		
-		Client client = new Client();
-		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
-				.accept("application/json").type("application/json").post(ClientResponse.class, requestA);
-		
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader())
+				.accept("application/json")
+				.post(Entity.json(requestA));
+
 		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
+		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
 		
+
 		//Insert second object
 		PostPutRequest<MockModelB> requestB = new PostPutRequest<MockModelB>();
 		requestB.setParam(modelB);
 		
-		response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
-				.accept("application/json").type("application/json").post(ClientResponse.class, requestB);
-
-		ApiResponse apiResponse = response.getEntity(ApiResponse.class);
+		response = client.target(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader())
+				.accept("application/json")
+				.post(Entity.json(requestB));
+				
+		ApiResponse apiResponse = response.readEntity(ApiResponse.class);
 		Assert.assertEquals(ApiVersion.v3, apiResponse.getVersion());
 		Assert.assertNotNull(apiResponse.getId());
 		Assert.assertEquals(HttpStatus.OK_200, (int)apiResponse.getResult().getStatus());
 		
 		//Assert by getting everything
-		response = client.resource(
-				String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort())).get(ClientResponse.class);
+		response = client.target(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader()).get(Response.class);
 
-		ApiResponse getResponse = response.getEntity(ApiResponse.class);
+		ApiResponse getResponse = response.readEntity(ApiResponse.class);
 		System.out.println("Result is" + getResponse.getResult());
 		MockModelA[] content = getResponse.getContentResource(MockModelA[].class);
 		System.out.println(getResponse.getResult());
@@ -125,6 +131,7 @@ public class EndpointTest {
 
 	@Test
 	public void testPut() throws Exception {
+		
 		MockPersistentResource.clearData();
 
 		//Insert new object
@@ -134,30 +141,38 @@ public class EndpointTest {
 		
 		PostPutRequest<MockModelB> request = new PostPutRequest<MockModelB>();
 		request.setParam(modelB);
-		Client client = new Client();
-		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
-				.accept("application/json").type("application/json").post(ClientResponse.class, request);
+		
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader())
+				.accept("application/json")
+				.post(Entity.json(request));
 		
 		//Do update to the resource
-		ApiResponse apiResponse = response.getEntity(ApiResponse.class);
+		ApiResponse apiResponse = response.readEntity(ApiResponse.class);
 		TCID id = apiResponse.getContentResource(MockModelB.class).getId();
+		
 		modelB.setId(id);
 		modelB.setIntTest(500); //New value that should get updated
 		modelB.setStrTest("Test String Updated"); //New value that should get updated
 		request.setParam(modelB);
-		client.resource(String.format("http://localhost:%d/v3/mock_b_models/%s", RULE.getLocalPort(), id))
-				.accept("application/json").type("application/json").put(ClientResponse.class, request);
+		
+		client.target(String.format("http://localhost:%d/v3/mock_b_models/%s", RULE.getLocalPort(), id))
+				.request().header("Authorization", createAuthHeader())
+				.accept("application/json")
+				.put(Entity.json(request));
 		
 		//Get the resource again, and see that it has been updated correctly
-		response = client.resource(
-				String.format("http://localhost:%d/v3/mock_b_models/%s", RULE.getLocalPort(), id)).get(ClientResponse.class);
+		response = client.target(String.format("http://localhost:%d/v3/mock_b_models/%s", RULE.getLocalPort(), id))
+				.request().header("Authorization", createAuthHeader()).get(Response.class);
 		
-		ApiResponse getResponse = response.getEntity(ApiResponse.class);
+		ApiResponse getResponse = response.readEntity(ApiResponse.class);
 		MockModelB content = getResponse.getContentResource(MockModelB.class);
 		Assert.assertEquals(500, (int)content.getIntTest());
 		Assert.assertEquals("Test String Updated", content.getStrTest());
 	}
 
+	
 	@Test
 	public void testDelete() throws Exception {
 		MockPersistentResource.clearData();
@@ -170,32 +185,40 @@ public class EndpointTest {
 		
 		PostPutRequest<MockModelB> requestA = new PostPutRequest<MockModelB>();
 		requestA.setParam(modelA);
-		Client client = new Client();
-		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
-				.accept("application/json").type("application/json").post(ClientResponse.class, requestA);
+		
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader())
+				.accept("application/json")
+				.post(Entity.json(requestA));
+
 		Assert.assertEquals(1, storageMap.size());
 
-		response = client.resource(
+		response = client.target(
 				String.format("http://localhost:%d/v3/mock_b_models/%s", RULE.getLocalPort(), 
-						response.getEntity(ApiResponse.class).getContentResource(MockModelB.class).getId())).delete(ClientResponse.class);
+						response.readEntity(ApiResponse.class).getContentResource(MockModelB.class).getId()))
+						.request().header("Authorization", createAuthHeader())
+						.delete(Response.class);
 		Assert.assertEquals(0, storageMap.size());
-		
-		//Assert by getting everything
-		response = client.resource(
-				String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort())).get(ClientResponse.class);
 
-		ApiResponse getResponse = response.getEntity(ApiResponse.class);
+		//Assert by getting everything
+		response = client.target(
+				String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader()).get(Response.class);
+
+		ApiResponse getResponse = response.readEntity(ApiResponse.class);
 		MockModelA[] content = getResponse.getContentResource(MockModelA[].class);
 		Assert.assertEquals(0, content.length);
 	}
 	
+
 	@Test
 	public void testGetResposeWithNull() throws Exception {
-		Client client = new Client();
-		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models/responseNull", RULE.getLocalPort()))
-									.get(ClientResponse.class);
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_b_models/responseNull", RULE.getLocalPort()))
+									.request().header("Authorization", createAuthHeader()).get(Response.class);
 		
-		ApiResponse apiResponse = response.getEntity(ApiResponse.class);
+		ApiResponse apiResponse = response.readEntity(ApiResponse.class);
 		Assert.assertEquals(ApiVersion.v3, apiResponse.getVersion());
 		Assert.assertNotNull(apiResponse.getId());
 		Assert.assertEquals(HttpStatus.OK_200, (int)apiResponse.getResult().getStatus());
@@ -205,11 +228,11 @@ public class EndpointTest {
 	
 	@Test
 	public void testGetFieldSelectorResposeWithNull() throws Exception {
-		Client client = new Client();
-		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models/selectoreNull", RULE.getLocalPort()))
-									.get(ClientResponse.class);
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_b_models/selectoreNull", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader()).get(Response.class);
 		
-		ApiResponse apiResponse = response.getEntity(ApiResponse.class);
+		ApiResponse apiResponse = response.readEntity(ApiResponse.class);
 		Assert.assertEquals(ApiVersion.v3, apiResponse.getVersion());
 		Assert.assertNotNull(apiResponse.getId());
 		Assert.assertEquals(HttpStatus.OK_200, (int)apiResponse.getResult().getStatus());
@@ -231,27 +254,32 @@ public class EndpointTest {
 		modelB.setIntTest(200);
 		modelB.setStrTest("Test+String+B");
 		
-		Client client = new Client();
+		Client client = ClientBuilder.newClient();
 		
 		//Insert first object
 		PostPutRequest<MockModelB> requestA = new PostPutRequest<MockModelB>();
 		requestA.setParam(modelA);
-		ClientResponse response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
-				.accept("application/json").type("application/json").post(ClientResponse.class, requestA);
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader())
+				.accept("application/json")
+				.post(Entity.json(requestA));
 		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
 		
 		//Insert second object
 		PostPutRequest<MockModelB> requestB = new PostPutRequest<MockModelB>();
 		requestB.setParam(modelB);
-		response = client.resource(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
-				.accept("application/json").type("application/json").post(ClientResponse.class, requestB);
+		response = client.target(String.format("http://localhost:%d/v3/mock_b_models", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader())
+				.accept("application/json")
+				.post(Entity.json(requestB));
 		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
 
 		// Get all
-		response = client.resource(
-				String.format("http://localhost:%d/v3/mock_b_models?filter=", RULE.getLocalPort())).get(ClientResponse.class);
+		response = client.target(
+				String.format("http://localhost:%d/v3/mock_b_models?filter=", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader()).get(Response.class);
 
-		ApiResponse getResponse = response.getEntity(ApiResponse.class);
+		ApiResponse getResponse = response.readEntity(ApiResponse.class);
 		MockModelB[] content = getResponse.getContentResource(MockModelB[].class);
 		Assert.assertEquals(2, content.length);
 
@@ -277,18 +305,75 @@ public class EndpointTest {
 		content = getResponse.getContentResource(MockModelB[].class);
 		Assert.assertEquals(2, content.length);
 	}
+	
+	@Test
+	public void testAnonymousAccess() throws Exception {
+		
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_a_models/anonymous", RULE.getLocalPort()))
+				.request().get();
+		
+		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+		
+		client = ClientBuilder.newClient();
+		response = client.target(String.format("http://localhost:%d/v3/mock_a_models/anonymous", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader()).get();
+		
+		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+		Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+	}
+	
+	@Test
+	public void testRoleBasedPermission() throws Exception {
+		
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(String.format("http://localhost:%d/v3/mock_a_models/protected", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeader()).get();
+		
+		Assert.assertEquals(HttpStatus.FORBIDDEN_403, response.getStatus());
+		
+		client = ClientBuilder.newClient();
+		response = client.target(String.format("http://localhost:%d/v3/mock_a_models/protected", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeaderWith("administrator")).get();
+		
+		Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
 
+		client = ClientBuilder.newClient();
+		response = client.target(String.format("http://localhost:%d/v3/mock_a_models/protected", RULE.getLocalPort()))
+				.request().header("Authorization", createAuthHeaderWith("employee")).get();
+		
+		Assert.assertEquals(HttpStatus.FORBIDDEN_403, response.getStatus());
+	}
+	
 	private ApiResponse getObjectsWithFilter(Client client, String filter)
 			throws UnsupportedEncodingException {
-		ClientResponse response;
+		Response response;
 		ApiResponse getResponse;
 		filter = filter!=null ? URLEncoder.encode(filter, "UTF-8") : "";
 		System.out.println("Filter(encoded) is " + filter);
-		response = client.resource(
-				String.format("http://localhost:%d/v3/mock_b_models?filter=", RULE.getLocalPort())+filter).get(ClientResponse.class);
+		response = client.target(
+				String.format("http://localhost:%d/v3/mock_b_models?filter=", RULE.getLocalPort())+filter)
+				.request().header("Authorization", createAuthHeader()).get(Response.class);
 
-		getResponse = response.getEntity(ApiResponse.class);
+		getResponse = response.readEntity(ApiResponse.class);
 		return getResponse;
 	}
-
+	
+	private String createAuthHeader() {
+		return createAuthHeaderWith(null);
+	}
+	
+	@SuppressWarnings("serial")
+	private String createAuthHeaderWith(String role) {
+		JWTToken token = new JWTToken();
+		token.setEmail("jdoe@topcoder.com");
+		token.setHandle("jdoe");
+		token.setUserId("123456789");
+		if(role!=null) {
+			token.setRoles(new ArrayList<String>(){{ add(role); }});
+		}
+		token.setIssuer(token.createIssuerFor(JWTAuthenticator.DEFAULT_AUTH_DOMAIN));
+		return "Bearer " + token.generateToken(JWT_SECRET);
+	}
 }

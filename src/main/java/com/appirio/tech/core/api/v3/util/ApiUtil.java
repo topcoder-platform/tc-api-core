@@ -1,6 +1,6 @@
 package com.appirio.tech.core.api.v3.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * various utility methods for api conversion.

@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
+import javax.ws.rs.container.ContainerRequestContext;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.appirio.tech.core.api.v3.model.ResourceHelper;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -22,7 +24,6 @@ import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
-import com.sun.jersey.spi.container.ContainerRequest;
 
 /**
  * Filter out properties in response for V3 API format.
@@ -35,10 +36,10 @@ public class ApiPartialResponsePropertyFilter implements PropertyFilter {
 	private static final String DELIMS = ",()";
 	private Map<String, Set<String>> map;
 
-	public ApiPartialResponsePropertyFilter(ApiResponse apiResponse, ContainerRequest request) {
+	public ApiPartialResponsePropertyFilter(ApiResponse apiResponse, ContainerRequestContext request) {
 		
 		//Find fields to return
-		String queryParam = request.getQueryParameters().getFirst("fields");
+		String queryParam = request.getUriInfo().getQueryParameters().getFirst("fields");
 		
 		Object content = apiResponse.getResult()!=null ? apiResponse.getResult().getContent() : null;
 		if (queryParam == null || queryParam.trim().isEmpty()) {

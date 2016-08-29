@@ -5,14 +5,14 @@
 
   <groupId>com.topcoder</groupId>
   <artifactId>core.api</artifactId>
-  <version>3.0.1</version>
+  <version>4.0.1</version>
   <name>core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <dropwizard.version>0.7.1</dropwizard.version>
+    <dropwizard.version>0.9.3</dropwizard.version>
     <amazon.aws.version>[1.6.12,1.7)</amazon.aws.version>
   </properties>
 

@@ -3,6 +3,8 @@
  */
 package com.appirio.tech.core.api.v3.response;
 
+import java.io.IOException;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -14,9 +16,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 
 /**
  * ResponseFilter to return only the fields specified from client (partial
@@ -36,20 +39,22 @@ public class ApiResponseFilter implements ContainerResponseFilter {
 	}
 
 	@Override
-	public ContainerResponse filter(ContainerRequest request,
-			ContainerResponse response) {
+//	public ContainerResponse filter(ContainerRequest request,
+//			ContainerResponse response) {
+	public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
+	
 		if (!"GET".equals(request.getMethod())) {
-			return response;
+			return;
 		}
-		if (response.getStatusType() != Response.Status.OK) {
-			return response;
+		if (response.getStatusInfo() != Response.Status.OK) {
+			return;
 		}
 		if (!MediaType.APPLICATION_JSON_TYPE.isCompatible(response.getMediaType())) {
-			return response;
+			return;
 		}
 		Object entity = response.getEntity();
 		if(!(entity instanceof ApiResponse)) {
-			return response;
+			return;
 		}
 		ApiResponse apiResponse = (ApiResponse)response.getEntity();
 
@@ -61,7 +66,6 @@ public class ApiResponseFilter implements ContainerResponseFilter {
 		} catch (JsonProcessingException ex) {
 			log.warn("Error during serialization to JSON", ex);
 		}
-		return response;
 	}
 
 }

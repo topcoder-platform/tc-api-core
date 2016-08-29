@@ -2,25 +2,29 @@ package com.appirio.tech.core.api.v3.util.filter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.appirio.tech.core.api.v3.util.jwt.JWTToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.core.util.ReaderWriter;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerRequestFilter;
-import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
+
+import org.glassfish.jersey.message.internal.ReaderWriter;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 
 @Provider
 public class LoggingFilter implements ContainerRequestFilter, ContainerResponseFilter {
@@ -33,20 +37,18 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
 	protected ObjectMapper mapper = new ObjectMapper();
 	
 	@Override
-	public ContainerRequest filter(ContainerRequest request) {
+	public void filter(ContainerRequestContext request) throws IOException {
 		MDC.put(MDC_KEY_USER, getUserInfo(request));
 		MDC.put(MDC_KEY_REQUESTBODY, getRequestBody(request));
-		return request;
 	}
-
+	
 	@Override
-	public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
+	public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
 		try {
 			logger.info(generateLog(request, response));
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
-		return response;
 	}
 
 	protected static String LOG_TEMPLATE = "[%s] [%s] [/%s] [%s] [%d] [%s]"; 
@@ -59,7 +61,7 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
 	 * 5: response status (e.g. 200)
 	 * 6: response body   (e.g. {{"handle":"jdoe","email":"jdoe@topcoder.com", ...}})
 	 */
-	protected String generateLog(ContainerRequest request, ContainerResponse response) {
+	protected String generateLog(ContainerRequestContext request, ContainerResponseContext response) {
 		try {
 			return String.format(LOG_TEMPLATE,
 									MDC.get(MDC_KEY_USER),
@@ -73,21 +75,23 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
 		}
 	}
 	
-	protected String getPath(ContainerRequest request) {
-		if(request==null)
+	protected String getPath(ContainerRequestContext request) {
+		if(request==null || request.getUriInfo()==null)
 			return null;
-		String reqUrl = request.getRequestUri()!=null ? request.getRequestUri().toString() : null;
-		if(reqUrl==null)
-			return request.getPath();
 		
-		String baseUrl = request.getBaseUri()!=null ? request.getBaseUri().toString() : null;
+		UriInfo uri = request.getUriInfo();
+		String reqUrl = uri.getRequestUri()!=null ? uri.getRequestUri().toString() : null;
+		if(reqUrl==null)
+			return request.getUriInfo().getPath();
+		
+		String baseUrl = uri.getBaseUri()!=null ? uri.getBaseUri().toString() : null;
 		return baseUrl!=null ? reqUrl.substring(baseUrl.length()) : reqUrl;
 	}
 	
-	protected String getUserInfo(ContainerRequest request) {
+	protected String getUserInfo(ContainerRequestContext request) {
 		if(request==null)
 			return "";
-		String header = request.getHeaderValue(HttpHeaders.AUTHORIZATION);
+		String header = getAuthorizationHeader(request);
 		if(header==null)
 			return "";
 		
@@ -109,17 +113,21 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
 			return "";
 		}
 	}
+
+	protected String getAuthorizationHeader(ContainerRequestContext request) {
+		return request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+	}
 	
-	protected String getRequestBody(ContainerRequest request) {
+	protected String getRequestBody(ContainerRequestContext request) {
 		if(request==null)
 			return "";
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		InputStream in = request.getEntityInputStream();
+		InputStream in = request.getEntityStream();
 		try {
 			ReaderWriter.writeTo(in, out);
 			byte[] buff = out.toByteArray();
-			request.setEntityInputStream(new ByteArrayInputStream(buff));
+			request.setEntityStream(new ByteArrayInputStream(buff));
 			return buff.length == 0 ? "" : new String(buff).replaceAll("\\n", "");
 		} catch (Exception e) {
 			String err = String.format("Failed to get request body. (%s: %s)", e.getClass().getName(), e.getMessage());
@@ -128,7 +136,7 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
 		}
     }
 	
-	protected String getResponseBody(ContainerResponse response) {
+	protected String getResponseBody(ContainerResponseContext response) {
 		if(response==null)
 			return "";
 		Object entity = response.getEntity();

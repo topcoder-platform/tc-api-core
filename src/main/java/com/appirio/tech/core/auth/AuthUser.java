@@ -3,19 +3,12 @@
  */
 package com.appirio.tech.core.auth;
 
-import com.appirio.tech.core.api.v3.TCID;
-import com.appirio.tech.core.api.v3.response.ApiResponse;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-
-import javax.ws.rs.core.MediaType;
+import java.security.Principal;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import java.net.URLEncoder;
-import java.util.List;
+import com.appirio.tech.core.api.v3.TCID;
 
 /**
  * A call to hold user information that was authenticated using API V3 authentication mechanism
@@ -23,7 +16,7 @@ import java.util.List;
  * @author sudo
  *
  */
-public class AuthUser {
+public class AuthUser implements Principal {
 	
 	private static final Logger logger = Logger.getLogger(AuthUser.class);
 	
@@ -39,6 +32,12 @@ public class AuthUser {
 	
 	private String authDomain;
 	
+
+	@Override
+	public String getName() {
+		return this.handle;
+	}
+
 	public TCID getUserId() {
 		return userId;
 	}
@@ -78,7 +77,7 @@ public class AuthUser {
 	protected void setToken(String token) {
 		this.token = token;
 	}
-
+	
 	public String getAuthDomain() { return authDomain; }
 
 	protected void setAuthDomain(String authDomain) { this.authDomain = authDomain; }
@@ -93,47 +92,5 @@ public class AuthUser {
 		if(this.roles==null || this.roles.size()==0)
 			return false;
 		return this.roles.contains(role);
-	}
-
-	public boolean isPermitted(String permission) {
-
-		String subjectId = this.getUserId().toString();
-
-		return makeRequest("permissions", permission, "ispermitted", subjectId);
-	}
-
-	protected boolean makeRequest(String resource, String resourceId, String endPoint, String subjectId) {
-
-		ClientConfig config = new DefaultClientConfig();
-		Client client = Client.create(config);
-
-		try {
-			WebResource res = client.resource("http://"
-					+ this.authDomain
-					+ ":8080/v3/"
-					+ resource.toString()
-					+ "/"
-					+ resourceId.toString()
-					+ "/"
-					+ endPoint.toString()
-					+ "/"
-					+ "?filter="
-					+ URLEncoder.encode("subjectID="+ subjectId.toString(), "UTF-8")
-					+ "&fields=&limit=&orderBy=");
-
-			ApiResponse response = res.accept(
-					MediaType.APPLICATION_JSON_TYPE).
-					header("Authorization", "Bearer " + this.getToken()).
-					get(ApiResponse.class);
-
-			if (response.getResult().getStatus() == 200) {
-				return true;
-			}
-		} catch(Exception e) {
-			logger.error("Error in REST call. "+e.getMessage(), e);
-			return false;
-		}
-
-		return false;
 	}
 }

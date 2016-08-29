@@ -1,263 +1,224 @@
 package com.appirio.tech.core.auth;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.SecurityContext;
 
+import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
 import org.junit.Test;
 
-import com.appirio.tech.core.api.v3.TCID;
 import com.appirio.tech.core.api.v3.exception.APIRuntimeException;
 import com.appirio.tech.core.api.v3.util.jwt.TokenExpiredException;
 import com.google.common.base.Optional;
-import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.api.core.HttpRequestContext;
 
 
 public class JWTAuthProviderTest {
-
-	@Test
-	public void testConstructor() throws Exception {
-		
-		String secret = "SECRET-DUMMY";
-		String authDomain = "AUTH-DOMAIN-DUMMY";
-		
-		System.setProperty(JWTAuthProvider.PROP_KEY_JWT_SECRET, secret);
-		
-		JWTAuthProvider provider = new JWTAuthProvider(authDomain);
-		
-		assertEquals("AUTH-DOMAIN-DUMMY", provider.getAuthDomain());
-		assertEquals(secret, provider.getSecret());
-	}
 	
 	@Test
-	public void testGetValue() throws Exception {
-
-		String token = "TOKEN-DUMMY";
-		String uid = "USER-ID-DUMMY";
-		AuthUser user = new AuthUser();
-		user.setUserId(new TCID(uid));
-		
-		// mock: context
-		HttpContext ctx = mockContext(token);
-		// mock: authenticator
+	public void testFilter() throws Exception {
+		// test data
+		String token = "DUMMY-TOKEN";
+		String authHeader = "Bearer " + token;
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(authHeader);
+		AuthUser principal = new AuthUser(); 
 		@SuppressWarnings("unchecked")
-		Authenticator<String, AuthUser> authenticator =
-				(Authenticator<String, AuthUser>) mock(Authenticator.class);
-		when(authenticator.authenticate(token)).thenReturn(Optional.of(user));
-		
-		// test
-		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
-				new JWTAuthProvider.JWTAuthInjectable(authenticator, true);
-		AuthUser result = jwtAuth.getValue(ctx);
-		
-		// verify result
-		assertNotNull(result);
-		assertEquals(result.getUserId().toString(), user.getUserId().toString());
-		
-		// verify mocks
-		verify(ctx).getRequest();
-		verify(authenticator).authenticate(token);
-	}
-
-	@Test
-	public void testGetValue_401ErrorWhenNoAuthHeader() throws Exception {
-		
-		// mock: context
-		HttpContext ctx = mockContext(null);
-		// mock: authenticator
-		@SuppressWarnings("unchecked")
-		Authenticator<String, AuthUser> authenticator =
-				(Authenticator<String, AuthUser>) mock(Authenticator.class);
+		Authenticator<String, AuthUser> authenticator = mock(Authenticator.class);
+		doReturn(Optional.of(principal)).when(authenticator).authenticate(token);
 
 		// test
-		boolean required = true;
-		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
-				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
-		try {
-			jwtAuth.getValue(ctx);
-			fail("APIRuntimeException should be thrown in the previous step.");
-		} catch (APIRuntimeException e) {
-			// 401 unauthorized
-			assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getHttpStatus());
-		}
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		testee.setAuthenticator(authenticator);
+		testee.filter(requestContext);
 		
-		// verify mock
-		verify(authenticator, never()).authenticate(anyString());
-	}
-
-	@Test
-	public void testGetValue_401ErrorWhenUnauthorized() throws Exception {
-
-		// mock: context
-		HttpContext ctx = mockContext("TOKEN-DUMMY");
-		// mock: authenticator
-		@SuppressWarnings("unchecked")
-		Authenticator<String, AuthUser> authenticator =
-				(Authenticator<String, AuthUser>) mock(Authenticator.class);
-		// returns Option.absent()
-		when(authenticator.authenticate(anyString())).thenReturn(Optional.<AuthUser>absent());
-
-		// test
-		boolean required = true;
-		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
-				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
-		try {
-			jwtAuth.getValue(ctx);
-			fail("APIRuntimeException should be thrown in the previous step.");
-		} catch (APIRuntimeException e) {
-			// 401 unauthorized
-			assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getHttpStatus());
-		}
-		
-		// verify mock
-		verify(authenticator).authenticate(anyString());
-	}
-	
-	@Test
-	public void testGetValue_NullWhenNotRequiredAndUnauthorized() throws Exception {
-
-		// mock: context
-		String token = "TOKEN-DUMMY";
-		HttpContext ctx = mockContext(token);
-		// mock: authenticator
-		@SuppressWarnings("unchecked")
-		Authenticator<String, AuthUser> authenticator =
-				(Authenticator<String, AuthUser>) mock(Authenticator.class);
-		// returns Option.absent()
-		when(authenticator.authenticate(anyString())).thenReturn(Optional.<AuthUser>absent());
-
-		// test
-		boolean required = false;
-		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
-				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
-		AuthUser user = jwtAuth.getValue(ctx);
-		
-		assertNull(user);
-		
-		// verify mock
+		// verify
+		verify(requestContext).getHeaders();
+		verify(requestContext).setSecurityContext(any(SecurityContext.class));
 		verify(authenticator).authenticate(token);
 	}
 	
 	@Test
-	public void testGetValue_NullWhenNoAuthHeaderAndNotRequired() throws Exception {
-
-		// mock: context
-		HttpContext ctx = mockContext(null);
-		// mock: authenticator
-		@SuppressWarnings("unchecked")
-		Authenticator<String, AuthUser> authenticator =
-				(Authenticator<String, AuthUser>) mock(Authenticator.class);
+	public void testFilter_401_WhenNoCredentialInRequest() throws Exception {
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(null);
 
 		// test
-		boolean required = false;
-		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
-				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
-		AuthUser user = jwtAuth.getValue(ctx);
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		try {
+			testee.filter(requestContext);
+			fail("APIRuntimeException should be thrown in the previous step.");
+		} catch(APIRuntimeException e) {
+			assertEquals(401, e.getHttpStatus());
+		}
 		
-		assertNull(user);
+		// verify
+		verify(requestContext).getHeaders();
+		verify(requestContext, never()).setSecurityContext(any(SecurityContext.class));
+	}
+	
+	@Test
+	public void testFilter_401_WhenCredentialIsNotAuthenticated() throws Exception {
+		// test data
+		String token = "DUMMY-TOKEN";
+		String authHeader = "Bearer " + token;
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(authHeader);
+		@SuppressWarnings("unchecked")
+		Authenticator<String, AuthUser> authenticator = mock(Authenticator.class);
+		doReturn(Optional.absent()).when(authenticator).authenticate(token); // unauthenticated
 		
-		// verify mock
-		verify(authenticator, never()).authenticate(anyString());
+		// test
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		testee.setAuthenticator(authenticator);
+		try {
+			testee.filter(requestContext);
+			fail("APIRuntimeException should be thrown in the previous step.");
+		} catch(APIRuntimeException e) {
+			assertEquals(401, e.getHttpStatus());
+		}
+		
+		// verify
+		verify(requestContext).getHeaders();
+		verify(requestContext, never()).setSecurityContext(any(SecurityContext.class));
+		verify(authenticator).authenticate(token);
 	}
 	
 	@Test
-	public void testGetValue_401ErrorWhenTokenIsExpired() throws Exception {
-
-		// mock: context
-		HttpContext ctx = mockContext("TOKEN-DUMMY");
-		// mock: authenticator
+	public void testFilter_401_WhenTokenIsExpired() throws Exception {
+		// test data
+		String token = "DUMMY-TOKEN";
+		String authHeader = "Bearer " + token;
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(authHeader);
 		@SuppressWarnings("unchecked")
-		Authenticator<String, AuthUser> authenticator =
-				(Authenticator<String, AuthUser>) mock(Authenticator.class);
-		// throw AuthenticationException
-		when(authenticator.authenticate(anyString())).thenThrow(new TokenExpiredException("jwt expired"));
-
+		Authenticator<String, AuthUser> authenticator = mock(Authenticator.class);
+		doThrow(new TokenExpiredException(token)).when(authenticator).authenticate(token); // token is expired
+		
 		// test
-		boolean required = true;
-		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
-				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		testee.setAuthenticator(authenticator);
 		try {
-			jwtAuth.getValue(ctx);
+			testee.filter(requestContext);
 			fail("APIRuntimeException should be thrown in the previous step.");
-		} catch (APIRuntimeException e) {
-			// 401 unauthorized
-			assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getHttpStatus());
-			// jwt expired
-			assertEquals(e.getMessage(), "jwt expired");
+		} catch(APIRuntimeException e) {
+			assertEquals(401, e.getHttpStatus());
 		}
-		// verify mock
-		verify(authenticator).authenticate(anyString());
+		
+		// verify
+		verify(requestContext).getHeaders();
+		verify(requestContext, never()).setSecurityContext(any(SecurityContext.class));
+		verify(authenticator).authenticate(token);
 	}
 	
 	@Test
-	public void testGetValue_500ErrorWhenAuthenticationException() throws Exception {
-
-		// mock: context
-		HttpContext ctx = mockContext("TOKEN-DUMMY");
-		// mock: authenticator
+	public void testFilter_500_WhenAuthenticationFailed() throws Exception {
+		// test data
+		String token = "DUMMY-TOKEN";
+		String authHeader = "Bearer " + token;
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(authHeader);
 		@SuppressWarnings("unchecked")
-		Authenticator<String, AuthUser> authenticator =
-				(Authenticator<String, AuthUser>) mock(Authenticator.class);
-		// throw AuthenticationException
-		when(authenticator.authenticate(anyString())).thenThrow(new AuthenticationException("Authentication error"));
-
+		Authenticator<String, AuthUser> authenticator = mock(Authenticator.class);
+		doThrow(new AuthenticationException("Authentication failed")).when(authenticator).authenticate(token); // authentication failed
+		
 		// test
-		boolean required = true;
-		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
-				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		testee.setAuthenticator(authenticator);
 		try {
-			jwtAuth.getValue(ctx);
+			testee.filter(requestContext);
 			fail("APIRuntimeException should be thrown in the previous step.");
-		} catch (APIRuntimeException e) {
-			// 500 internal server error
-			assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getHttpStatus());
+		} catch(APIRuntimeException e) {
+			assertEquals(500, e.getHttpStatus());
 		}
-		// verify mock
-		verify(authenticator).authenticate(anyString());
+		
+		// verify
+		verify(requestContext).getHeaders();
+		verify(requestContext, never()).setSecurityContext(any(SecurityContext.class));
+		verify(authenticator).authenticate(token);
+	}
+	
+	protected ContainerRequestContext createMockRequestContext(String authHeader) {
+		MultivaluedMap<String, String> headers = new MultivaluedStringMap();
+		if(authHeader!=null)
+			headers.add(HttpHeaders.AUTHORIZATION, authHeader);
+		ContainerRequestContext requestContext = mock(ContainerRequestContext.class);
+		doReturn(headers).when(requestContext).getHeaders();
+		
+		return requestContext;
 	}
 	
 	@Test
-	public void testGetValue_ThorowsExceptionWhenUnexpectedError() throws Exception {
-		// mock: context
-		HttpContext ctx = mockContext("TOKEN-DUMMY");
-		// mock: authenticator
-		@SuppressWarnings("unchecked")
-		Authenticator<String, AuthUser> authenticator =
-				(Authenticator<String, AuthUser>) mock(Authenticator.class);
-		// throw AuthenticationException
-		when(authenticator.authenticate(anyString())).thenThrow(new RuntimeException("Unexpected error"));
-
+	public void testExtractCredentials() throws Exception {
+		// test data
+		String token = "DUMMY-TOKEN";
+		String authHeader = "Bearer " + token;
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(authHeader);
+		
 		// test
-		boolean required = true;
-		JWTAuthProvider.JWTAuthInjectable jwtAuth = 
-				new JWTAuthProvider.JWTAuthInjectable(authenticator, required);
-		try {
-			jwtAuth.getValue(ctx);
-			fail("APIRuntimeException should be thrown in the previous step.");
-		} catch (RuntimeException e) {
-		}
-		// verify mock
-		verify(authenticator).authenticate(anyString());
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		String result = testee.extractCredentials(requestContext);
+
+		// verify
+		assertEquals(token, result);
+		verify(requestContext).getHeaders();
 	}
 	
-	protected HttpContext mockContext(String token) {
-		HttpContext ctx = mock(HttpContext.class);
-		HttpRequestContext reqctx = mock(HttpRequestContext.class);
-		String header = token==null ? null : "Bearer " + token;
-		when(reqctx.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn(header);		
-		when(ctx.getRequest()).thenReturn(reqctx);
-		return ctx;
+	@Test
+	public void testExtractCredentials_NullWhenNoAuthorizationHeader() throws Exception {
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(null);
+		
+		// test
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		String result = testee.extractCredentials(requestContext);
+
+		// verify
+		assertNull(result);
+		verify(requestContext).getHeaders();
+	}
+	
+	@Test
+	public void testExtractCredentials_NullWhenAuthorizationHeaderHasInvalidScheme() throws Exception {		
+		// test data
+		String token = "DUMMY-TOKEN";
+		String authHeader = "Basic " + token; // Unsupported scheme
+		
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(authHeader);
+		
+		// test
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		String result = testee.extractCredentials(requestContext);
+
+		// verify
+		assertNull(token, result);
+		verify(requestContext).getHeaders();
+	}
+	
+	@Test
+	public void testExtractCredentials_NullWhenAuthorizationHeaderIsInvalidFormat() throws Exception {		
+		// test data
+		String token = "DUMMY-TOKEN";
+		String authHeader = "Bearer" + token;
+		
+		// mock
+		ContainerRequestContext requestContext = createMockRequestContext(authHeader);
+		
+		// test
+		JWTAuthProvider<AuthUser> testee = new JWTAuthProvider<>();
+		String result = testee.extractCredentials(requestContext);
+
+		// verify
+		assertNull(token, result);
+		verify(requestContext).getHeaders();
 	}
 }
