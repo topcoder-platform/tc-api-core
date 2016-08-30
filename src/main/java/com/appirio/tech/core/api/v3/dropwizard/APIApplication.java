@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Singleton;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration.Dynamic;
 import javax.ws.rs.Path;
@@ -24,25 +23,15 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 
 import org.eclipse.jetty.servlets.CrossOriginFilter;
-import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.api.TypeLiteral;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import org.glassfish.jersey.server.spi.internal.ValueFactoryProvider;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.appirio.tech.core.api.v3.exception.ResourceInitializationException;
 import com.appirio.tech.core.api.v3.model.annotation.ApiJacksonAnnotationIntrospector;
-import com.appirio.tech.core.api.v3.request.annotation.APIFieldParam;
-import com.appirio.tech.core.api.v3.request.annotation.APIQueryParam;
 import com.appirio.tech.core.api.v3.request.inject.FieldSelectorProvider;
-import com.appirio.tech.core.api.v3.request.inject.FieldSelectorProvider.FieldSelectorFactory;
-import com.appirio.tech.core.api.v3.request.inject.FieldSelectorProvider.FieldSelectorInjectionResolver;
 import com.appirio.tech.core.api.v3.request.inject.QueryParameterProvider;
-import com.appirio.tech.core.api.v3.request.inject.QueryParameterProvider.QueryParameterFactory;
-import com.appirio.tech.core.api.v3.request.inject.QueryParameterProvider.QueryParameterInjectionResolver;
 import com.appirio.tech.core.api.v3.response.ApiResponseFilter;
 import com.appirio.tech.core.auth.AllowAnonymousFeature;
 import com.appirio.tech.core.auth.AuthUser;
