@@ -102,10 +102,10 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		environment.jersey().getResourceConfig().register(new QueryParameterProvider.Binder());
 		
 		//Register V3 API response filter for GET call (handling partial response and includes param)
-		environment.jersey().register(new ApiResponseFilter(JACKSON_OBJECT_MAPPER));
+		configureApiResponseFilter(configuration, environment);
 		
 		//Register ExceptionMapper to catch all exception and wrap to V3 format
-		environment.jersey().register(new RuntimeExceptionMapper());
+		configureRuntimeExceptionMapper(configuration, environment);
 		
 		JWTAuthenticator authenticator = new JWTAuthenticator(configuration.getAuthDomain(), getSecret());
 		environment.jersey().register(new AuthDynamicFeature(
@@ -125,7 +125,7 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 	    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(AuthUser.class));
 	    
 	}
-	
+
 	public static final String PROP_KEY_JWT_SECRET = "TC_JWT_KEY";
 
 	/**
@@ -142,12 +142,16 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 	}
 
 
-	private void configureFilters(T configuration, Environment environment) {
+	protected void configureFilters(T configuration, Environment environment) {
 		if(configuration.getFilters()==null)
 			return;
 		for (String filter : configuration.getFilters()) {
 			if(filter==null || filter.trim().length()==0)
 				continue;
+			if(ApiResponseFilter.class.getName().equals(filter)) {
+				configureApiResponseFilter(configuration, environment);
+				continue;
+			}
 			configureFilter(environment, filter);
 		}
 	}
@@ -169,6 +173,15 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 			environment.jersey().register(filter);
 		}
 	}
+	
+	protected void configureApiResponseFilter(T configuration, Environment environment) {
+		logger.info(String.format("Registering Filter: '%s'", ApiResponseFilter.class.getName()));
+		environment.jersey().register(new ApiResponseFilter(JACKSON_OBJECT_MAPPER));
+	}
+	
+	protected void configureRuntimeExceptionMapper(T configuration, Environment environment) {
+		environment.jersey().register(new RuntimeExceptionMapper());
+	}
 
 	/**
 	 * @param configuration
@@ -177,17 +190,17 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 	protected void applySystemProperties(APIBaseConfiguration configuration, Environment environment) {
 		// 
 		Map<String, String> systemProperties = configuration.getSystemProperties();
-		if(systemProperties != null && !systemProperties.isEmpty()) {
-			for(Iterator<String> keys = systemProperties.keySet().iterator(); keys.hasNext();) {
-				String key = keys.next();
-				String value = systemProperties.get(key);
-				if(System.getProperty(key)!=null) {
-					logger.info("System propery["+key+"] = "+System.getProperty(key));
-					continue;
-				}
-				System.setProperty(key, value);
-				logger.info("System propery["+key+"] -> "+value);
+		if(systemProperties==null || systemProperties.isEmpty())
+			return;
+		for(Iterator<String> keys = systemProperties.keySet().iterator(); keys.hasNext();) {
+			String key = keys.next();
+			String value = systemProperties.get(key);
+			if(System.getProperty(key)!=null) {
+				logger.info("System propery["+key+"] = "+System.getProperty(key));
+				continue;
 			}
+			System.setProperty(key, value);
+			logger.info("System propery["+key+"] -> "+value);
 		}
 	}
 	
