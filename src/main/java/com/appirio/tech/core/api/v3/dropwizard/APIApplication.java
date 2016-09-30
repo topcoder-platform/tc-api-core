@@ -98,8 +98,8 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		}
 		
 		//Register V3 API query/put/post/delete parameter objects to map into annotated instances
-		environment.jersey().getResourceConfig().register(new FieldSelectorProvider.Binder());
-		environment.jersey().getResourceConfig().register(new QueryParameterProvider.Binder());
+		environment.jersey().register(new FieldSelectorProvider.Binder());
+		environment.jersey().register(new QueryParameterProvider.Binder());
 		
 		//Register V3 API response filter for GET call (handling partial response and includes param)
 		configureApiResponseFilter(configuration, environment);
@@ -107,23 +107,8 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 		//Register ExceptionMapper to catch all exception and wrap to V3 format
 		configureRuntimeExceptionMapper(configuration, environment);
 		
-		JWTAuthenticator authenticator = new JWTAuthenticator(configuration.getAuthDomain(), getSecret());
-		environment.jersey().register(new AuthDynamicFeature(
-		        new JWTAuthProvider.Builder<AuthUser>()
-		        	.setAuthenticator(authenticator)
-		            .buildAuthFilter()));
-		
-		environment.jersey().register(new AllowAnonymousFeature(
-		        new JWTAuthProvider.Builder<AuthUser>()
-		        	.setRequired(false)
-		        	.setAuthenticator(authenticator)
-		            .buildAuthFilter()));
-		
-		environment.jersey().register(RolesAllowedDynamicFeature.class);
-		
-	    // Binder to inject a custom Principal object into parameters annotated with @Auth
-	    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(AuthUser.class));
-	    
+		//Register Auth components
+		configureAuth(configuration, environment);
 	}
 
 	public static final String PROP_KEY_JWT_SECRET = "TC_JWT_KEY";
@@ -181,6 +166,25 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 	
 	protected void configureRuntimeExceptionMapper(T configuration, Environment environment) {
 		environment.jersey().register(new RuntimeExceptionMapper());
+	}
+	
+	protected void configureAuth(T configuration, Environment environment) {
+		JWTAuthenticator authenticator = new JWTAuthenticator(configuration.getAuthDomain(), getSecret());
+		environment.jersey().register(new AuthDynamicFeature(
+		        new JWTAuthProvider.Builder<AuthUser>()
+		        	.setAuthenticator(authenticator)
+		            .buildAuthFilter()));
+		
+		environment.jersey().register(new AllowAnonymousFeature(
+		        new JWTAuthProvider.Builder<AuthUser>()
+		        	.setRequired(false)
+		        	.setAuthenticator(authenticator)
+		            .buildAuthFilter()));
+		
+		environment.jersey().register(RolesAllowedDynamicFeature.class);
+		
+	    // Binder to inject a custom Principal object into parameters annotated with @Auth
+	    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(AuthUser.class));
 	}
 
 	/**
