@@ -4,6 +4,8 @@ systemProperties:
   TC_JWT_KEY: tc-jwt-key
   FOO: foo
 
+#useResponseFilter: false
+
 server:
   rootPath: '/v3/*'
   applicationConnectors:

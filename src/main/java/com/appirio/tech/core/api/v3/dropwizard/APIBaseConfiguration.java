@@ -21,6 +21,8 @@ import javax.validation.constraints.NotNull;
 public class APIBaseConfiguration extends Configuration {
 	
 	boolean useResourceAutoRegistering = false;
+	
+	boolean useResponseFilter = true;
 
 	Map<String, String> systemProperties;
 
@@ -40,6 +42,14 @@ public class APIBaseConfiguration extends Configuration {
 		this.useResourceAutoRegistering = useResourceAutoRegistering;
 	}
 	
+	public boolean getUseResponseFilter() {
+		return useResponseFilter;
+	}
+
+	public void setUseResponseFilter(boolean useResponseFilter) {
+		this.useResponseFilter = useResponseFilter;
+	}
+
 	public Map<String, String> getSystemProperties() {
 		return systemProperties;
 	}

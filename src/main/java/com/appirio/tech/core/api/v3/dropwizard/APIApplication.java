@@ -160,8 +160,11 @@ public class APIApplication<T extends APIBaseConfiguration> extends Application<
 	}
 	
 	protected void configureApiResponseFilter(T configuration, Environment environment) {
-		logger.info(String.format("Registering Filter: '%s'", ApiResponseFilter.class.getName()));
-		environment.jersey().register(new ApiResponseFilter(JACKSON_OBJECT_MAPPER));
+		logger.info(String.format("Configuration#useResponseFilter: %s", configuration.getUseResponseFilter()));
+		if(configuration.getUseResponseFilter()) {
+			logger.info(String.format("Registering Filter: '%s'", ApiResponseFilter.class.getName()));
+			environment.jersey().register(new ApiResponseFilter(JACKSON_OBJECT_MAPPER));
+		}
 	}
 	
 	protected void configureRuntimeExceptionMapper(T configuration, Environment environment) {
