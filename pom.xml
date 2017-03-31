@@ -5,7 +5,7 @@
 
   <groupId>com.topcoder</groupId>
   <artifactId>core.api</artifactId>
-  <version>4.0.0</version>
+  <version>5.0.0-SNAPHSOT</version>
   <name>core.api</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
@@ -125,13 +125,13 @@
   <distributionManagement>
     <!-- for deployment on the build server -->
     <repository>
-      <id>appirio-repo</id>
-      <name>Appirio Maven Repository</name>
+      <id>topcoder-repo</id>
+      <name>Topcoder Maven Repository</name>
       <url>file:///mnt/maven/repository</url>
     </repository>
     <snapshotRepository>
-      <id>appirio-repo</id>
-      <name>Appirio Maven Repository</name>
+      <id>topcoder-repo</id>
+      <name>Topcoder Maven Repository</name>
       <url>file:///mnt/maven/repository</url>
     </snapshotRepository>
   </distributionManagement>
@@ -165,7 +165,7 @@
           <sourceEncoding>UTF-8</sourceEncoding>
           <targetJdk>1.6</targetJdk>
           <includes>
-            <include>com/appirio/tech/core/**/*.java</include>
+            <include>com/topcoder/tech/core/**/*.java</include>
           </includes>
         </configuration>
       </plugin>
@@ -174,7 +174,7 @@
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>3.0.1</version>
         <configuration>
-          <onlyAnalyze>com.appirio.tech.core.-</onlyAnalyze>
+          <onlyAnalyze>com.topcoder.tech.core.-</onlyAnalyze>
           <effort>Max</effort>
           <xmlOutput>true</xmlOutput>
         </configuration>

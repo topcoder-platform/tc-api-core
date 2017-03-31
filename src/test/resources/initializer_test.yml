@@ -21,7 +21,7 @@ logging:
   level: INFO
   # Logger-specific levels.
   loggers:
-    # Sets the level for 'com.appirio.tech' to DEBUG.
-    com.appirio.tech: DEBUG
+    # Sets the level for 'com.topcoder' to DEBUG.
+    com.topcoder: DEBUG
   appenders:
     - type: console
